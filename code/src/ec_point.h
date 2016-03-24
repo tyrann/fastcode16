@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "bigint.h"
 
-#ifndef __ECC_POINT_H_
-#define __ECC_POINT_H_
+#ifndef __EC_POINT_H_
+#define __EC_POINT_H_
 #endif
 
 /* Describes a point on the elliptic curve. 
@@ -17,10 +17,10 @@ typedef struct
 }Point;
 
 /* Addition of two points on a curve*/
-Point ecc_points_add(Point p, Point q);
+Point ec_points_add(Point p, Point q);
 
 /* Multiplication of two points on a curve*/
-Point ecc_points_mul(Point p, Point q);
+Point ec_points_mul(Point p, Point q);
 
 
 

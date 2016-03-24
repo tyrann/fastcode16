@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include "bigint.h"
+#include "ec_point.h"
 
-#ifndef __ECC_PARAMETERS_H_
-#define __ECC_PARAMETERS_H_
+#ifndef __EC_PARAMETERS_H_
+#define __EC_PARAMETERS_H_
 #endif
 
 /* General representation of an elliptic curve*/
@@ -26,7 +27,7 @@ typedef struct
  * An indication of whether the elliptic curve domain parameters are valid or not 
  * 
  * The return value should be 0 if invalid and 1 otherwise*/
-int ecc_validation(EllipticCurve e); 
+int ec_validation(EllipticCurve e); 
 
 
 /*Elliptic Curve Domain Parameters over Fp Generation Primitive
@@ -37,4 +38,4 @@ int ecc_validation(EllipticCurve e);
  *Output:
  *  Elliptic curve domain parameters over Fp
  * */
-EllipticCurve ecc_generation(int security_level);
+EllipticCurve ec_generation(int security_level);
