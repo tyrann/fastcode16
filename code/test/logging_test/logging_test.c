@@ -1,4 +1,4 @@
-#include "../logging.h"
+#include "../../src/logging.h"
 
 void my_function() {
     LOG_ERROR("Message without arguments logged.");
