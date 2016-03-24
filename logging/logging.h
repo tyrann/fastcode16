@@ -12,40 +12,58 @@
 #define LOG_LEVEL LOG_LEVEL_DEBUG
 #endif
 
-// Initialize the logging framework
-void _init_logging(char* file_name);
-void _log_console(char* msg, ...);
-void _log_file(char* msg, ...);
+// Log a message to the console.
+void _log_console(const char* tag, const char* function, int line, const char* msg, ...);
+// TODO: Implement if file logging required
+// void _log_file(const char* tag, const char* function, int line, const char* msg, ...);
 
 // Enable or disable console and file logging
-#ifdef ENABLE_CONSOLE_LOG
+#ifndef DISABLE_CONSOLE_LOG
+#define _LOG_CONSOLE(tag, function, line, msg, ...) \
+    _log_console(tag, function, line, msg, ##__VA_ARGS__)
+#else
+#define _LOG_CONSOLE(tag, function, line, msg, ...)
+#endif
 
-#define _LOG(msg, ...) \
+/* // TODO: Uncomment if file logging required
+#ifndef DISABLE_FILE_LOG
+#define _LOG_FILE(tag, function, line, msg, ...) \
+    _log_console(tag, function, line, msg, ##__VA_ARGS__)
+#else
+#define _LOG_FILE(tag, function, line, msg, ...)
+#endif */
+
+// Call all supported loggers
+#define _LOG(tag, function, line, msg, ...) \
 { \
-    _LOG_CONSOLE(msg, ...); \
-    _LOG_FILE(msg, ...); \
-} \
+    _LOG_CONSOLE(tag, function, line, msg, ##__VA_ARGS__); \
+    /* TODO: Uncomment if file logging required */ \
+    /* _LOG_FILE(tag, function, line, msg, ##__VA_ARGS__); */ \
+}
 
 // Enable or disable LOG_DEBUG macro according to the
 // choosen LOG_LEVEL.
-#if LOG_LEVEL <= LOG_LEVEL_DEBUG
-#define LOG_DEBUG(msg, ...) _LOG(msg, __VA_ARGS__)
+#if LOG_LEVEL >= LOG_LEVEL_DEBUG
+#define LOG_DEBUG(msg, ...) \
+    _LOG("DEBUG", __FUNCTION__, __LINE__, msg, ##__VA_ARGS__)
 #else
 #define LOG_DEBUG(msg, ...)
 #endif
 
 // Enable or disable LOG_INFO macro according to the
 // choosen LOG_LEVEL.
-#if LOG_LEVEL <= LOG_LEVEL_INFO
-#define LOG_INFO(msg, ...) _LOG(msg, __VA_ARGS__)
+#if LOG_LEVEL >= LOG_LEVEL_INFO
+#define LOG_INFO(msg, ...) \
+    _LOG("INFO", __FUNCTION__, __LINE__, msg, ##__VA_ARGS__)
 #else
 #define LOG_INFO(msg, ...)
 #endif
 
 // Enable or disable LOG_ERROR macro according to the
 // choosen LOG_LEVEL.
-#if LOG_LEVEL <= LOG_LEVEL_ERROR
-#define LOG_ERROR(msg, ...) _LOG(msg, __VA_ARGS__)
+#if LOG_LEVEL >= LOG_LEVEL_ERROR
+#define LOG_ERROR(msg, ...) \
+    _LOG("ERROR", __FUNCTION__, __LINE__, msg, ##__VA_ARGS__)
 #else
 #define LOG_ERROR(msg, ...)
 #endif
