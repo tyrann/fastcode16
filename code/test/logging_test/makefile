@@ -2,4 +2,4 @@
 # test teh functionality.
 
 all :
-	gcc -DLOG_LEVEL=3 ../../src/logging.c logging_test.c -o logging_test
+	gcc -DLOG_LEVEL=2 ../../src/logging/logging.c logging_test.c -o logging_test

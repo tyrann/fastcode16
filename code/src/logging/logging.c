@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void _log_console(const char* tag, const char* function, int line, const char* msg, ...)
+void __log_console(const char* tag, const char* function, int line, const char* msg, ...)
 {    
     // Enable access to variadic arguments
     va_list argptr;
