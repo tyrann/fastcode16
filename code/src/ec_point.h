@@ -19,7 +19,7 @@ typedef struct
 /* Addition of two points on a curve*/
 Point ec_points_add(Point p, Point q);
 
-/* Multiplication of a points on a curve by a scalar*/
+/* Multiplication of a pointon a curve by a scalar*/
 Point ec_point_mul(Point p, BigInt k);
 
 
