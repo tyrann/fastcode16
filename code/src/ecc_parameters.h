@@ -28,7 +28,7 @@ typedef struct
 
 }EllipticCurve;
 
-/* Addition on the points on a curve*/
+/* Addition of two points on a curve*/
 Point ecc_points_add(Point p, Point q);
 
 /* Multiplication of two points on a curve*/
