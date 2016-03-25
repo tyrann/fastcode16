@@ -1,5 +1,8 @@
 #include <stdint.h>
 
+#ifndef __BIGINT_H_
+#define __BIGINT_H_
+
 // Structure for big integers. Supports unsigned integres
 // with value <= 2^(2^64). Only unsigned numbers are supported at the 
 // moment. If signed number are required open issue to @dotPiano.
@@ -43,3 +46,5 @@ BigInt add_Fp(const BigInt* a, const BigInt* b, const BigInt* p);
 // Multiply two BigInts in a prime finite field Fp of size p, and return the
 // result in a new object ("Multiplication modulo p").
 BigInt mul_Fp(const BigInt* a, const BigInt* b, const BigInt* p);
+
+#endif
