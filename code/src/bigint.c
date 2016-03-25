@@ -3,17 +3,9 @@
 #include "bigint.h"
 #include "logging/logging.h"
 
-#define ASSERT_VALID_BIGINT(num) \
-{ \
-    assert(num != 0); \
-    assert(num->octets != 0); \
-    assert(num->allocated_octets > 0); \
-    assert(num->significant_octets > 0); \
-}
-
 void bigint_free(BigInt* a) {
     
-    ASSERT_VALID_BIGINT(a);
+    BIGINT_ASSERT_VALID(a);
     
     free(a->octets)
     a->octets = 0;
@@ -23,8 +15,8 @@ void bigint_free(BigInt* a) {
 
 bool bigint_are_equal(const BigInt* a, const BigInt* b)
 {
-    ASSERT_VALID_BIGINT(a);
-    ASSERT_VALID_BIGINT(b);
+    BIGINT_ASSERT_VALID(a);
+    BIGINT_ASSERT_VALID(b);
     
     // If the number of octets is different, then the
     // numbers are different
