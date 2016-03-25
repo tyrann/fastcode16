@@ -16,8 +16,12 @@ typedef struct
 
 }Point;
 
+void create_point(BigInt const* a, BigInt const* b, Point* p);
+
+void create_point_inf(Point* p);
+
 /* Addition of two points on a curve*/
-Point ec_points_add(Point a, Point b, BigInt p);
+Point ec_point_add(Point a, Point b, BigInt p);
 
 /* Multiplication of a point on a curve by a scalar*/
 Point ec_point_mul(Point a, BigInt k, BigInt p);
