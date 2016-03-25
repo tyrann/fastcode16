@@ -3,8 +3,8 @@
 #include "bigint.h"
 #include "logging/logging.h"
 
-void bigint_free(BigInt* a) {
-    
+void bigint_free(BigInt* a)
+{    
     BIGINT_ASSERT_VALID(a);
     
     free(a->octets)
@@ -13,7 +13,22 @@ void bigint_free(BigInt* a) {
     a->significant_octets = 0;
 }
 
-bool bigint_are_equal(const BigInt* a, const BigInt* b)
+bigint_from_uint64(BigInt* dest, uint64_t num)
+{
+    // Find number of octets needed
+    uint64_t num_octets;
+    for (num_octets = 8; num_octets > 1; num_octets--)
+    {
+        uint64_t octet = num & (0xFF << (8 * (num_octets - 1)));
+        if (octet != 0) break;
+    }
+    if (i == 0) i = 1;
+    
+    // Create result object
+    BigInt result = { 0, 0, 0 };
+}
+
+int bigint_are_equal(const BigInt* a, const BigInt* b)
 {
     BIGINT_ASSERT_VALID(a);
     BIGINT_ASSERT_VALID(b);
@@ -24,7 +39,7 @@ bool bigint_are_equal(const BigInt* a, const BigInt* b)
         return false;
     
     // Check that all significant octets match
-    for (uint64_t i = 0; i < a->significant_octets)
+    for (uint64_t i = 0; i < a->significant_octets; i++)
     {
         if (a->octets[i] != b->octets[i])
             return false;
@@ -32,3 +47,4 @@ bool bigint_are_equal(const BigInt* a, const BigInt* b)
     
     return true;
 }
+

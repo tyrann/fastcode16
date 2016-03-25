@@ -20,14 +20,14 @@ typedef struct
 void bigint_free(BigInt* a);
 
 // Create a BigInt object from a 32bit unsigned integer
-BigInt bigint_from_uint32(uint32_t num);
+void bigint_from_uint32(BigInt* dest, uint32_t num);
 
 // Create a BigInt object from a 64bit unsigned integer
-BigInt bigint_from_uint64(uint64_t num);
+void bigint_from_uint64(BigInt* dest, uint64_t num);
 
 // Create a BigInt object from a string containing the hexadecimal
 // representation of a number
-BigInt bigint_from_hex_string(const char* num);
+void bigint_from_hex_string(BigInt* dest, const char* num);
 
 // Create a textual hexadecimal representation of a BigInt number.
 // WARNING: the returned char buffer must be deallocated by the caller
@@ -38,21 +38,21 @@ char* bigint_to_hex_string(const BigInt* num);
 int bigint_are_equal(const BigInt* a, const BigInt* b);
 
 // Create a copy of a BigInt
-BigInt bigint_copy(const BigInt* a);
+void bigint_copy(BigInt* dest, const BigInt* a);
 
 // Add two BigInts and return the result in a new object
-BigInt bigint_add(const BigInt* a, const BigInt* b);
+void bigint_add(BigInt* dest, const BigInt* a, const BigInt* b);
 
 // Multiply two BigInts and return the result in a new object
-BigInt bigint_mul(const BigInt* a, const BigInt* b);
+void bigint_mul(BigInt* dest, const BigInt* a, const BigInt* b);
 
 // Add two BigInts in a prime finite field Fp of size p, and return the
 // result in a new object ("Addition modulo p").
-BigInt bigint_add_Fp(const BigInt* a, const BigInt* b, const BigInt* p);
+void bigint_add_Fp(BigInt* dest, const BigInt* a, const BigInt* b, const BigInt* p);
 
 // Multiply two BigInts in a prime finite field Fp of size p, and return the
 // result in a new object ("Multiplication modulo p").
-BigInt bigint_mul_Fp(const BigInt* a, const BigInt* b, const BigInt* p);
+void bigint_mul_Fp(BigInt* dest, const BigInt* a, const BigInt* b, const BigInt* p);
 
 // Checks if a BigInt object is currently valid
 #define BIGINT_ASSERT_VALID(num) \
