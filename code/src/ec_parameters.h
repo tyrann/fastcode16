@@ -4,7 +4,6 @@
 
 #ifndef __EC_PARAMETERS_H_
 #define __EC_PARAMETERS_H_
-#endif
 
 /* General representation of an elliptic curve*/
 typedef struct
@@ -39,3 +38,5 @@ int ec_validation(EllipticCurve e);
  *  Elliptic curve domain parameters over Fp
  * */
 EllipticCurve ec_generation(int security_level);
+
+#endif
