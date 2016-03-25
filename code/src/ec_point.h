@@ -22,4 +22,3 @@ Point ec_points_add(Point p, Point q);
 Point ec_point_mul(Point p, BigInt k);
 
 #endif 
-/* end of include guard: EC_POINT_H */
