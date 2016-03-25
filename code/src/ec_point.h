@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "bigint.h"
 
-#ifndef EC_POINT_H_
-#define EC_POINT_H_
+#ifndef __EC_POINT_H_
+#define __EC_POINT_H_
 
 /* Describes a point on the elliptic curve. 
  * We represent the point at infinity by
