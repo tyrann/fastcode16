@@ -12,7 +12,7 @@ typedef struct
 {
 	BigInt x;
 	BigInt y;
-	char point_at_inf;
+	char is_at_infinity;
 
 }Point;
 
