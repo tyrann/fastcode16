@@ -26,7 +26,7 @@ typedef struct
  * An indication of whether the elliptic curve domain parameters are valid or not 
  * 
  * The return value should be 0 if invalid and 1 otherwise*/
-int ec_validation(EllipticCurve e); 
+int ec_validation(EllipticCurve e, int security_level); 
 
 
 /*Elliptic Curve Domain Parameters over Fp Generation Primitive
