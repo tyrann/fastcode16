@@ -48,21 +48,21 @@ void bigint_from_hex_string(BigInt* dest, const char* num)
     
     // Ignore possible leading zeros
     uint64_t i = 0;
-    uint64_t prefix_digits = 0;
     while (num[i] != '\0' && num[i] == '0')
     {
-        prefix_digits++;
         i++;
     }
+    uint64_t prefix_digits = i;
     
     // Find the number of octets needed
-    uint64_t digits = 0;
     while (num[i] != '\0')
     {
-        digits++;
         i++;
     }
-    uint64_t num_octets = (digits + 1) / 2;
+    uint64_t total_digits = i;
+    uint64_t significant_digits = total_digits - prefix_digits;
+    uint64_t num_octets = (significant_digits + 1) / 2;
+    if (num_octets == 0) num_octets = 1;
     
     // Create result object
     dest->allocated_octets = num_octets;
@@ -71,6 +71,33 @@ void bigint_from_hex_string(BigInt* dest, const char* num)
     assert(dest->octets != 0);
     
     // Copy digits
+    if (significant_digits == 0)
+    {
+        dest->octets[0] = 0;
+    }
+    else
+    {
+        uint64_t j = prefix_digits;
+        char octet_string[] = "00";
+        uint64_t octet_id = 0;
+        
+        // In case the number of digits id odd, read the first one
+        // alone
+        if (significant_digits % 2 == 1)
+        {
+            octet_string[1] = num[j];
+            dest->octets[octet_id] = (char)strtol(octet_string, 0, 16);
+            octet_id++;
+            j++;
+        }
+        for (; j < total_digits; j+=2)
+        {
+            octet_string[0] = num[j];
+            octet_string[1] = num[j+1];
+            dest->octets[octet_id] = (char)strtol(octet_string, 0, 16);
+            octet_id++;
+        }
+    }
 }
 
 int bigint_are_equal(const BigInt* a, const BigInt* b)
