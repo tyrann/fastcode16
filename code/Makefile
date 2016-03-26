@@ -1,10 +1,10 @@
 # based on the makefile of google test https://github.com/google/googletest/tree/master/googletest/make/Makefile
 
-VPATH = ./src:./test
-
 SOURCES = sample1.c sample1_unittest.c
 
 OBJECTS = $(SOURCES:.c=.o)
+
+VPATH = ./src:./test
 
 GTEST_DIR = ./lib/googletest
 
