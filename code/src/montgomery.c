@@ -2,13 +2,13 @@
 
 #define WORDSIZE 64
 
-int __extended_gcd(BigInt a, BigInt b)
+int __extended_gcd(BigInt* a, BigInt* b)
 {
 	//TODO
 	return 0;
 
 }
-void __montgomery_convert(BigInt x, BigInt p, BigInt* res)
+void __montgomery_convert(BigInt* x, BigInt* p, BigInt* res)
 {
 	bigint_copy(res,x);
 	/*n is the R parameter in the Montgomery convertion*/
@@ -24,7 +24,7 @@ void __montgomery_convert(BigInt x, BigInt p, BigInt* res)
 	}
 }
 
-void __montgomery_revert(BigInt x,BigInt p, BigInt* rev)
+void __montgomery_revert(BigInt* x,BigInt* p, BigInt* rev)
 {
 	bigint_copy(rev,x);
 
@@ -45,7 +45,7 @@ void __montgomery_revert(BigInt x,BigInt p, BigInt* rev)
 	}
 }
 
-void montgomery_mul(BigInt x, BigInt y, BigInt p, BigInt* res)
+void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 {
 	//TODO	
 }
