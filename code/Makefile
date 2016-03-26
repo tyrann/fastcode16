@@ -1,10 +1,12 @@
 # based on the makefile of google test https://github.com/google/googletest/tree/master/googletest/make/Makefile
 
+VPATH = ./src:./test
+
+SOURCES = sample1.c sample1_unittest.c
+
+OBJECTS = $(SOURCES:.c=.o)
+
 GTEST_DIR = ./lib/googletest
-
-USER_DIR = ./src
-
-TEST_DIR = ./test
 
 BIN_DIR = ./bin
 
@@ -14,16 +16,12 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 
 CXXFLAGS += -g -Wall -Wextra -pthread
 
-TESTS = $(BIN_DIR)/sample1_unittest
+EXEC = $(BIN_DIR)/unittests
 
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
                 $(GTEST_DIR)/include/gtest/internal/*.h
 
-all : $(TESTS)
-
-clean :
-	rm -r ./obj
-	rm -r ./bin
+all : $(EXEC)
 
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 
@@ -41,14 +39,10 @@ $(OBJ_DIR)/gtest.a : $(OBJ_DIR)/gtest-all.o | $(OBJ_DIR)
 $(OBJ_DIR)/gtest_main.a : $(OBJ_DIR)/gtest-all.o $(OBJ_DIR)/gtest_main.o | $(OBJ_DIR)
 	$(AR) $(ARFLAGS) $@ $^
 
-$(OBJ_DIR)/sample1.o : $(USER_DIR)/sample1.c $(USER_DIR)/sample1.h $(GTEST_HEADERS)  | $(OBJ_DIR)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/sample1.c -o $@
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/sample1_unittest.o : $(TEST_DIR)/sample1_unittest.c \
-                     $(USER_DIR)/sample1.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TEST_DIR)/sample1_unittest.c -o $@
-
-$(BIN_DIR)/sample1_unittest : $(OBJ_DIR)/sample1.o $(OBJ_DIR)/sample1_unittest.o $(OBJ_DIR)/gtest_main.a | $(BIN_DIR)
+$(BIN_DIR)/unittests : $(OBJ_DIR)/gtest_main.a $(addprefix $(OBJ_DIR)/, $(OBJECTS)) | $(BIN_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
 $(BIN_DIR):
@@ -56,3 +50,8 @@ $(BIN_DIR):
 
 $(OBJ_DIR):
 	 mkdir $(OBJ_DIR)
+
+.PHONY: clean
+clean :
+	rm -r ./obj
+	rm -r ./bin
