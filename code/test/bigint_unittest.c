@@ -161,3 +161,46 @@ TEST(bigint_to_hex_string_test, test_small_even_conversion)
     EXPECT_EQ(strcmp(num_string, expected_string), 0);
     free(num_string);
 }
+
+// Test equality for BigInts
+TEST(bigint_equality_test, test_equality)
+{
+    BigInt a, b;
+    bigint_from_hex_string(&a, "000123837483928ABCDEF7678EDBAC76EF67BA768D");
+    bigint_from_hex_string(&b, "123837483928ABCDEF7678EDBAC76EF67BA768D");
+    
+    int are_equal = bigint_are_equal(&a, &b);
+    
+    EXPECT_EQ(are_equal, 1);
+    
+    bigint_free(&a);
+    bigint_free(&b);
+}
+
+TEST(bigint_equality_test, test_inequality)
+{
+    BigInt a, b;
+    bigint_from_hex_string(&a, "123837483928ABCDEF7678EDBAC76EF67BA768D");
+    bigint_from_hex_string(&b, "123837483928ABCDE27678EDBAC76EF67BA768D");
+    
+    int are_equal = bigint_are_equal(&a, &b);
+    
+    EXPECT_EQ(are_equal, 0);
+    
+    bigint_free(&a);
+    bigint_free(&b);
+}
+
+// Test BigInt copy
+TEST(bigint_copy_test, test_copy)
+{
+    BigInt a, b;
+    bigint_from_hex_string(&a, "AB76C87D5FE78DB789A789D8CDFFE7EFD89CAB876A");
+    bigint_copy(&b, &a);
+    
+    int are_equal = bigint_are_equal(&a, &b);
+    EXPECT_EQ(are_equal, 1);
+    
+    bigint_free(&a);
+    bigint_free(&b);
+}

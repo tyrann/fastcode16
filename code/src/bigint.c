@@ -115,26 +115,6 @@ void bigint_from_hex_string(BigInt* dest, const char* num)
     }
 }
 
-int bigint_are_equal(const BigInt* a, const BigInt* b)
-{
-    BIGINT_ASSERT_VALID(a);
-    BIGINT_ASSERT_VALID(b);
-    
-    // If the number of octets is different, then the
-    // numbers are different
-    if (a->significant_octets != b->significant_octets)
-        return false;
-    
-    // Check that all significant octets match
-    for (uint64_t i = 0; i < a->significant_octets; i++)
-    {
-        if (a->octets[i] != b->octets[i])
-            return false;
-    }
-    
-    return true;
-}
-
 char* bigint_to_hex_string(const BigInt* num)
 {
     BIGINT_ASSERT_VALID(num);
@@ -179,4 +159,44 @@ char* bigint_to_hex_string(const BigInt* num)
     LOG_DEBUG("%llu octets converted to %llu characters, generating the "
         "string '%s'", num->significant_octets, num_chars, result);
     return result;
+}
+
+int bigint_are_equal(const BigInt* a, const BigInt* b)
+{
+    BIGINT_ASSERT_VALID(a);
+    BIGINT_ASSERT_VALID(b);
+    
+    // If the number of octets is different, then the
+    // numbers are different
+    if (a->significant_octets != b->significant_octets)
+    {
+        LOG_DEBUG("Two BigInt are different because they have a different "
+            "number of significant octets");
+        return 0;
+    }
+    
+    // Check that all significant octets match
+    for (uint64_t i = 0; i < a->significant_octets; i++)
+    {
+        if (a->octets[i] != b->octets[i])
+        {
+            LOG_DEBUG("Two BigInt are different because they have different "
+                "octets");
+            return 0;
+        }
+    }
+    
+    LOG_DEBUG("Two BigInt are equal");
+    return 1;
+}
+
+void bigint_copy(BigInt* dest, const BigInt* a)
+{
+    BIGINT_ASSERT_VALID(a);
+    assert(dest != 0);
+    
+    dest->allocated_octets = a->allocated_octets;
+    dest->significant_octets = a->significant_octets;
+    dest->octets = (char*)malloc(dest->allocated_octets);
+    memcpy(dest->octets, a->octets, dest->allocated_octets);
 }
