@@ -1,5 +1,7 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "bigint.h"
 #include "logging/logging.h"
@@ -23,13 +25,13 @@ void bigint_from_uint64(BigInt* dest, uint64_t num)
 {
     // Find number of octets needed
     uint64_t num_octets;
-    LOG_DEBUG("Converting number: %#18llX", num);
+    LOG_DEBUG("Converting number: %#llX", num);
     for (num_octets = 8; num_octets > 1; num_octets--)
     {
         uint64_t mask = 0xFFULL << (8 * (num_octets - 1));
-        LOG_DEBUG("Mask = %#18llX", mask);
+        LOG_DEBUG("Mask = %#llX", mask);
         uint64_t octet = num & mask;
-        LOG_DEBUG("Octet = %#18llX", octet);
+        LOG_DEBUG("Octet = %#llX", octet);
         if (octet != 0) break;
     }
     
@@ -96,7 +98,7 @@ void bigint_from_hex_string(BigInt* dest, const char* num)
         {
             octet_string[1] = num[j];
             dest->octets[octet_id] = (char)strtol(octet_string, 0, 16);
-            LOG_DEBUG("Octet %llu (%#4hhX) parsed from string %s.",
+            LOG_DEBUG("Octet %llu (%#hhX) parsed from string %s.",
                 octet_id, dest->octets[octet_id], octet_string);
             octet_id--;
             j++;
@@ -106,7 +108,7 @@ void bigint_from_hex_string(BigInt* dest, const char* num)
             octet_string[0] = num[j];
             octet_string[1] = num[j+1];
             dest->octets[octet_id] = (char)strtol(octet_string, 0, 16);
-            LOG_DEBUG("Octet %llu (%#4hhX) parsed from string %s.",
+            LOG_DEBUG("Octet %llu (%#hhX) parsed from string %s.",
                 octet_id, dest->octets[octet_id], octet_string);
             octet_id--;
         }
@@ -131,4 +133,50 @@ int bigint_are_equal(const BigInt* a, const BigInt* b)
     }
     
     return true;
+}
+
+char* bigint_to_hex_string(const BigInt* num)
+{
+    BIGINT_ASSERT_VALID(num);
+    
+    // Determine the number of characters necessary to store the number
+    // and allocate a buffer of the same size
+    uint64_t num_chars = num->significant_octets * 2;
+    if (num->octets[num->significant_octets-1] <= 0x0F)
+        num_chars--;
+    char* result = (char*)malloc(num_chars+1);
+    result[num_chars] = '\0';
+        
+    // Convert the octets to a string representation
+    // the intermediate copy is necessary in order to avoid writing
+    // the string termination character to the final string.
+    uint64_t i = 0;
+    char temp[] = "00";
+    for (; i + 1 < num->significant_octets; i++)
+    {
+        sprintf((char*)temp, "%02hhX", num->octets[i]);
+        strncpy(&result[num_chars-i*2-2], (char*)temp, 2);
+        LOG_DEBUG("Octet %llu (%02hhX) copied to chars %llu-%llu",
+            i, num->octets[i], num_chars-i*2-2, num_chars-i*2-1);
+    }
+    
+    // Special case for the last octet (may fit in only one char)
+    if (num->octets[i] <= 0x0F)
+    {
+        sprintf((char*)temp, "%01hhX", num->octets[i]);
+        strncpy(&result[0], (char*)temp, 1);
+        LOG_DEBUG("Octet %llu (%01hhX) copied to char %llu",
+            i, num->octets[i], 0ULL);
+    }
+    else
+    {
+        sprintf((char*)temp, "%02hhX", num->octets[i]);
+        strncpy(&result[0], (char*)temp, 2);
+        LOG_DEBUG("Octet %llu (%02hhX) copied to chars %llu-%llu",
+            i, num->octets[i], 0ULL, 1ULL);
+    }
+    
+    LOG_DEBUG("%llu octets converted to %llu characters, generating the "
+        "string '%s'", num->significant_octets, num_chars, result);
+    return result;
 }
