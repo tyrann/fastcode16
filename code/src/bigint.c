@@ -49,6 +49,7 @@ void bigint_from_uint64(BigInt* dest, uint64_t num)
 void bigint_from_hex_string(BigInt* dest, const char* num)
 {
     assert(num != 0);
+    LOG_DEBUG("Converting number: %s", num);
     
     // Ignore possible leading zeros
     uint64_t i = 0;
@@ -68,6 +69,10 @@ void bigint_from_hex_string(BigInt* dest, const char* num)
     uint64_t num_octets = (significant_digits + 1) / 2;
     if (num_octets == 0) num_octets = 1;
     
+    LOG_DEBUG("Found %llu digits (%llu prefix, %llu significant). "
+        "Number requires %llu octets.", total_digits, prefix_digits,
+        significant_digits, num_octets);
+    
     // Create result object
     dest->allocated_octets = num_octets;
     dest->significant_octets = num_octets;
@@ -83,7 +88,7 @@ void bigint_from_hex_string(BigInt* dest, const char* num)
     {
         uint64_t j = prefix_digits;
         char octet_string[] = "00";
-        uint64_t octet_id = 0;
+        uint64_t octet_id = num_octets - 1;
         
         // In case the number of digits id odd, read the first one
         // alone
@@ -91,7 +96,9 @@ void bigint_from_hex_string(BigInt* dest, const char* num)
         {
             octet_string[1] = num[j];
             dest->octets[octet_id] = (char)strtol(octet_string, 0, 16);
-            octet_id++;
+            LOG_DEBUG("Octet %llu (%#4hhX) parsed from string %s.",
+                octet_id, dest->octets[octet_id], octet_string);
+            octet_id--;
             j++;
         }
         for (; j < total_digits; j+=2)
@@ -99,7 +106,9 @@ void bigint_from_hex_string(BigInt* dest, const char* num)
             octet_string[0] = num[j];
             octet_string[1] = num[j+1];
             dest->octets[octet_id] = (char)strtol(octet_string, 0, 16);
-            octet_id++;
+            LOG_DEBUG("Octet %llu (%#4hhX) parsed from string %s.",
+                octet_id, dest->octets[octet_id], octet_string);
+            octet_id--;
         }
     }
 }

@@ -58,3 +58,39 @@ TEST(bigint_from_uint64_test, test_small_conversion)
     EXPECT_EQ(bigint.octets[4], num >> (4 * 8));
     EXPECT_EQ(((uint32_t*)bigint.octets)[0], (uint32_t)(num & 0xFFFFFFFFULL));
 }
+
+// Test string to BigInt conversion
+TEST(bigint_from_hex_string_test, test_conversion)
+{
+    char num[] = "F123456789ABCDEF0FEDCBA9876543210";
+    BigInt bigint;
+    bigint_from_hex_string(&bigint, num);
+    
+    EXPECT_EQ(bigint.allocated_octets, 17);
+    EXPECT_EQ(bigint.significant_octets, 17);
+    EXPECT_EQ(((uint64_t*)bigint.octets)[0], 0xFEDCBA9876543210ULL);
+    EXPECT_EQ(((uint64_t*)bigint.octets)[1], 0x123456789ABCDEF0ULL);
+    EXPECT_EQ(((char*)bigint.octets)[16], 0x0F);
+}
+
+TEST(bigint_from_hex_string_test, test_zero_conversion)
+{
+    char num[] = "0";
+    BigInt bigint;
+    bigint_from_hex_string(&bigint, num);
+    
+    EXPECT_EQ(bigint.allocated_octets, 1);
+    EXPECT_EQ(bigint.significant_octets, 1);
+    EXPECT_EQ(*bigint.octets, 0);
+}
+
+TEST(bigint_from_hex_string_test, test_small_conversion)
+{
+    char num[] = "000A";
+    BigInt bigint;
+    bigint_from_hex_string(&bigint, num);
+    
+    EXPECT_EQ(bigint.allocated_octets, 1);
+    EXPECT_EQ(bigint.significant_octets, 1);
+    EXPECT_EQ(bigint.octets[0], 0xA);
+}
