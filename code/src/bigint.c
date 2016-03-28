@@ -8,7 +8,7 @@ void bigint_free(BigInt* a)
 {    
     BIGINT_ASSERT_VALID(a);
     
-    free(a->octets)
+    free(a->octets);
     a->octets = 0;
     a->allocated_octets = 0;
     a->significant_octets = 0;
@@ -23,9 +23,13 @@ void bigint_from_uint64(BigInt* dest, uint64_t num)
 {
     // Find number of octets needed
     uint64_t num_octets;
+    LOG_DEBUG("Converting number: %#18llX", num);
     for (num_octets = 8; num_octets > 1; num_octets--)
     {
-        uint64_t octet = num & (0xFF << (8 * (num_octets - 1)));
+        uint64_t mask = 0xFFULL << (8 * (num_octets - 1));
+        LOG_DEBUG("Mask = %#18llX", mask);
+        uint64_t octet = num & mask;
+        LOG_DEBUG("Octet = %#18llX", octet);
         if (octet != 0) break;
     }
     
@@ -38,7 +42,7 @@ void bigint_from_uint64(BigInt* dest, uint64_t num)
     // Copy the number to the allocate doctets
     for (uint64_t i = 0; i < num_octets; i++)
     {
-        dest->octets[i] = (char)((num >> i * 8) & 0xFF);
+        dest->octets[i] = (char)((num >> i * 8) & 0xFFULL);
     }
 }
 

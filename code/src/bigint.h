@@ -1,5 +1,8 @@
 #include <stdint.h>
 
+#ifndef __BIGINT_H_
+#define __BIGINT_H_
+
 // Structure for big integers. Supports unsigned integres
 // with value <= 2^(8*2^64). Only unsigned numbers are supported at the 
 // moment. If signed number are required open issue to @dotPiano.
@@ -62,3 +65,5 @@ void bigint_mul_Fp(BigInt* dest, const BigInt* a, const BigInt* b, const BigInt*
     assert(num->allocated_octets > 0); \
     assert(num->significant_octets > 0); \
 }
+
+#endif

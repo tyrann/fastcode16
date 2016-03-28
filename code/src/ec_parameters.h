@@ -4,7 +4,6 @@
 
 #ifndef __EC_PARAMETERS_H_
 #define __EC_PARAMETERS_H_
-#endif
 
 /* General representation of an elliptic curve*/
 typedef struct
@@ -27,7 +26,7 @@ typedef struct
  * An indication of whether the elliptic curve domain parameters are valid or not 
  * 
  * The return value should be 0 if invalid and 1 otherwise*/
-int ec_validation(EllipticCurve e); 
+int ec_validation(EllipticCurve e, int security_level); 
 
 
 /*Elliptic Curve Domain Parameters over Fp Generation Primitive
@@ -39,3 +38,5 @@ int ec_validation(EllipticCurve e);
  *  Elliptic curve domain parameters over Fp
  * */
 EllipticCurve ec_generation(int security_level);
+
+#endif
