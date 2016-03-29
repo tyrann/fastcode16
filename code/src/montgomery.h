@@ -1,7 +1,7 @@
 #include "bigint.h"
 
 /* Checks if GCD of a and b is equal to 1*/
-int __extended_gcd(BigInt* a, BigInt* b);
+void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v);
 
 void __montgomery_convert(BigInt* x, BigInt* p, BigInt* res);
 

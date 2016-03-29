@@ -3,7 +3,7 @@
 #define WORDSIZE 64
 #define B 2
 
-int __extended_gcd(BigInt* a, BigInt* b)
+void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v)
 {
 	//TODO
 	return 0;
