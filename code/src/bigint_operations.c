@@ -88,4 +88,3 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 		bigint_sub_inplace(res,p);
 	}
 }
-
