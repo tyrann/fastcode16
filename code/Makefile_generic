@@ -1,5 +1,6 @@
 SOURCES = logging.c bigint_utilities.c bigint_conversion.c \
-    bigint_conversion_unittest.cc bigint_utilities_unittest.cc
+    bigint_conversion_unittest.cc bigint_utilities_unittest.cc \
+	bigint_operations.c bigint_operations_unittest.cc
 
 VPATH = ./src:./test:./src/logging
 
