@@ -1,3 +1,8 @@
+
+#include <stdlib.h>
+#include <string.h>
+
+#include "logging/logging.h"
 #include "bigint_operations.h"
 #include "bigint_utilities.h"
 
@@ -91,6 +96,44 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 	}
 }
 */
+
+void bigint_left_shift_inplace(BigInt* a)
+{
+    BIGINT_ASSERT_VALID(a);
+    
+    // Increase size of the buffer if necessary
+    uint64_t original_octets = a->significant_octets;
+    if (a->octets[a->significant_octets-1] > 0x7F)
+    {
+        uchar* new_octets = (uchar*)malloc(a->significant_octets + 1);
+        memcpy(new_octets, a->octets, a->significant_octets);
+        free(a->octets);
+        
+        a->octets = new_octets;
+        a->significant_octets += 1;
+        a->allocated_octets = a->significant_octets;
+    }
+    
+    // Left shift octets by one, propagating the carry across octets.
+    uchar carry = 0;
+    for (uint64_t i = 0; i < original_octets; i++)
+    {
+        uchar cur_carry = carry;
+        carry = a->octets[i] >> 7;
+        LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
+            "to the carry (%hhu) resulting in %02hhX", i, a->octets[i],
+            a->octets[i] << 1, cur_carry, cur_carry + (a->octets[i] << 1));
+        a->octets[i] = cur_carry + (a->octets[i] << 1);
+    }
+    
+    // Add carry to last octet if necessary
+    if (carry > 0)
+    {
+        a->octets[original_octets] = carry;
+        LOG_DEBUG("Carry (%hhu) added to octet %llu resulting in (%02hhX)",
+            carry, original_octets + 1, a->octets[original_octets + 1]);
+    }
+}
 
 int bigint_is_even(BigInt* a)
 {
