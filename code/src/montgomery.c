@@ -17,7 +17,7 @@ void __montgomery_convert(BigInt* x, BigInt* p, BigInt* res)
 	int i;
 	for (i = 0; i < n; ++i)
    	{
-		bigint_shift_left_inplace(res,1);
+		bigint_shift_left_inplace(res);
 		if(bigint_is_greater(res,p))
 		{
 			bigint_sub_inplace(res,p);
@@ -36,12 +36,12 @@ void __montgomery_revert(BigInt* x,BigInt* p, BigInt* rev)
 	{
 		if(bigint_is_even(rev))
 		{
-			bigint_shift_right_inplace(rev,1);
+			bigint_shift_right_inplace(rev);
 		}
 		else
 		{
 			bigint_add_inplace(rev,p);
-			bigint_shift_right_inplace(rev,1);
+			bigint_shift_right_inplace(rev);
 		}
 	}
 }
