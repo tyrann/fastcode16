@@ -28,13 +28,13 @@ void bigint_from_uint64(BigInt* dest, uint64_t num)
     // Create result object
     dest->allocated_octets = num_octets;
     dest->significant_octets = num_octets;
-    dest->octets = (char*)malloc(sizeof(char) * num_octets);
+    dest->octets = (uchar*)malloc(sizeof(uchar) * num_octets);
     assert(dest->octets != 0);
     
     // Copy the number to the allocate doctets
     for (uint64_t i = 0; i < num_octets; i++)
     {
-        dest->octets[i] = (char)((num >> i * 8) & 0xFFULL);
+        dest->octets[i] = (uchar)((num >> i * 8) & 0xFFULL);
     }
 }
 
@@ -68,7 +68,7 @@ void bigint_from_hex_string(BigInt* dest, const char* num)
     // Create result object
     dest->allocated_octets = num_octets;
     dest->significant_octets = num_octets;
-    dest->octets = (char*)malloc(sizeof(char) * num_octets);
+    dest->octets = (uchar*)malloc(sizeof(uchar) * num_octets);
     assert(dest->octets != 0);
     
     // Copy digits
@@ -87,7 +87,7 @@ void bigint_from_hex_string(BigInt* dest, const char* num)
         if (significant_digits % 2 == 1)
         {
             octet_string[1] = num[j];
-            dest->octets[octet_id] = (char)strtol(octet_string, 0, 16);
+            dest->octets[octet_id] = (uchar)strtol(octet_string, 0, 16);
             LOG_DEBUG("Octet %llu (%#hhX) parsed from string %s.",
                 octet_id, dest->octets[octet_id], octet_string);
             octet_id--;
@@ -97,7 +97,7 @@ void bigint_from_hex_string(BigInt* dest, const char* num)
         {
             octet_string[0] = num[j];
             octet_string[1] = num[j+1];
-            dest->octets[octet_id] = (char)strtol(octet_string, 0, 16);
+            dest->octets[octet_id] = (uchar)strtol(octet_string, 0, 16);
             LOG_DEBUG("Octet %llu (%#hhX) parsed from string %s.",
                 octet_id, dest->octets[octet_id], octet_string);
             octet_id--;

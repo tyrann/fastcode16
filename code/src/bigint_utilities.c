@@ -52,6 +52,6 @@ void bigint_copy(BigInt* dest, const BigInt* a)
     
     dest->allocated_octets = a->allocated_octets;
     dest->significant_octets = a->significant_octets;
-    dest->octets = (char*)malloc(dest->allocated_octets);
+    dest->octets = (uchar*)malloc(dest->allocated_octets);
     memcpy(dest->octets, a->octets, dest->allocated_octets);
 }
