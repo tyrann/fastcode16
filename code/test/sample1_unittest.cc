@@ -1,5 +1,7 @@
 #include <limits.h>
+extern "C" { 
 #include "../src/sample1.h"
+}
 #include "gtest/gtest.h"
 
 // Test sum

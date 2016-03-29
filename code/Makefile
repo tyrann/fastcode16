@@ -1,8 +1,11 @@
 # based on the makefile of google test https://github.com/google/googletest/tree/master/googletest/make/Makefile
 
-SOURCES = sample1.c sample1_unittest.c
+CC = gcc
 
-OBJECTS = $(SOURCES:.c=.o)
+SOURCES = sample1.c sample1_unittest.cc
+
+TMP = $(SOURCES:.c=.o)
+OBJECTS = $(TMP:.cc=.o)
 
 VPATH = ./src:./test
 
@@ -39,8 +42,11 @@ $(OBJ_DIR)/gtest.a : $(OBJ_DIR)/gtest-all.o | $(OBJ_DIR)
 $(OBJ_DIR)/gtest_main.a : $(OBJ_DIR)/gtest-all.o $(OBJ_DIR)/gtest_main.o | $(OBJ_DIR)
 	$(AR) $(ARFLAGS) $@ $^
 
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: %.cc | $(OBJ_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+	$(CC) -c $< -o $@
 
 $(BIN_DIR)/unittests : $(OBJ_DIR)/gtest_main.a $(addprefix $(OBJ_DIR)/, $(OBJECTS)) | $(BIN_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
