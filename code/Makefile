@@ -5,6 +5,8 @@ SOURCES = sample1.c sample1_unittest.cc
 TMP = $(SOURCES:.c=.o)
 OBJECTS = $(TMP:.cc=.o)
 
+# Paths
+
 VPATH = ./src:./test
 
 GTEST_DIR = ./lib/googletest
@@ -12,6 +14,13 @@ GTEST_DIR = ./lib/googletest
 BIN_DIR = ./bin
 
 OBJ_DIR = ./obj
+
+GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
+                $(GTEST_DIR)/include/gtest/internal/*.h
+
+GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
+
+# compiler options
 
 CC = gcc
 
@@ -21,14 +30,11 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 
 CXXFLAGS += -g -Wall -Wextra -pthread
 
+# targets
+
 EXEC = unittests
 
-GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
-                $(GTEST_DIR)/include/gtest/internal/*.h
-
 all : $(EXEC)
-
-GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 
 gtest-all.o : $(GTEST_SRCS_) | $(OBJ_DIR)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
