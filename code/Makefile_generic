@@ -1,0 +1,8 @@
+SOURCES = logging.c bigint_utilities.c bigint_conversion.c \
+    bigint_conversion_unittest.cc bigint_utilities_unittest.cc
+
+VPATH = ./src:./test:./src/logging
+
+# GCC architecture flags
+AFLAGS = 
+CFLAGS = -g -Wall -Wextra -std=c99 -DLOG_LEVEL=0 $(AFLAGS)
