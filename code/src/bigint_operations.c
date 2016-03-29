@@ -1,4 +1,4 @@
-#include "montgomery.h"
+#include "bigint_operations.h"
 
 #define WORDSIZE 64
 #define B 2
@@ -6,7 +6,6 @@
 void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v)
 {
 	//TODO
-	return 0;
 
 }
 void __montgomery_convert(BigInt* x, BigInt* p, BigInt* res)
@@ -17,7 +16,7 @@ void __montgomery_convert(BigInt* x, BigInt* p, BigInt* res)
 	int i;
 	for (i = 0; i < n; ++i)
    	{
-		bigint_shift_left_inplace(res);
+		bigint_left_shift_inplace(res);
 		if(bigint_is_greater(res,p))
 		{
 			bigint_sub_inplace(res,p);
@@ -36,12 +35,12 @@ void __montgomery_revert(BigInt* x,BigInt* p, BigInt* rev)
 	{
 		if(bigint_is_even(rev))
 		{
-			bigint_shift_right_inplace(rev);
+			bigint_right_shift_inplace(rev);
 		}
 		else
 		{
 			bigint_add_inplace(rev,p);
-			bigint_shift_right_inplace(rev);
+			bigint_right_shift_inplace(rev);
 		}
 	}
 }
@@ -80,7 +79,7 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 
 		bigint_add_inplace(&xiy, &uip);
 		bigint_add_inplace(res, &xiy);
-		bigint_shift_right_inplace(res);
+		bigint_right_shift_inplace(res);
 		
 
 	}
