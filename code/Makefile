@@ -1,7 +1,5 @@
 # based on the makefile of google test https://github.com/google/googletest/tree/master/googletest/make/Makefile
 
-CC = gcc
-
 SOURCES = sample1.c sample1_unittest.cc
 
 TMP = $(SOURCES:.c=.o)
@@ -14,6 +12,10 @@ GTEST_DIR = ./lib/googletest
 BIN_DIR = ./bin
 
 OBJ_DIR = ./obj
+
+CC = gcc
+
+CFLAGS = -Wall -Wextra -std=c99
 
 CPPFLAGS += -isystem $(GTEST_DIR)/include
 
@@ -46,7 +48,7 @@ $(OBJ_DIR)/%.o: %.cc | $(OBJ_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
-	$(CC) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BIN_DIR)/unittests : $(OBJ_DIR)/gtest_main.a $(addprefix $(OBJ_DIR)/, $(OBJECTS)) | $(BIN_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
