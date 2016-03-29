@@ -144,6 +144,3 @@ int bigint_is_even(BigInt* a)
     }
     return 1;
 }
-
-
-
