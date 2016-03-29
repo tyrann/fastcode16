@@ -1,4 +1,6 @@
 #include "bigint_operations.h"
+#include "bigint_structure.h"
+#include "bigint_conversion.h"
 
 #define WORDSIZE 64
 #define B 2
@@ -49,7 +51,8 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 {
 	/* This is -p^-1 mod b*/
 	int pbar = 1;
-	bigint_set_zero(res);
+	uint32_t k = 0;
+	bigint_from_uint32(res, k);
 
 	int n = WORDSIZE * 10;
 	int i;
@@ -101,13 +104,16 @@ int bigint_is_greater(BigInt* a, BigInt* b)
 	}
 	else
 	{
-		int byte = a->significant_octets;
+		int high_byte = a->significant_octets;
 		int i;
 
-		for (i = byte; i < 0; i++) 
+		for (i = high_byte; i < 0; i--) 
 		{
-
-
+			if(a->octets[high_byte] > b->octets[high_byte])
+			{
+				return 1;
+			} 
 		}
+		return 0;
 	}
 }
