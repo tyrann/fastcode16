@@ -88,3 +88,18 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 		bigint_sub_inplace(res,p);
 	}
 }
+
+void bigint_left_shift_inplace(BigInt* a)
+{
+    // Increase size of the buffer if necessary
+    if (a->octets[a->significant_octets-1] > 0x0F)
+    {
+        
+    }
+    
+    char carry
+    for (uint64_t i = 0; i < a->significant_octets; i++)
+    {
+        
+    }
+}
