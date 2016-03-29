@@ -95,7 +95,8 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 int bigint_is_even(BigInt* a)
 {
     BIGINT_ASSERT_VALID(a);
-    if((a->octets[0] & 1) == 1) {
+    if((a->octets[0] & 1) == 1)
+    {
 	return 0;
     }
     return 1;
