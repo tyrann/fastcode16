@@ -1,4 +1,7 @@
-#include "../src/bigint.h"
+
+extern "C" {
+    #include "../src/bigint.h"
+}
 #include "gtest/gtest.h"
 
 // Test bigint_free function
