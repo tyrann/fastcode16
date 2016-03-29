@@ -1,6 +1,7 @@
 # based on the makefile of google test https://github.com/google/googletest/tree/master/googletest/make/Makefile
 
-SOURCES = sample1.c logging.c bigint_utilities.c bigint_conversion.c sample1_unittest.cc bigint_unittest.cc
+SOURCES = logging.c bigint_utilities.c bigint_conversion.c \
+    bigint_conversion_unittest.cc bigint_utilities_unittest.cc
 
 TMP = $(SOURCES:.c=.o)
 OBJECTS = $(TMP:.cc=.o)
