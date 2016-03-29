@@ -1,9 +1,11 @@
 #include "bigint_operations.h"
+#include "bigint_utilities.h"
 
 #define WORDSIZE 64
 #define B 2
 
-void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v)
+
+/* void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v)
 {
 	//TODO
 
@@ -11,7 +13,7 @@ void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v)
 void __montgomery_convert(BigInt* x, BigInt* p, BigInt* res)
 {
 	bigint_copy(res,x);
-	/*n is the R parameter in the Montgomery convertion*/
+	/\*n is the R parameter in the Montgomery convertion*\/
 	int n = WORDSIZE * 10;
 	int i;
 	for (i = 0; i < n; ++i)
@@ -47,7 +49,7 @@ void __montgomery_revert(BigInt* x,BigInt* p, BigInt* rev)
 
 void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 {
-	/* This is -p^-1 mod b*/
+	/\* This is -p^-1 mod b*\/
 	int pbar = 1;
 	bigint_set_zero(res);
 
@@ -88,3 +90,17 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 		bigint_sub_inplace(res,p);
 	}
 }
+*/
+
+int bigint_is_even(BigInt* a)
+{
+    BIGINT_ASSERT_VALID(a);
+    if((a->octets[0] & 1) == 1)
+    {
+	return 0;
+    }
+    return 1;
+}
+
+
+
