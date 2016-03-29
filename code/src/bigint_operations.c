@@ -88,3 +88,26 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 		bigint_sub_inplace(res,p);
 	}
 }
+
+int bigint_is_greater(BigInt* a, BigInt* b)
+{
+	if(a->significant_octets > b->significant_octets)
+	{
+		return 1;
+	}
+	else if(b->significant_octets > a->significant_octets)
+	{
+		return 0;
+	}
+	else
+	{
+		int byte = a->significant_octets;
+		int i;
+
+		for (i = byte; i < 0; i++) 
+		{
+
+
+		}
+	}
+}
