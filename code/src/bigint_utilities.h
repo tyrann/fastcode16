@@ -3,6 +3,7 @@
 #define __BIGINT_UTILITIES_H_
 
 #include "bigint.h"
+#include <assert.h>
 
 // Release the octets buffer of a number. This frees up memory, but
 // using the number results invalid afterwards 
