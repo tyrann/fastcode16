@@ -1,13 +1,12 @@
 # based on the makefile of google test https://github.com/google/googletest/tree/master/googletest/make/Makefile
 
-SOURCES = sample1.c sample1_unittest.cc
+SOURCES = sample1.c logging.c bigint_utilities.c bigint_conversion.c sample1_unittest.cc bigint_unittest.cc
 
 TMP = $(SOURCES:.c=.o)
 OBJECTS = $(TMP:.cc=.o)
 
 # Paths
-
-VPATH = ./src:./test
+VPATH = ./src:./test:./src/logging
 
 GTEST_DIR = ./lib/googletest
 
