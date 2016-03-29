@@ -110,7 +110,7 @@ TEST(bigint_to_hex_string_test, test_conversion)
         0xFULL
     };
     
-    BigInt bigint = { 17, 17, (char*)num_data };
+    BigInt bigint = { 17, 17, (uchar*)num_data };
     char* num_string = bigint_to_hex_string(&bigint);
     char expected_string[] = "F123456789ABCDEF0FEDCBA9876543220";
     
@@ -122,7 +122,7 @@ TEST(bigint_to_hex_string_test, test_zero_conversion)
 {
     char num_data[] = { 0x0 };
     
-    BigInt bigint = { 1, 1, (char*)num_data };
+    BigInt bigint = { 1, 1, (uchar*)num_data };
     char* num_string = bigint_to_hex_string(&bigint);
     char expected_string[] = "0";
     
@@ -134,7 +134,7 @@ TEST(bigint_to_hex_string_test, test_small_odd_conversion)
 {
     char num_data[] = { 0x0F };
     
-    BigInt bigint = { 1, 1, (char*)num_data };
+    BigInt bigint = { 1, 1, (uchar*)num_data };
     char* num_string = bigint_to_hex_string(&bigint);
     char expected_string[] = "F";
     
@@ -146,7 +146,7 @@ TEST(bigint_to_hex_string_test, test_small_even_conversion)
 {
     char num_data[] = { 0x2A };
     
-    BigInt bigint = { 1, 1, (char*)num_data };
+    BigInt bigint = { 1, 1, (uchar*)num_data };
     char* num_string = bigint_to_hex_string(&bigint);
     char expected_string[] = "2A";
     

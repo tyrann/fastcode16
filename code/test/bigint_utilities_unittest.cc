@@ -7,12 +7,12 @@ extern "C" {
 // Test bigint_free function
 TEST(bigint_free_test, free_test)
 {
-    BigInt bigint = { 1, 1, (char*)malloc(1 * sizeof(char)) };
+    BigInt bigint = { 1, 1, (uchar*)malloc(1 * sizeof(uchar)) };
     bigint_free(&bigint);
     
     EXPECT_EQ(bigint.allocated_octets, 0);
     EXPECT_EQ(bigint.significant_octets, 0);
-    EXPECT_EQ(bigint.octets, (char*)0);
+    EXPECT_EQ(bigint.octets, (uchar*)0);
 }
 
 
