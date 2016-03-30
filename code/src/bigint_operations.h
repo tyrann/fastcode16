@@ -21,7 +21,7 @@ int bigint_is_even(BigInt* a);
 
 //void bigint_right_shift_inplace(BigInt* a);
 
-//void bigint_add_inplace(BigInt* a, BigInt* b);
+void bigint_add_inplace(BigInt* a, BigInt* b);
 
 //void bigint_mul_inplace(BigInt* a, BigInt* b);
 

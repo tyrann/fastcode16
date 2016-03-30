@@ -92,6 +92,46 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 }
 */
 
+void bigint_add_inplace(BigInt* a, BigInt* b)
+{
+	BIGINT_ASSERT_VALID(a);
+    BIGINT_ASSERT_VALID(b);
+	uchar accumulator = 0;
+	// count stores the minimal number of digits between a and b
+	uint64_t count = (a->significant_octets > b->significant_octets) ? b->significant_octets : a->significant_octets;	
+	uint64_t i = 0;
+	for (; i < count; i++)
+    {
+        accumulator = accumulator + a->octets[i] + b->octets[i];
+		b->octets[i] = accumulator & 0xFF;
+		accumulator = accumulator >> 8;
+    }
+	
+	for (i = count; (i < b->significant_octets) && (accumulator!=0); i++)
+	{
+		accumulator += b->octets[i];
+		b->octets[i] = accumulator & 0xFF;
+		accumulator = accumulator >> 8;
+	}
+}
+
+
+void bigint_sub_inplace(BigInt* a, BigInt* b)
+{
+	BIGINT_ASSERT_VALID(a);
+    BIGINT_ASSERT_VALID(b);
+	// negation of b 
+	for (unsigned int i = 0; i < b->significant_octets; i++)
+    {
+		b->octets[i] = b->octets[i] & 0xFF;
+    }
+	// add 1 to the end of b 
+    BigInt c;	
+	bigint_from_uint64(&c, 1);
+	bigint_add_inplace(&c, b);
+	bigint_add_inplace(a, b);
+}
+
 int bigint_is_even(BigInt* a)
 {
     BIGINT_ASSERT_VALID(a);
