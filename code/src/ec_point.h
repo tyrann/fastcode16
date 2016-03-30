@@ -9,8 +9,8 @@
  * byte-long flag */
 typedef struct
 {
-	BigInt *x;
-	BigInt *y;
+	BigInt x;
+	BigInt y;
 	char is_at_infinity;
 
 }Point;
