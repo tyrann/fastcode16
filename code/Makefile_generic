@@ -5,6 +5,9 @@ SOURCES = logging.c bigint_utilities.c bigint_conversion.c \
 SOURCES_MEMORYTEST_POINTS = bigint_utilities.c bigint_conversion.c bigint_operations.c \
 	ec_point.c memory_test_point.c
 
+SOURCES_MEMORYTEST_EC_PARAMETER = bigint_utilities.c bigint_conversion.c bigint_operations.c \
+	ec_point.c ec_parameters.c memory_test_ec_parameter.c
+
 VPATH = ./src:./test:./src/logging:./test/memory
 
 # GCC architecture flags

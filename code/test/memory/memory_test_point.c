@@ -1,6 +1,4 @@
 #include <stdlib.h>
-
-#include "../../src/ec_parameters.h"
 #include "../../src/bigint.h"
 #include "../../src/ec_point.h"
 

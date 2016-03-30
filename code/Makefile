@@ -6,6 +6,7 @@ TMP = $(SOURCES:.c=.o)
 OBJECTS = $(TMP:.cc=.o)
 
 OBJECTS_MEMORYTEST_POINTS = $(SOURCES_MEMORYTEST_POINTS:.c=.o)
+OBJECTS_MEMORYTEST_EC_PARAMETER = $(SOURCES_MEMORYTEST_EC_PARAMETER:.c=.o)
 
 # Paths
 GTEST_DIR = ./lib/googletest
@@ -31,7 +32,7 @@ CXXFLAGS += -g -Wall -Wextra -pthread
 
 # targets
 
-EXEC = $(BIN_DIR)/unittests  $(BIN_DIR)/memtest_points
+EXEC = $(BIN_DIR)/unittests  $(BIN_DIR)/memorytest_points $(BIN_DIR)/memorytest_parameter
 
 all : $(EXEC)
 
@@ -58,7 +59,10 @@ $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 $(BIN_DIR)/unittests : $(OBJ_DIR)/gtest_main.a $(addprefix $(OBJ_DIR)/,$(OBJECTS)) | $(BIN_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
-$(BIN_DIR)/memtest_points : $(addprefix $(OBJ_DIR)/,$(OBJECTS_MEMORYTEST_POINTS)) | $(BIN_DIR)
+$(BIN_DIR)/memorytest_points : $(addprefix $(OBJ_DIR)/,$(OBJECTS_MEMORYTEST_POINTS)) | $(BIN_DIR)
+	$(CC) $(CFLAGS) $^ -o $@
+
+$(BIN_DIR)/memorytest_parameter : $(addprefix $(OBJ_DIR)/,$(OBJECTS_MEMORYTEST_EC_PARAMETER)) | $(BIN_DIR)
 	$(CC) $(CFLAGS) $^ -o $@
 
 $(BIN_DIR):

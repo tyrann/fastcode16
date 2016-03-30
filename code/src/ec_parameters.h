@@ -14,8 +14,7 @@ typedef struct
 	Point generator;
 	BigInt n;
 	BigInt h;
-
-}EllipticCurve;
+} EllipticCurveParameter;
 
 
 /*Elliptic Curve Domain Parameters over Fp Validation Primitive
@@ -26,7 +25,7 @@ typedef struct
  * An indication of whether the elliptic curve domain parameters are valid or not 
  * 
  * The return value should be 0 if invalid and 1 otherwise*/
-int ec_validation(EllipticCurve e, int security_level); 
+int ec_validation(EllipticCurveParameter e, int security_level); 
 
 
 /*Elliptic Curve Domain Parameters over Fp Generation Primitive
@@ -37,6 +36,10 @@ int ec_validation(EllipticCurve e, int security_level);
  *Output:
  *  Elliptic curve domain parameters over Fp
  * */
-EllipticCurve ec_generation(int security_level);
+EllipticCurveParameter ec_generation(int security_level);
+
+void ec_free(EllipticCurveParameter *ec);
+
+void ec_create_parameters(EllipticCurveParameter *ec, const BigInt const *p, const BigInt const *a, const BigInt const *b, const Point const *generator, const BigInt const *n, const BigInt const *h);
 
 #endif
