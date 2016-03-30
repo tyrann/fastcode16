@@ -34,8 +34,7 @@ TEST(copy_point, copy_point)
 
     ASSERT_TRUE(bigint_are_equal(&(p.x), &(q.x)));
     ASSERT_TRUE(bigint_are_equal(&(p.y), &(q.y)));
-    ASSERT_FALSE(p.is_at_infinity);
-    ASSERT_FALSE(q.is_at_infinity);
+    ASSERT_TRUE(p.is_at_infinity == q.is_at_infinity);
 
     bigint_free(&x);
     bigint_free(&y);
@@ -43,3 +42,18 @@ TEST(copy_point, copy_point)
     point_free(&q);
 }
 
+
+TEST(create_point_inf, create_point_inf)
+{
+    Point p;
+    create_point_inf(&p);
+    BigInt zero;
+    bigint_from_uint32(&zero, 0);
+
+    ASSERT_TRUE(bigint_are_equal(&(p.x), &(zero)));
+    ASSERT_TRUE(bigint_are_equal(&(p.y), &(zero)));
+    ASSERT_TRUE(p.is_at_infinity);
+
+    bigint_free(&zero);
+    point_free(&p);
+}
