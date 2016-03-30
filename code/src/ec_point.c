@@ -24,7 +24,7 @@ void point_free(Point* p)
     bigint_free(&(p->y));
 }
 
-void point_copy(Point* dest, const Point const *source)
+void point_copy(Point* dest, Point const *source)
 {
     bigint_copy(&(dest->x), &(source->x));
     bigint_copy(&(dest->y), &(source->y));
