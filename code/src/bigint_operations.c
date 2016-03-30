@@ -102,30 +102,36 @@ int bigint_is_greater(BigInt* a, BigInt* b)
 {
 	BIGINT_ASSERT_VALID(a);
 	BIGINT_ASSERT_VALID(b);
-	if(a->significant_octets > b->significant_octets)
+
+	uint64_t a_high = a->significant_octets;
+	uint64_t b_high = b->significant_octets;
+
+	if(a_high > b_high)
 	{
 		return 1;
 	}
-	else if(b->significant_octets > a->significant_octets)
+	else if(b_high > a_high)
 	{
 		return 0;
 	}
 	else
 	{
-		uint64_t high_byte = a->significant_octets;
-		
-		while(a->octets[high_byte] == b->octets[high_byte])
+		uint64_t high_byte = a_high;
+		int i;
+
+		for (i = high_byte; i > 0; --i)
 		{
-			high_byte--;
+			if(a->octets[i-1] > b->octets[i-1])
+			{
+				return 1;
+			}
+			else if(b->octets[i-1] > a->octets[i-1])
+			{
+				return 0;
+			} 
 		}
-		if(a->octets[high_byte] > b->octets[high_byte])
-		{
-			return 1;
-		}
-		else
-		{
-			return 0;
-		} 
+		return 0;
+	
 	}
 }
 
