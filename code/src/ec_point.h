@@ -21,7 +21,7 @@ void create_point_inf(Point* p);
 
 void point_free(Point* p);
 
-void point_copy(Point* dest, const Point const *source);
+void point_copy(Point* dest, Point const *source);
 
 /* Addition of two points on a curve*/
 Point ec_point_add(Point a, Point b, BigInt p);
