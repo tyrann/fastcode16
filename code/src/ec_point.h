@@ -23,6 +23,8 @@ void point_free(Point* p);
 
 void point_copy(Point* dest, Point const *source);
 
+int point_are_equal(Point const *x, Point const *y);
+
 /* Addition of two points on a curve*/
 Point ec_point_add(Point a, Point b, BigInt p);
 

@@ -11,7 +11,7 @@ void ec_free(EllipticCurveParameter *ec)
     bigint_free(&(ec->h));
 }
 
-void ec_create_parameters(EllipticCurveParameter *ec, const BigInt const *p, const BigInt const *a, const BigInt const *b, const Point const *generator, const BigInt const *n, const BigInt const *h)
+void ec_create_parameters(EllipticCurveParameter *ec, BigInt const *p, BigInt const *a, BigInt const *b, Point const *generator, BigInt const *n, BigInt const *h)
 {
     bigint_copy(&(ec->p), p);
     bigint_copy(&(ec->a), a);

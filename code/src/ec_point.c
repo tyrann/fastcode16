@@ -30,3 +30,11 @@ void point_copy(Point* dest, const Point const *source)
     bigint_copy(&(dest->y), &(source->y));
     dest->is_at_infinity = source->is_at_infinity;
 }
+
+int point_are_equal(Point const *p, Point const *q)
+{
+    if(!bigint_are_equal(&(p->x), &q->x) || !bigint_are_equal(&(p->y), &q->y) || p->is_at_infinity != q->is_at_infinity) {
+	return 0;
+    }
+    return 1;
+}

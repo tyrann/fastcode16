@@ -40,6 +40,6 @@ EllipticCurveParameter ec_generation(int security_level);
 
 void ec_free(EllipticCurveParameter *ec);
 
-void ec_create_parameters(EllipticCurveParameter *ec, const BigInt const *p, const BigInt const *a, const BigInt const *b, const Point const *generator, const BigInt const *n, const BigInt const *h);
+void ec_create_parameters(EllipticCurveParameter *ec, BigInt const *p, BigInt const *a, BigInt const *b, Point const *generator, BigInt const *n, BigInt const *h);
 
 #endif
