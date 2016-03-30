@@ -25,7 +25,7 @@ int bigint_is_even(BigInt* a);
 
 //void bigint_mul_inplace(BigInt* a, BigInt* b);
 
-//int bigint_is_greater(BigInt* a, BigInt* b);
+int bigint_is_greater(BigInt* a, BigInt* b);
 
 //int bigint_is_equal(BigInt* a,BigInt* b);
 

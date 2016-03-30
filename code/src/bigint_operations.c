@@ -6,7 +6,6 @@
 #define WORDSIZE 64
 #define B 2
 
-
 /* void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v)
 {
 	//TODO
@@ -96,6 +95,8 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 */
 int bigint_is_greater(BigInt* a, BigInt* b)
 {
+	BIGINT_ASSERT_VALID(a);
+	BIGINT_ASSERT_VALID(b);
 	if(a->significant_octets > b->significant_octets)
 	{
 		return 1;
@@ -106,12 +107,12 @@ int bigint_is_greater(BigInt* a, BigInt* b)
 	}
 	else
 	{
-		int high_byte = a->significant_octets;
-		int i;
+		uint64_t high_byte = a->significant_octets;
+		uint64_t i;
 
-		for (i = high_byte; i < 0; i--) 
+		for (i = high_byte; i > 0; i--) 
 		{
-			if(a->octets[high_byte] > b->octets[high_byte])
+			if(a->octets[high_byte-1] > b->octets[high_byte-1])
 			{
 				return 1;
 			} 

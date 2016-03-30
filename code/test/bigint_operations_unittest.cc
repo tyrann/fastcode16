@@ -35,3 +35,29 @@ TEST(bigint_is_even, check_odd)
     ASSERT_FALSE(bigint_is_even(&a1));
     bigint_free(&a1);
 }
+
+TEST(bigint_greater_than, check_greater_than)
+{
+    BigInast a1;
+	BigInt a2;
+
+    bigint_from_uint32(&a1, 1);
+    bigint_from_uint32(&a2, 3);
+
+    ASSERT_FALSE(bigint_is_greater(&a1,&a2));
+    bigint_free(&a1);
+	bigint_free(&a2);
+
+	BigInt a3;
+	BigInt a4;
+
+	bigint_from_uint32(&a3, 2836);
+	bigint_from_uint32(&a4, 2835);
+
+	ASSERT_TRUE(bigint_is_greater(&a3, &a4));
+	
+	bigint_free(&a3);
+	bigint_free(&a4);
+    
+
+}
