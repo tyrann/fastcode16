@@ -113,16 +113,19 @@ int bigint_is_greater(BigInt* a, BigInt* b)
 	else
 	{
 		uint64_t high_byte = a->significant_octets;
-		uint64_t i;
-
-		for (i = high_byte; i > 0; i--) 
+		
+		while(a->octets[high_byte] == b->octets[high_byte])
 		{
-			if(a->octets[high_byte-1] > b->octets[high_byte-1])
-			{
-				return 1;
-			} 
+			high_byte--;
 		}
-		return 0;
+		if(a->octets[high_byte] > b->octets[high_byte])
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		} 
 	}
 }
 
