@@ -135,6 +135,27 @@ void bigint_left_shift_inplace(BigInt* a)
     }
 }
 
+void bigint_right_shift_inplace(BigInt* a)
+{
+    BIGINT_ASSERT_VALID(a);
+    
+    // Right shift octets by one, propagating the carry across octets.
+    uchar carry = 0;
+    for (uint64_t i = a->significant_octets; i > 0; i--)
+    {
+        uchar cur_carry = carry;
+        carry = a->octets[i-1] << 7;
+        LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
+            "to the carry (%hhu) resulting in %02hhX", i-1, a->octets[i-1],
+            a->octets[i-1] << 1, cur_carry, cur_carry + (a->octets[i-1] << 1));
+        a->octets[i-1] = cur_carry + (a->octets[i-1] >> 1);
+    }
+    
+    // Check if the number of significant octets decreased
+    if (a->octets[a->significant_octets-1] == 0 && a->significant_octets > 1)
+        a->significant_octets--;
+}
+
 int bigint_is_even(BigInt* a)
 {
     BIGINT_ASSERT_VALID(a);
