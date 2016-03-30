@@ -98,11 +98,11 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 	}
 }
 */
-int bigint_is_greater(BigInt* a, BigInt* b)
+int bigint_is_greater(const BigInt* const a, const BigInt* const b)
 {
 	BIGINT_ASSERT_VALID(a);
 	BIGINT_ASSERT_VALID(b);
-
+	
 	uint64_t a_high = a->significant_octets;
 	uint64_t b_high = b->significant_octets;
 
