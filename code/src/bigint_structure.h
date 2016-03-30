@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+typedef unsigned char uchar;
+
 // Structure for big integers. Supports unsigned integres
 // with value <= 2^(8*2^64). Only unsigned numbers are supported at the 
 // moment. If signed number are required open issue to @dotPiano.
@@ -16,7 +18,7 @@ typedef struct
     uint64_t significant_octets;
 
     // Pointer to the buffer containing the octets of the number
-    char* octets;
+    uchar* octets;
 } BigInt;
 
 #endif
