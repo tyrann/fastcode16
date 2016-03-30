@@ -11,7 +11,7 @@ int main(void)
     bigint_from_hex_string(&b, "FFFFFFFFAAAAAAAAAAAACCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
     Point p;
     create_point(&p, &a, &b);
-    //point_free(&p);
+    point_free(&p);
     bigint_free(&a);
     bigint_free(&b);
 }
