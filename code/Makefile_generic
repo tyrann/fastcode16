@@ -2,7 +2,10 @@ SOURCES = logging.c bigint_utilities.c bigint_conversion.c \
     bigint_conversion_unittest.cc bigint_utilities_unittest.cc \
 	bigint_operations.c bigint_operations_unittest.cc
 
-VPATH = ./src:./test:./src/logging
+SOURCES_MEMORYTEST_POINTS = bigint_utilities.c bigint_conversion.c bigint_operations.c \
+	ec_point.c memory_test_point.c
+
+VPATH = ./src:./test:./src/logging:./test/memory
 
 # GCC architecture flags
 AFLAGS = 

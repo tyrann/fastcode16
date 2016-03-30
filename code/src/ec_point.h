@@ -9,15 +9,19 @@
  * byte-long flag */
 typedef struct
 {
-	BigInt x;
-	BigInt y;
+	BigInt *x;
+	BigInt *y;
 	char is_at_infinity;
 
 }Point;
 
-void create_point(BigInt const* a, BigInt const* b, Point* p);
+void create_point(Point* p, BigInt const* a, BigInt const* b);
 
 void create_point_inf(Point* p);
+
+void point_free(Point* p);
+
+void point_copy(Point* dest, const Point const *source);
 
 /* Addition of two points on a curve*/
 Point ec_point_add(Point a, Point b, BigInt p);
