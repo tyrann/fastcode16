@@ -4,3 +4,4 @@ obj/
 *.swp
 tags
 .ycm_*
+.syntastic*
