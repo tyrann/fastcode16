@@ -20,8 +20,10 @@ void __montgomery_convert(BigInt* res, BigInt* x, BigInt* p)
 {
 	bigint_copy(res,x);
 	/*n is the R parameter in the Montgomery convertion*/
+
 	uint64_t n = p->significant_octets * 8;
 	uint64_t i;
+    
 	for (i = 0; i < n; ++i)
    	{
 		bigint_left_shift_inplace(res);
@@ -55,7 +57,7 @@ void __montgomery_revert(BigInt* rev, BigInt* x,BigInt* p)
 
 void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
 {
-	/\* This is -p^-1 mod b*\/
+	/* This is -p^-1 mod b*/
 	int pbar = 1;
 	uint32_t k = 0;
 	bigint_from_uint32(res, k);
