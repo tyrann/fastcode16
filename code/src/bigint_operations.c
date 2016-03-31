@@ -15,7 +15,7 @@
 {
 	//TODO
 
-}
+}*/
 void __montgomery_convert(BigInt* x, BigInt* p, BigInt* res)
 {
 	bigint_copy(res,x);
@@ -97,7 +97,7 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 		bigint_sub_inplace(res,p);
 	}
 }
-*/
+
 int bigint_is_greater(const BigInt* const a, const BigInt* const b)
 {
 	BIGINT_ASSERT_VALID(a);
