@@ -1,3 +1,7 @@
+
+#ifndef __BIGINT_OPERATIONS_H_
+#define __BIGINT_OPERATIONS_H_
+
 #include "bigint.h"
 
 /* Checks if GCD of a and b is equal to 1*/
@@ -30,3 +34,5 @@ int bigint_is_greater(const BigInt* const a, const BigInt* const b);
 //int bigint_is_equal(BigInt* a,BigInt* b);
 
 //void bigint_sub_inplace(BigInt* a, BigInt* b);
+
+#endif
