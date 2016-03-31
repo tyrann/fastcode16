@@ -1,5 +1,9 @@
 #include "config.h"
 
+const char CONFIG_SUCCESS = 0;
+const char CONFIG_COULD_NOT_OPEN_FILE = 1;
+const char CONFIG_INVALID_FORMAT = 2;
+
 const char * KEYS[] = {
     "p",
     "a",

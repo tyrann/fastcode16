@@ -11,9 +11,9 @@
 #define BUFFER_SIZE 512
 
 // return values for read_config_file
-const char CONFIG_SUCCESS = 0;
-const char CONFIG_COULD_NOT_OPEN_FILE = 1;
-const char CONFIG_INVALID_FORMAT = 2;
+extern const char CONFIG_SUCCESS;
+extern const char CONFIG_COULD_NOT_OPEN_FILE;
+extern const char CONFIG_INVALID_FORMAT;
 
 // If the return value is not equal to 0, parameter will be in an undefined state
 /*
