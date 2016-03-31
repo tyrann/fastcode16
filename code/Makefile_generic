@@ -2,9 +2,10 @@ SOURCES = logging.c bigint_utilities.c bigint_conversion.c \
     bigint_conversion_unittest.cc bigint_utilities_unittest.cc \
 	bigint_operations.c bigint_operations_unittest.cc \
 	ec_point.c ec_point_unittest.cc \
-	ec_parameters.c ec_parameters_unittest.cc
+	ec_parameters.c ec_parameters_unittest.cc \
+	config.c config_unittest.cc
 
-VPATH = ./src:./test:./src/logging
+VPATH = ./src:./test:./src/logging:./src/config:./test/config
 
 # GCC architecture flags
 AFLAGS = 
