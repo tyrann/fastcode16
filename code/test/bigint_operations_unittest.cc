@@ -54,9 +54,9 @@ TEST(bigint_add_inplace, test_add)
 TEST(bigint_sub_inplace, test_sub)
 {
     BigInt a, b, c;	
-	bigint_from_uint64(&a,20);
-	bigint_from_uint64(&b,10);
-	bigint_from_uint64(&c,10);
+	bigint_from_uint64(&a,98349869483274);
+	bigint_from_uint64(&b,25213123210954);
+	bigint_from_uint64(&c,73136746272320);
     bigint_sub_inplace(&a, &b);
     int are_equal = bigint_are_equal(&a, &c);
     EXPECT_EQ(are_equal, 1);    
