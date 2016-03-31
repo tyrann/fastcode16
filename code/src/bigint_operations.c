@@ -1,6 +1,8 @@
 #include "bigint_operations.h"
 #include "bigint_utilities.h"
-
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #define WORDSIZE 64
 #define B 2
 
@@ -96,22 +98,51 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 {
 	BIGINT_ASSERT_VALID(a);
     BIGINT_ASSERT_VALID(b);
-	uchar accumulator = 0;
+	uint32_t accumulator = 0;
 	// count stores the minimal number of digits between a and b
 	uint64_t count = (a->significant_octets > b->significant_octets) ? b->significant_octets : a->significant_octets;	
 	uint64_t i = 0;
+
 	for (; i < count; i++)
-    {
-        accumulator = accumulator + a->octets[i] + b->octets[i];
-		b->octets[i] = accumulator & 0xFF;
-		accumulator = accumulator >> 8;
+    {		
+		//printf("Before operations a = %s\n", bigint_to_hex_string(a));
+		//printf("Before operations b = %s\n", bigint_to_hex_string(b));
+		uint32_t atemp = (uint32_t)a->octets[i];
+		uint32_t btemp = (uint32_t)b->octets[i];
+		//printf("atemp =  %u \n",atemp);
+		//printf("btemp =  %u \n",btemp);
+        accumulator = (accumulator + atemp + btemp);
+		//printf("before accumulator =  %u \n",accumulator);
+		//printf("before a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
+		//printf("before b->octets[%llu] =  (%#hhX) \n",i,b->octets[i]);
+		a->octets[i] = accumulator & 0xFF;	
+		//printf("after a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
+		accumulator = accumulator>>8;		
+		//printf("after accumulator =  %hhu \n",accumulator);
+
+
     }
-	
-	for (i = count; (i < b->significant_octets) && (accumulator!=0); i++)
+	// Extend bigint a to allocate more bytes
+	if(accumulator>0)
 	{
-		accumulator += b->octets[i];
-		b->octets[i] = accumulator & 0xFF;
+		a->significant_octets += 1;
+		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		if (newOctets) 
+		{
+			a->octets = newOctets;
+			a->octets[i] = 0;
+		}	
+		//printf("After function a = %s\n", bigint_to_hex_string(a));
+	}	
+	// Adds the carry to bigint a
+	for (i = count; (i < a->significant_octets) && (accumulator!=0); i++)
+	{
+		//printf("For loop ori accumulator =  %u \n",accumulator);
+		accumulator += a->octets[i];
+		//printf("For loop after accumulator =  %u \n",accumulator);
+		a->octets[i] = accumulator & 0xFF;
 		accumulator = accumulator >> 8;
+		//printf("For loop b = %s\n", bigint_to_hex_string(a));
 	}
 }
 
@@ -120,16 +151,53 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 {
 	BIGINT_ASSERT_VALID(a);
     BIGINT_ASSERT_VALID(b);
-	// negation of b 
-	for (unsigned int i = 0; i < b->significant_octets; i++)
-    {
-		b->octets[i] = b->octets[i] & 0xFF;
+	uint32_t accumulator = 0;
+	// count stores the maximal number of digits between a and b
+	uint64_t count = (a->significant_octets > b->significant_octets) ? a->significant_octets : b->significant_octets;	
+	uint64_t i = 0;
+
+	for (; i < count; i++)
+    {		
+		//printf("Before operations a = %s\n", bigint_to_hex_string(a));
+		//printf("Before operations b = %s\n", bigint_to_hex_string(b));
+		uint32_t atemp = (uint32_t)a->octets[i];
+		uint32_t btemp = (uint32_t)b->octets[i];
+		//printf("atemp =  %u \n",atemp);
+		//printf("btemp =  %u \n",btemp);
+        accumulator = (accumulator + atemp + btemp);
+		//printf("before accumulator =  %u \n",accumulator);
+		//printf("before a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
+		//printf("before b->octets[%llu] =  (%#hhX) \n",i,b->octets[i]);
+		a->octets[i] = accumulator & 0xFF;	
+		//printf("after a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
+		accumulator = accumulator>>8;		
+		//printf("after accumulator =  %hhu \n",accumulator);
+
+
     }
-	// add 1 to the end of b 
-    BigInt c;	
-	bigint_from_uint64(&c, 1);
-	bigint_add_inplace(&c, b);
-	bigint_add_inplace(a, b);
+	// Extend bigint a to allocate more bytes
+	if(accumulator>0)
+	{
+		a->significant_octets += 1;
+		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		if (newOctets) 
+		{
+			a->octets = newOctets;
+			a->octets[i] = 0;
+		}	
+		//printf("After function a = %s\n", bigint_to_hex_string(a));
+	}	
+	// Adds the carry to bigint a
+	for (i = count; (i < a->significant_octets) && (accumulator!=0); i++)
+	{
+		//printf("For loop ori accumulator =  %u \n",accumulator);
+		accumulator += a->octets[i];
+		//printf("For loop after accumulator =  %u \n",accumulator);
+		a->octets[i] = accumulator & 0xFF;
+		accumulator = accumulator >> 8;
+		//printf("For loop b = %s\n", bigint_to_hex_string(a));
+	}
+
 }
 
 int bigint_is_even(BigInt* a)
