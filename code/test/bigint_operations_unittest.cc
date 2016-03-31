@@ -241,3 +241,67 @@ TEST(bigint_right_shift_inplace, test_different_size)
     bigint_free(&a);
     bigint_free(&expected);
 }
+
+TEST(bigint_montgomery_convert, test_big_numbers)
+{
+    BigInt a, p, A, expected;
+    bigint_from_hex_string(&a, "6d09acdef99ad700431e77edcd980a3a54594d6e79a6657a68c7b");
+    bigint_from_hex_string(&p, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
+    bigint_from_hex_string(&expected, "f730a1cf9f75e49d796ab57b016187c97d23899d548bb4cd3c9243cb71b6b130");
+    
+    __montgomery_convert(&A, &a, &p);
+    ASSERT_TRUE(bigint_are_equal(&A, &expected));
+    
+    bigint_free(&a);
+    bigint_free(&p);
+    bigint_free(&A);
+    bigint_free(&expected);
+    
+    bigint_from_hex_string(&a, "19f7dd97453df6cb19aa8120882a211ee82d59a584e5b833e16968640");
+    bigint_from_hex_string(&p, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
+    bigint_from_hex_string(&expected, "22975b43cd66ef93e142e006ab5bb9522981ab20121a661f432bc566544a9f61");
+    
+    __montgomery_convert(&A, &a, &p);
+    ASSERT_TRUE(bigint_are_equal(&A, &expected));
+    
+    bigint_free(&a);
+    bigint_free(&p);
+    bigint_free(&A);
+    bigint_free(&expected);
+}
+
+TEST(bigint_montgomery_revert, test_big_numbers)
+{
+    BigInt a, p, A, expected;
+    bigint_from_hex_string(&expected, "6d09acdef99ad700431e77edcd980a3a54594d6e79a6657a68c7b");
+    bigint_from_hex_string(&p, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
+    bigint_from_hex_string(&a, "f730a1cf9f75e49d796ab57b016187c97d23899d548bb4cd3c9243cb71b6b130");
+    
+    __montgomery_revert(&A, &a, &p);
+    ASSERT_TRUE(bigint_are_equal(&A, &expected));
+    
+    bigint_free(&a);
+    bigint_free(&p);
+    bigint_free(&A);
+    bigint_free(&expected);
+    
+    bigint_from_hex_string(&expected, "19f7dd97453df6cb19aa8120882a211ee82d59a584e5b833e16968640");
+    bigint_from_hex_string(&p, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
+    bigint_from_hex_string(&a, "22975b43cd66ef93e142e006ab5bb9522981ab20121a661f432bc566544a9f61");
+    
+    __montgomery_revert(&A, &a, &p);
+    ASSERT_TRUE(bigint_are_equal(&A, &expected));
+    
+    bigint_free(&a);
+    bigint_free(&p);
+    bigint_free(&A);
+    bigint_free(&expected);
+}
+
+// MULTIPLICATION TEST:
+/*
+    p: "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff"
+    x: "6d09acdef99ad700431e77edcd980a3a54594d6e79a6657a68c7b"
+    y: "19f7dd97453df6cb19aa8120882a211ee82d59a584e5b833e16968640"
+    (x*y) mod p: "e35f881473508854759637d8a77f8d1f94a5d0d2b54637193f6f8c070b15326f"
+*/
