@@ -4,7 +4,7 @@ SOURCES = logging.c bigint_utilities.c bigint_conversion.c \
 	ec_point.c ec_point_unittest.cc \
 	ec_parameters.c ec_parameters_unittest.cc
 
-VPATH = ./src:./test:./src/logging:./test/memory
+VPATH = ./src:./test:./src/logging
 
 # GCC architecture flags
 AFLAGS = 
