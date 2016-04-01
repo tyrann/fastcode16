@@ -1,7 +1,7 @@
 SOURCES = logging.c bigint_utilities.c bigint_conversion.c \
     bigint_conversion_unittest.cc bigint_utilities_unittest.cc \
 	bigint_operations.c bigint_operations_unittest.cc \
-	ec_point.c ec_point_unittest.cc \
+	ec_point_utilities.c ec_point_utilities_unittest.cc \
 	ec_parameters.c ec_parameters_unittest.cc
 
 VPATH = ./src:./test:./src/logging
