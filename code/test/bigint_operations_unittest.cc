@@ -85,12 +85,11 @@ TEST(bigint_add_inplace, test_add_mem2)
 	bigint_from_hex_string(&a, "1FFAFF");
 	bigint_from_hex_string(&b, "1");
 	bigint_from_hex_string(&c, "1FFB00");
-	
+
 	ASSERT_EQ(a.significant_octets, 3);
 	ASSERT_EQ(b.significant_octets, 1);
 	
 	bigint_add_inplace(&a,&b);
-
 	ASSERT_TRUE(bigint_are_equal(&a,&c));
 	ASSERT_EQ(a.significant_octets, 3);
 	bigint_free(&a);

@@ -214,7 +214,7 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 		accumulator = accumulator>>8;		
     }
 	// Extend bigint a to allocate more bytes
-	if(accumulator>0)
+	if(accumulator>0 && (abs(a->significant_octets - b->significant_octets)<=1) )
 	{
 		a->significant_octets += 1;
 		a->allocated_octets += 1;
