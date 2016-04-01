@@ -15,9 +15,15 @@ typedef struct
 
 }Point;
 
-void create_point(BigInt const* a, BigInt const* b, Point* p);
+void create_point(Point* p, BigInt const* a, BigInt const* b);
 
 void create_point_inf(Point* p);
+
+void point_free(Point* p);
+
+void point_copy(Point* dest, Point const *source);
+
+int point_are_equal(Point const *x, Point const *y);
 
 /* Addition of two points on a curve*/
 Point ec_point_add(Point a, Point b, BigInt p);

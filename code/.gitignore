@@ -5,3 +5,4 @@ lib/
 *.swp
 tags
 .ycm_*
+.syntastic*
