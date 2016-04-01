@@ -52,6 +52,51 @@ TEST(bigint_add_inplace, test_add)
     bigint_free(&b);
 	bigint_free(&c);
 }
+
+TEST(bigint_add_inplace, test_add_zero)
+{
+	BigInt a,b;
+	bigint_from_uint64(&a, 0);
+	bigint_from_uint32(&b, 4);
+	
+	bigint_add_inplace(&a,&b);
+	ASSERT_TRUE(bigint_are_equal(&a, &b));
+
+	bigint_free(&a);
+	bigint_free(&b);
+}
+TEST(bigint_add_inplace, test_add_mem)
+{
+	BigInt a,b;
+	bigint_from_hex_string(&a, "FFFF");
+	bigint_from_hex_string(&b, "1");
+	
+	ASSERT_EQ(a.significant_octets, 2);
+	ASSERT_EQ(b.significant_octets, 1);
+
+	bigint_add_inplace(&a,&b);
+	ASSERT_EQ(a.significant_octets, 3);
+	bigint_free(&a);
+	bigint_free(&b);
+}
+TEST(bigint_add_inplace, test_add_mem2)
+{
+	BigInt a,b,c;
+	bigint_from_hex_string(&a, "1FFAFF");
+	bigint_from_hex_string(&b, "1");
+	bigint_from_hex_string(&c, "1FFB00");
+	
+	ASSERT_EQ(a.significant_octets, 3);
+	ASSERT_EQ(b.significant_octets, 1);
+	
+	bigint_add_inplace(&a,&b);
+
+	ASSERT_TRUE(bigint_are_equal(&a,&c));
+	ASSERT_EQ(a.significant_octets, 3);
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+}
 // Test BigInt sub
 TEST(bigint_sub_inplace, test_sub)
 {
