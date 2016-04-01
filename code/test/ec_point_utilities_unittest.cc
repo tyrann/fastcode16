@@ -22,6 +22,39 @@ TEST(create_point, create_point)
     point_free(&p);
 }
 
+TEST(create_point_from_hex, create_point_form_hex)
+{
+    Point p, q;
+    BigInt x;
+    BigInt y;
+    bigint_from_hex_string(&x, "FFCC");
+    bigint_from_hex_string(&y, "CCFF");
+    create_point(&p, &x, &y);
+    create_point_from_hex(&q, "FFCC", "CCFF");
+
+    ASSERT_TRUE(point_are_equal(&p,&q));
+
+    bigint_free(&x);
+    bigint_free(&y);
+    point_free(&p);
+    point_free(&q);
+}
+
+TEST(create_point_inf, create_point_inf)
+{
+    Point p;
+    create_point_inf(&p);
+    BigInt zero;
+    bigint_from_uint32(&zero, 0);
+
+    ASSERT_TRUE(bigint_are_equal(&(p.x), &(zero)));
+    ASSERT_TRUE(bigint_are_equal(&(p.y), &(zero)));
+    ASSERT_TRUE(p.is_at_infinity);
+
+    bigint_free(&zero);
+    point_free(&p);
+}
+
 TEST(copy_point, copy_point)
 {
     Point p, q;
@@ -40,22 +73,6 @@ TEST(copy_point, copy_point)
     bigint_free(&y);
     point_free(&p);
     point_free(&q);
-}
-
-
-TEST(create_point_inf, create_point_inf)
-{
-    Point p;
-    create_point_inf(&p);
-    BigInt zero;
-    bigint_from_uint32(&zero, 0);
-
-    ASSERT_TRUE(bigint_are_equal(&(p.x), &(zero)));
-    ASSERT_TRUE(bigint_are_equal(&(p.y), &(zero)));
-    ASSERT_TRUE(p.is_at_infinity);
-
-    bigint_free(&zero);
-    point_free(&p);
 }
 
 TEST(point_are_equal, different_x_coordinate)
