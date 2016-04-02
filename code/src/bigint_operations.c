@@ -194,6 +194,15 @@ void bigint_right_shift_inplace(BigInt* a)
         a->significant_octets--;
 }
 
+void bigint_modulo_inplace(BigInt* a, BigInt* mod)
+{
+	if(bigint_is_greater(mod,a))
+	{
+		return;
+	}
+}
+
+
 int bigint_is_even(BigInt* a)
 {
     BIGINT_ASSERT_VALID(a);

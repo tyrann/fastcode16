@@ -31,6 +31,8 @@ void bigint_right_shift_inplace(BigInt* a);
 
 int bigint_is_greater(const BigInt* const a, const BigInt* const b);
 
+void bigint_modulo_inplace(BigInt* a, BigInt* mod);
+
 //int bigint_is_equal(BigInt* a,BigInt* b);
 
 //void bigint_sub_inplace(BigInt* a, BigInt* b);
