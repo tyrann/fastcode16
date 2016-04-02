@@ -280,7 +280,6 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 				highBorrow = 1;
 			}			
 		}
-		printf("Before Sub Looping a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);		
 		uint32_t atemp = (uint32_t)a->octets[i];
 		uint32_t btemp = (uint32_t)b->octets[i];
 		borrow = 0;
@@ -304,7 +303,6 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 			atemp = atemp + btemp;
 		}
 		a->octets[i] = atemp;	
-		printf("After Sub Looping a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
     }
 	int stopFlag = 0;
 	i=i+1;
@@ -315,18 +313,12 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 		if ((uint32_t)a->octets[i] == 0)
 		{
 			a->octets[i] = 0xFF;
-			printf("Looping if== 0 a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
-
 		}
 		else 
 		{
 			a->octets[i] -= 1;
 			stopFlag = 1; 
-			printf("Looping else a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
-
 		}
-		//printf("Looping a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
-
     }
     }
 	// Empty the 0 top bytes
@@ -334,8 +326,6 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 	stopFlag = 0;
 	for (uint64_t i = a->significant_octets-1; (i>0)&&(!stopFlag); i--)
 	{
-		printf("Before a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
-
 		if((uint32_t)a->octets[i]==0)
 		{
 			emptyBytes +=1;
@@ -344,7 +334,6 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 		{
 			stopFlag = 1;
 		}
-		printf("emptyBytes = %u\n",emptyBytes);		
 	}
 	// Shrink bigint a to allocate less bytes
 	if(emptyBytes > 0)
@@ -357,8 +346,6 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 			a->octets = newOctets;
 		}	
 	}	
-	printf("After sub function a = %s\n", bigint_to_hex_string(a));
-
 }
 
 int bigint_is_even(BigInt* a)

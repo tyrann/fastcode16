@@ -284,12 +284,7 @@ TEST(bigint_sub_inplace, test_sub)
     bigint_free(&a);
     bigint_free(&b);
 	bigint_free(&c);
-	
-		
 
-	
-	/**/
-	
 }
 
 TEST(bigint_greater_than, check_greater_than)
