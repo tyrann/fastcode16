@@ -202,6 +202,23 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
     BIGINT_ASSERT_VALID(b);
 	uint32_t accumulator = 0;
 	// count stores the minimal number of digits between a and b
+
+	uint32_t oriA = a->significant_octets;
+	
+	if(a->significant_octets < b->significant_octets)
+	{
+		a->significant_octets = b->significant_octets;
+		a->allocated_octets = b->significant_octets;
+		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		if (newOctets) 
+		{
+			a->octets = newOctets;
+			for(uint32_t n = oriA; n<a->significant_octets; n++)
+			{
+				a->octets[n] = 0;
+			}
+		}			
+	}
 	uint64_t count = (a->significant_octets > b->significant_octets) ? b->significant_octets : a->significant_octets;	
 	uint64_t i = 0;
 	// Execute adding
@@ -214,7 +231,7 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 		accumulator = accumulator>>8;		
     }
 	// Extend bigint a to allocate more bytes
-	if(accumulator>0 && (abs(a->significant_octets - b->significant_octets)<=1) )
+	if(accumulator>0 && (abs(a->significant_octets - b->significant_octets)<=1) && (((accumulator + a->octets[i])>0xFF)||(a->significant_octets<=1)))
 	{
 		a->significant_octets += 1;
 		a->allocated_octets += 1;
@@ -239,33 +256,87 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 {
 	BIGINT_ASSERT_VALID(a);
     BIGINT_ASSERT_VALID(b);
+	if(bigint_is_greater(b,a))
+	{
+		printf("Warnning! a < b ");
+	}
+
 	// count stores the minimum number of digits between a and b
 	uint64_t count = (a->significant_octets > b->significant_octets) ? b->significant_octets : a->significant_octets;	
 	uint64_t i = 0;
+	int borrow;
+	int highBorrow = 0;
 	for (; i < count; i++)
-    {		
+    {
+		if (highBorrow) 
+		{
+			if ((uint32_t)a->octets[i+1]!=0)
+			{
+				a->octets[i+1] -= 1;
+			}	
+			else
+			{
+				a->octets[i+1] = 0xFF;
+				highBorrow = 1;
+			}			
+		}
+		printf("Before Sub Looping a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);		
 		uint32_t atemp = (uint32_t)a->octets[i];
 		uint32_t btemp = (uint32_t)b->octets[i];
-		int borrow = 0;
+		borrow = 0;
 		borrow = (atemp < btemp);
 		btemp = ~((uint32_t)b->octets[i])+1;
 		if(borrow)
 		{
 			atemp = atemp + 0xFF + 1 + btemp;
-			a->octets[i+1] -= 1;
+			if ((uint32_t)a->octets[i+1]!=0)
+			{
+				a->octets[i+1] -= 1;
+			}	
+			else
+			{
+				a->octets[i+1] = 0xFF;
+				highBorrow = 1;
+			}				
 		}
 		else
 		{
 			atemp = atemp + btemp;
 		}
 		a->octets[i] = atemp;	
+		printf("After Sub Looping a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
+    }
+	int stopFlag = 0;
+	i=i+1;
+	if(borrow||highBorrow)
+	{
+	for (; (i < a->significant_octets)&&(!stopFlag); i++)
+    {
+		if ((uint32_t)a->octets[i] == 0)
+		{
+			a->octets[i] = 0xFF;
+			printf("Looping if== 0 a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
+
+		}
+		else 
+		{
+			a->octets[i] -= 1;
+			stopFlag = 1; 
+			printf("Looping else a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
+
+		}
+		//printf("Looping a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
+
+    }
     }
 	// Empty the 0 top bytes
 	uint64_t emptyBytes = 0;
-	int stopFlag = 0;
-	for (uint64_t i = a->significant_octets; (i>0)&&(!stopFlag); i--)
+	stopFlag = 0;
+	for (uint64_t i = a->significant_octets-1; (i>0)&&(!stopFlag); i--)
 	{
-		if(a->octets[i]==0)
+		printf("Before a->octets[%llu] =  (%#hhX) \n",i,a->octets[i]);
+
+		if((uint32_t)a->octets[i]==0)
 		{
 			emptyBytes +=1;
 		}
@@ -273,19 +344,20 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 		{
 			stopFlag = 1;
 		}
-		
+		printf("emptyBytes = %u\n",emptyBytes);		
 	}
-	// Extend bigint a to allocate more bytes
-	if(emptyBytes>0)
+	// Shrink bigint a to allocate less bytes
+	if(emptyBytes > 0)
 	{
-		a->significant_octets -= emptyBytes-1;
-		a->allocated_octets -= emptyBytes-1;
+		a->significant_octets -= emptyBytes;
+		a->allocated_octets -= emptyBytes;
 		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
 		if (newOctets) 
 		{
 			a->octets = newOctets;
 		}	
 	}	
+	printf("After sub function a = %s\n", bigint_to_hex_string(a));
 
 }
 
