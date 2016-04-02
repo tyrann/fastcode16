@@ -96,6 +96,25 @@ TEST(bigint_add_inplace, test_add_mem2)
 	bigint_free(&b);
 	bigint_free(&c);
 }
+TEST(bigint_add_inplace, test_add_mem3)
+{
+
+	BigInt a,b,c;
+	bigint_from_hex_string(&a, "FAFF");
+	bigint_from_hex_string(&b, "1");
+	bigint_from_hex_string(&c, "FB00");
+
+	ASSERT_EQ(a.significant_octets, 2);
+	ASSERT_EQ(b.significant_octets, 1);
+	
+	bigint_add_inplace(&a,&b);
+	ASSERT_TRUE(bigint_are_equal(&a,&c));
+	ASSERT_EQ(a.significant_octets, 2);
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+}
+
 // Test BigInt sub
 TEST(bigint_sub_inplace, test_sub)
 {
