@@ -2,8 +2,10 @@
 
 include Makefile_generic
 
-TMP = $(SOURCES:.c=.o)
-OBJECTS = $(TMP:.cc=.o)
+TMP = $(SOURCES_TESTING:.c=.o)
+OBJECTS_TESTING = $(TMP:.cc=.o)
+
+OBJECTS_MAIN = $(SOURCES_MAIN:.c=.o)
 
 # Paths
 GTEST_DIR = ./lib/googletest
@@ -29,7 +31,7 @@ CXXFLAGS += -g -Wall -Wextra -pthread
 
 # targets
 
-EXEC = $(BIN_DIR)/unittests
+EXEC = $(BIN_DIR)/unittests $(BIN_DIR)/ecc
 
 all : $(EXEC)
 
@@ -53,8 +55,11 @@ $(OBJ_DIR)/%.o: %.cc | $(OBJ_DIR)
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BIN_DIR)/unittests : $(OBJ_DIR)/gtest_main.a $(addprefix $(OBJ_DIR)/,$(OBJECTS)) | $(BIN_DIR)
+$(BIN_DIR)/unittests : $(OBJ_DIR)/gtest_main.a $(addprefix $(OBJ_DIR)/,$(OBJECTS_TESTING)) | $(BIN_DIR)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+
+$(BIN_DIR)/ecc : $(addprefix $(OBJ_DIR)/,$(OBJECTS_MAIN)) | $(BIN_DIR)
+	$(CC) $(CFLAS) $^ -o $@
 
 $(BIN_DIR):
 	 mkdir $(BIN_DIR)
