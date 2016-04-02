@@ -4,11 +4,12 @@
 
 #include "logging/logging.h"
 #include "bigint_operations.h"
+#include "bigint_structure.h"
+#include "bigint_conversion.h"
 #include "bigint_utilities.h"
 
 #define WORDSIZE 64
 #define B 2
-
 
 /* void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v)
 {
@@ -56,7 +57,8 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 {
 	/\* This is -p^-1 mod b*\/
 	int pbar = 1;
-	bigint_set_zero(res);
+	uint32_t k = 0;
+	bigint_from_uint32(res, k);
 
 	int n = WORDSIZE * 10;
 	int i;
@@ -96,6 +98,42 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 	}
 }
 */
+int bigint_is_greater(const BigInt* const a, const BigInt* const b)
+{
+	BIGINT_ASSERT_VALID(a);
+	BIGINT_ASSERT_VALID(b);
+	
+	uint64_t a_high = a->significant_octets;
+	uint64_t b_high = b->significant_octets;
+
+	if(a_high > b_high)
+	{
+		return 1;
+	}
+	else if(b_high > a_high)
+	{
+		return 0;
+	}
+	else
+	{
+		uint64_t high_byte = a_high;
+		int i;
+
+		for (i = high_byte; i > 0; --i)
+		{
+			if(a->octets[i-1] > b->octets[i-1])
+			{
+				return 1;
+			}
+			else if(b->octets[i-1] > a->octets[i-1])
+			{
+				return 0;
+			} 
+		}
+		return 0;
+	
+	}
+}
 
 void bigint_left_shift_inplace(BigInt* a)
 {

@@ -4,6 +4,7 @@ extern "C" {
 }
 #include "gtest/gtest.h"
 
+
 // Test bigint_is_even funciton
 TEST(bigint_is_even, check_even)
 {
@@ -37,6 +38,66 @@ TEST(bigint_is_even, check_odd)
     bigint_free(&a1);
 }
 
+TEST(bigint_greater_than, check_greater_than)
+{
+    BigInt a1;
+	BigInt a2;
+
+    bigint_from_uint32(&a1, 1);
+    bigint_from_uint32(&a2, 3);
+
+    ASSERT_FALSE(bigint_is_greater(&a1,&a2));
+    bigint_free(&a1);
+	bigint_free(&a2);
+
+	BigInt a3;
+	BigInt a4;
+
+	bigint_from_uint32(&a3, 2836);
+	bigint_from_uint32(&a4, 2835);
+
+	ASSERT_TRUE(bigint_is_greater(&a3, &a4));
+	
+	bigint_free(&a3);
+	bigint_free(&a4);
+
+	BigInt b1;
+	BigInt b2;
+
+	bigint_from_hex_string(&b1, "FFFFFFFFFFFFFFFFF");
+	bigint_from_hex_string(&b2, "FFFFFFFFFFFFFFFFA");
+
+	ASSERT_TRUE(bigint_is_greater(&b1,&b2));
+
+	bigint_free(&b1);
+	bigint_free(&b2);
+    
+
+}
+TEST(bigint_greater_than, check_greater_than_0)
+{
+    	
+	BigInt a5;
+	BigInt a6;
+	bigint_from_uint32(&a5, 0);
+	bigint_from_uint32(&a6, 0);
+
+	ASSERT_FALSE(bigint_is_greater(&a5, &a6));
+	bigint_free(&a5);
+	bigint_free(&a6);
+	
+	BigInt a1;
+	BigInt a2;
+
+	bigint_from_hex_string(&a1, "FFFFFFFFFFFFFFFFF");
+	bigint_from_hex_string(&a2, "0");
+
+	ASSERT_TRUE(bigint_is_greater(&a1,&a2));
+
+	bigint_free(&a1);
+	bigint_free(&a2); 
+
+}
 // Test left shift
 TEST(bigint_left_shift_inplace, test_same_size)
 {
