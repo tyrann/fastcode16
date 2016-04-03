@@ -275,10 +275,7 @@ TEST(bigint_sub_inplace, test_sub)
     bigint_free(&a4);
     bigint_free(&b4);
 	bigint_free(&c4);
-	
-	
-		
-	
+
 	BigInt a6, b6, c6;	
 	bigint_from_hex_string(&a6, "200");
 	bigint_from_hex_string(&b6, "100");
