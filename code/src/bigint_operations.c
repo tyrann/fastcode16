@@ -7,7 +7,9 @@
 #include "bigint_structure.h"
 #include "bigint_conversion.h"
 #include "bigint_utilities.h"
-
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #define WORDSIZE 64
 #define B 2
 
@@ -192,6 +194,160 @@ void bigint_right_shift_inplace(BigInt* a)
     // Check if the number of significant octets decreased
     if (a->octets[a->significant_octets-1] == 0 && a->significant_octets > 1)
         a->significant_octets--;
+}
+
+void bigint_add_inplace(BigInt* a, BigInt* b)
+{
+	BIGINT_ASSERT_VALID(a);
+    BIGINT_ASSERT_VALID(b);
+
+	uint32_t carry = 0;
+	uint32_t a_bytes = a->significant_octets;
+	
+	// Extends a if b is larger
+	if(a->significant_octets < b->significant_octets)
+	{
+		a->significant_octets = b->significant_octets;
+		a->allocated_octets = b->significant_octets;
+		uchar* new_octets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		if (new_octets) 
+		{
+			a->octets = new_octets;
+			for(uint32_t n = a_bytes; n < a->significant_octets; n++)
+			{
+				a->octets[n] = 0;
+			}
+		}			
+	}
+	a_bytes = a->significant_octets;
+	uint64_t i = 0;
+	// Execute adding and propagate carry
+	for (; i < a_bytes; i++)
+    {	
+		uint32_t atemp;
+		uint32_t btemp;
+		if(i <= b->significant_octets-1)
+		{
+			atemp = (uint32_t)a->octets[i];
+			btemp = (uint32_t)b->octets[i];
+			carry = (carry + atemp + btemp);
+		}
+		else
+		{
+			atemp = (uint32_t)a->octets[i];
+			carry = (carry + atemp);
+		}
+
+		a->octets[i] = carry & 0xFF;	
+		carry = carry>>8;		
+    }
+	// If needed, allocate 1 more byte for the carry
+	if(carry > 0)
+	{
+		a->significant_octets += 1;
+		a->allocated_octets += 1;
+		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		if (newOctets) 
+		{
+			a->octets = newOctets;
+			a->octets[i] = carry;
+		}	
+	}	
+}
+
+
+void bigint_sub_inplace(BigInt* a, BigInt* b)
+{
+	// Negative representation is not implemented
+	if(bigint_is_greater(b,a))
+	{
+		printf("! a < b ");
+	} 
+	else 
+	{
+	BIGINT_ASSERT_VALID(a);
+    BIGINT_ASSERT_VALID(b);
+
+	// count stores the minimum number of digits between a and b
+	uint64_t count = (a->significant_octets > b->significant_octets) ? b->significant_octets : a->significant_octets;	
+	uint64_t i = 0;
+	uint8_t back_carry;
+	uint8_t next_back_carry;
+   	// next_back_carry is created to handle cases where back_carry is needed for i,  yet the both i+1 and i+2 bytes are zeros
+	// Execute the sub from the lowest digits to the digits of count
+	for (; i < count; i++)
+    {
+		uint32_t atemp = (uint32_t)a->octets[i];
+		uint32_t btemp = (uint32_t)b->octets[i];
+		back_carry = 0;
+		back_carry = (atemp < btemp);
+
+		// Two-complement is stored in btemp
+		btemp = ~((uint32_t)b->octets[i])+1;
+		
+		if(back_carry || next_back_carry)
+		{
+			
+			// If possible get a unit from the byte above
+			if ((uint32_t)a->octets[i+1]!=0) 
+			{
+				a->octets[i+1] -= 1;
+			}	
+			// Else we need to look further up
+			else
+			{
+				a->octets[i+1] = 0xFF;
+				next_back_carry = 1;
+			}				
+		}
+		atemp = atemp + btemp;
+		a->octets[i] = atemp;	
+    }
+	
+	// We might need to keep retrieving a unit until we reach a non-zero byte 
+	int stopFlag = 0;
+	i=i+1;
+	if(back_carry || next_back_carry)
+	{
+	for (; (i < a->significant_octets)&&(!stopFlag); i++)
+    {
+		if ((uint32_t)a->octets[i] == 0)
+		{
+			a->octets[i] = 0xFF;
+		}
+		else 
+		{
+			a->octets[i] -= 1;
+			stopFlag = 1; 
+		}
+    }
+    }
+	// Empty higher significant bytes that are zeros 
+	uint64_t emptyBytes = 0;
+	stopFlag = 0;
+	for (uint64_t i = a->significant_octets-1; (i>0)&&(!stopFlag); i--)
+	{
+		if((uint32_t)a->octets[i]==0)
+		{
+			emptyBytes +=1;
+		}
+		else
+		{
+			stopFlag = 1;
+		}
+	}
+	// Deallocate most significant bytes that are zero 
+	if(emptyBytes > 0)
+	{
+		a->significant_octets -= emptyBytes;
+		a->allocated_octets -= emptyBytes;
+		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		if (newOctets) 
+		{
+			a->octets = newOctets;
+		}	
+	}	
+	}
 }
 
 int bigint_is_even(BigInt* a)
