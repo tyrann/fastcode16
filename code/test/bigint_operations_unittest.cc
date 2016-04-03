@@ -199,6 +199,22 @@ TEST(bigint_add_inplace, test_add_mem6)
 	bigint_free(&b);
 	bigint_free(&c);
 }
+
+TEST(bigint_add_inplace, large_number)
+{
+    BigInt a,b,c;
+    bigint_from_hex_string(&a, "508E4AA1C1FE6527C419418CC50AA59CCDF2E5C4C0A1F3B2452A9DC01397D8D6BF88C311CCA797AEA6DA4AEA3C78808");
+    bigint_from_hex_string(&b, "91BB5C22AE9EF6E7E1FAEED5C31F792082352CF807B7DFE9D300053895AFE1A1E24BBA4EE4092B18F868638C16A626");
+    bigint_from_hex_string(&c, "59AA0063ECE854964238F07A213C9D2ED6163894411D71B0E25A9E139CF2D6F0DDAD7EB6BAE82A603660D122FDE2E2E");
+	
+    bigint_add_inplace(&a,&b);
+
+    ASSERT_TRUE(bigint_are_equal(&a,&c));
+    bigint_free(&a);
+    bigint_free(&b);
+    bigint_free(&c);
+}
+
 TEST(bigint_sub_inplace, sub_test_1)
 {
 	BigInt a5, b5, c5;	
