@@ -198,6 +198,20 @@ TEST(bigint_add_inplace, test_add_mem6)
 	bigint_free(&b);
 	bigint_free(&c);
 }
+TEST(bigint_sub_inplace, sub_test_1)
+{
+	BigInt a5, b5, c5;	
+	bigint_from_hex_string(&a5, "100");
+	bigint_from_hex_string(&b5, "1");
+	bigint_from_hex_string(&c5, "FF");
+    bigint_sub_inplace(&a5, &b5);
+    int are_equal = bigint_are_equal(&a5, &c5);
+    EXPECT_EQ(are_equal, 1);    
+    bigint_free(&a5);
+    bigint_free(&b5);
+	bigint_free(&c5);
+}
+
 // Test BigInt sub
 TEST(bigint_sub_inplace, test_sub)
 {
@@ -248,17 +262,7 @@ TEST(bigint_sub_inplace, test_sub)
 	bigint_free(&c4);
 	
 	
-	BigInt a5, b5, c5;	
-	bigint_from_hex_string(&a5, "100");
-	bigint_from_hex_string(&b5, "1");
-	bigint_from_hex_string(&c5, "FF");
-    bigint_sub_inplace(&a5, &b5);
-    are_equal = bigint_are_equal(&a5, &c5);
-    EXPECT_EQ(are_equal, 1);    
-    bigint_free(&a5);
-    bigint_free(&b5);
-	bigint_free(&c5);
-	
+		
 	
 	BigInt a6, b6, c6;	
 	bigint_from_hex_string(&a6, "200");
