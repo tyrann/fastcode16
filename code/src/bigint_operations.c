@@ -314,6 +314,7 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 				if ((uint32_t)a->octets[i+1]!=0) 
 				{
 					a->octets[i+1] -= 1;
+					next_back_carry = 0;
 				}	
 				// Else we need to look further up
 				else
