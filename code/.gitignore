@@ -1,7 +1,10 @@
 bin/
 obj/
+lib/
 *.exe
 *.swp
 tags
 .ycm_*
 .syntastic*
+.gitignore
+unittests.exe.stackdump
