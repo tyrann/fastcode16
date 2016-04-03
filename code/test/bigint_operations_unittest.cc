@@ -337,9 +337,9 @@ TEST(bigint_sub_inplace, test_sub)
 TEST(bigint_sub_inplace, test_sub_large)
 {
 	BigInt a,b,c;
-	bigint_from_hex_string(&a, "93FA234AFF0ACC2393F");
-	bigint_from_hex_string(&b, "8AB44BEFCD89");
-	bigint_from_hex_string(&c, "93fa234253c60d26bb6");
+	bigint_from_hex_string(&a, "93FA234AFF0ACC23");
+	bigint_from_hex_string(&b, "8AB44BEFCD89");	
+	bigint_from_hex_string(&c, "93F99896B31AFE9A");
 	
 	bigint_sub_inplace(&a,&b);
 	ASSERT_TRUE(bigint_are_equal(&a, &c));
