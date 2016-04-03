@@ -65,6 +65,37 @@ TEST(bigint_add_inplace, test_add_zero)
 	bigint_free(&a);
 	bigint_free(&b);
 }
+TEST(bigint_add_inplace, test_add_size)
+{
+	BigInt a,b,c;
+	bigint_from_hex_string(&a, "FF");
+	bigint_from_hex_string(&b, "10000");
+	bigint_from_hex_string(&c, "100FF");
+	
+	bigint_add_inplace(&a,&b);
+	ASSERT_TRUE(bigint_are_equal(&a, &c));
+	ASSERT_EQ(a.significant_octets, 1);
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+}
+TEST(bigint_add_inplace, test_add_inversed)
+{
+	BigInt a,b,c;
+	bigint_from_hex_string(&a, "FFFFFFFE");
+	bigint_from_hex_string(&b, "0102");
+	bigint_from_hex_string(&c, "100000100");
+	
+	bigint_add_inplace(&a,&b);
+	ASSERT_TRUE(bigint_are_equal(&a, &c));
+	ASSERT_EQ(a.significant_octets, 5);
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+}
+
 TEST(bigint_add_inplace, test_add_mem)
 {
 	BigInt a,b;
