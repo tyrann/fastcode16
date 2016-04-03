@@ -612,3 +612,19 @@ TEST(bigint_modulo_inplace, test_modulo_large_1)
 	bigint_free(&b);
 	bigint_free(&c);
 }
+
+
+TEST(bigint_sub_inplace, bad_memory_acces)
+{
+    BigInt a8, b8, c8;
+    int are_equal;
+    bigint_from_hex_string(&a8, "100000");
+    bigint_from_hex_string(&b8, "FFFFF");
+    bigint_from_hex_string(&c8, "1");
+    bigint_sub_inplace(&a8, &b8);
+    are_equal = bigint_are_equal(&a8, &c8);
+    EXPECT_EQ(are_equal, 1);    
+    bigint_free(&a8);
+    bigint_free(&b8);
+    bigint_free(&c8);
+}

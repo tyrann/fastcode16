@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 #define WORDSIZE 64
 #define B 2
 
@@ -308,7 +309,7 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 			
 			if(back_carry || next_back_carry)
 			{
-				
+				//assert(i+1 < a->allocated_octets);
 				// If possible get a unit from the byte above
 				if ((uint32_t)a->octets[i+1]!=0) 
 				{
