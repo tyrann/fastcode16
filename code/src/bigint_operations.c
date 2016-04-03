@@ -200,6 +200,13 @@ void bigint_modulo_inplace(BigInt* a, BigInt* mod)
 	{
 		return;
 	}
+	else
+	{
+		while(bigint_is_greater(a,mod))
+		{
+			bigint_sub_inplace(a,mod);
+		}
+	}
 }
 
 
