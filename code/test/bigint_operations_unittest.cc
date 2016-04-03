@@ -212,6 +212,20 @@ TEST(bigint_sub_inplace, sub_test_1)
 	bigint_free(&c5);
 }
 
+TEST(bigint_sub_inplace, sub_test_2)
+{
+	BigInt a5, b5, c5;	
+	bigint_from_hex_string(&a5, "FF");
+	bigint_from_hex_string(&b5, "FF");
+	bigint_from_hex_string(&c5, "0");
+    bigint_sub_inplace(&a5, &b5);
+    int are_equal = bigint_are_equal(&a5, &c5);
+    EXPECT_EQ(are_equal, 1);    
+    bigint_free(&a5);
+    bigint_free(&b5);
+	bigint_free(&c5);
+}
+
 // Test BigInt sub
 TEST(bigint_sub_inplace, test_sub)
 {
