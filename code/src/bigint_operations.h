@@ -29,6 +29,9 @@ void bigint_add_inplace(BigInt* a, BigInt* b);
 
 void bigint_sub_inplace(BigInt* a, BigInt* b);
 
+// Divide x by y and place the result in res
+void bigint_divide(BigInt* res, BigInt* x, BigInt* y);
+
 //void bigint_mul_inplace(BigInt* a, BigInt* b);
 
 int bigint_is_greater(const BigInt* const a, const BigInt* const b);

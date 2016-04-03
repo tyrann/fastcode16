@@ -359,3 +359,23 @@ int bigint_is_even(BigInt* a)
     }
     return 1;
 }
+
+void bigint_divide(BigInt* res, BigInt* x, BigInt* y) {
+    
+    BIGINT_ASSERT_VALID(x);
+    BIGINT_ASSERT_VALID(y);
+    assert(res != 0);
+    
+    uint64_t n = x->significant_octets;
+    uint64_t t = y->significant_octets
+    
+    assert(!(t == 1 && y->octets[0] == 0));
+    assert(n >= t);
+   
+    res->octets = (uchar*)malloc((n-t) * sizeof(uchar));
+    res->allocated_octets = n - t;
+    
+    for (uint64_t j = 0; j < n - t; j++)
+        res.octets[j] = 0;
+        
+}
