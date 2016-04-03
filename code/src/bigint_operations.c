@@ -258,18 +258,21 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 
 void bigint_sub_inplace(BigInt* a, BigInt* b)
 {
-	BIGINT_ASSERT_VALID(a);
-    BIGINT_ASSERT_VALID(b);
 	if(bigint_is_greater(b,a))
 	{
-		printf("Warnning! a < b ");
-	}
+		printf("! a < b ");
+	} 
+	else 
+	{
+	BIGINT_ASSERT_VALID(a);
+    BIGINT_ASSERT_VALID(b);
 
 	// count stores the minimum number of digits between a and b
 	uint64_t count = (a->significant_octets > b->significant_octets) ? b->significant_octets : a->significant_octets;	
 	uint64_t i = 0;
 	int borrow;
-	int highBorrow = 0;
+	int highBorrow = 0; // highBorrow is created to handle cases where borrow is needed for i,  yet the both i+1 and i+2 bytes are zeros
+	// Execute the sub from the lowest digits to the digits of count
 	for (; i < count; i++)
     {
 		if (highBorrow) 
@@ -288,17 +291,21 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 		uint32_t btemp = (uint32_t)b->octets[i];
 		borrow = 0;
 		borrow = (atemp < btemp);
+		// Change btemp to negative
 		btemp = ~((uint32_t)b->octets[i])+1;
+		// If need borrow then add extra 0xFF to current atemp
 		if(borrow)
 		{
+			
 			atemp = atemp + 0xFF + 1 + btemp;
-			if ((uint32_t)a->octets[i+1]!=0)
+			//Minus 1 from higher bytes 
+			if ((uint32_t)a->octets[i+1]!=0) // The higher bytes is not zero, minus 1 directly 
 			{
 				a->octets[i+1] -= 1;
 			}	
 			else
 			{
-				a->octets[i+1] = 0xFF;
+				a->octets[i+1] = 0xFF; // in case the higher bytes is zero, keep borrowing from higher bytes
 				highBorrow = 1;
 			}				
 		}
@@ -308,6 +315,8 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 		}
 		a->octets[i] = atemp;	
     }
+	
+	// If borrow or higher borrowr happens, finish the borrwo minus execution 
 	int stopFlag = 0;
 	i=i+1;
 	if(borrow||highBorrow)
@@ -325,7 +334,7 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 		}
     }
     }
-	// Empty the 0 top bytes
+	// Empty top bytes that are zeros 
 	uint64_t emptyBytes = 0;
 	stopFlag = 0;
 	for (uint64_t i = a->significant_octets-1; (i>0)&&(!stopFlag); i--)
@@ -350,6 +359,7 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 			a->octets = newOctets;
 		}	
 	}	
+	}
 }
 
 int bigint_is_even(BigInt* a)
