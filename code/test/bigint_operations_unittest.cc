@@ -341,6 +341,7 @@ TEST(bigint_sub_inplace, test_sub_large)
 	bigint_from_hex_string(&b, "8AB44BEFCD89");	
 	bigint_from_hex_string(&c, "93F99896B31AFE9A");
 	
+	bigint_sub_inplace(&a,&b);
 	ASSERT_TRUE(bigint_are_equal(&a, &c));
 
 	bigint_free(&a);

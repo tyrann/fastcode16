@@ -301,7 +301,6 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 		{
 			uint32_t atemp = (uint32_t)a->octets[i];
 			uint32_t btemp = (uint32_t)b->octets[i];
-			back_carry = 0;
 			back_carry = (atemp < btemp);
 
 			// Two-complement is stored in btemp
@@ -323,13 +322,13 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 				}				
 			}
 			atemp = atemp + btemp;
-			a->octets[i] = atemp;	
+			a->octets[i] = atemp;
 		}
 		
 		// We might need to keep retrieving a unit until we reach a non-zero byte 
 		int stopFlag = 0;
 		i=i+1;
-		if(back_carry || next_back_carry)
+		if(next_back_carry)
 		{
 			for (; (i < a->significant_octets)&&(!stopFlag); i++)
 			{
