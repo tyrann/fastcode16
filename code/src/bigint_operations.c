@@ -206,6 +206,8 @@ void bigint_modulo_inplace(BigInt* a, BigInt* mod)
 	{
 		printf("Impossible to apply mod 0");
 	}
+	bigint_free(&test);	
+
 	if(bigint_is_greater(mod,a))
 	{
 		return;
