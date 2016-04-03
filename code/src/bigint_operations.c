@@ -198,6 +198,13 @@ void bigint_right_shift_inplace(BigInt* a)
 
 void bigint_modulo_inplace(BigInt* a, BigInt* mod)
 {
+	BigInt test;
+	bigint_from_uint32(&test,0);
+
+	if(bigint_are_equal(&test,mod))
+	{
+		printf("Impossible to apply mod 0");
+	}
 	if(bigint_is_greater(mod,a))
 	{
 		return;
