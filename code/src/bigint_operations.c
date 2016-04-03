@@ -200,38 +200,49 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 {
 	BIGINT_ASSERT_VALID(a);
     BIGINT_ASSERT_VALID(b);
-	uint32_t accumulator = 0;
-	// count stores the minimal number of digits between a and b
 
-	uint32_t oriA = a->significant_octets;
+	uint32_t carry = 0;
+	uint32_t a_bytes = a->significant_octets;
 	
+	// Extends a if b is larger
 	if(a->significant_octets < b->significant_octets)
 	{
 		a->significant_octets = b->significant_octets;
 		a->allocated_octets = b->significant_octets;
-		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
-		if (newOctets) 
+		uchar* new_octets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		if (new_octets) 
 		{
-			a->octets = newOctets;
-			for(uint32_t n = oriA; n<a->significant_octets; n++)
+			a->octets = new_octets;
+			for(uint32_t n = a_bytes; n < a->significant_octets; n++)
 			{
 				a->octets[n] = 0;
 			}
 		}			
 	}
-	uint64_t count = (a->significant_octets > b->significant_octets) ? b->significant_octets : a->significant_octets;	
+	a_bytes = a->significant_octets;
 	uint64_t i = 0;
-	// Execute adding
-	for (; i < count; i++)
-    {		
-		uint32_t atemp = (uint32_t)a->octets[i];
-		uint32_t btemp = (uint32_t)b->octets[i];
-        accumulator = (accumulator + atemp + btemp);
-		a->octets[i] = accumulator & 0xFF;	
-		accumulator = accumulator>>8;		
+	// Execute adding and propagate carry
+	for (; i < a_bytes; i++)
+    {	
+		uint32_t atemp;
+		uint32_t btemp;
+		if(i <= b->significant_octets-1)
+		{
+			atemp = (uint32_t)a->octets[i];
+			btemp = (uint32_t)b->octets[i];
+			carry = (carry + atemp + btemp);
+		}
+		else
+		{
+			atemp = (uint32_t)a->octets[i];
+			carry = (carry + atemp);
+		}
+
+		a->octets[i] = carry & 0xFF;	
+		carry = carry>>8;		
     }
-	// Extend bigint a to allocate more bytes
-	if(accumulator>0 && (abs(a->significant_octets - b->significant_octets)<=1) && (((accumulator + a->octets[i])>0xFF)||(a->significant_octets<=1)))
+	// If needed, allocate 1 more byte for the carry
+	if(carry > 0)
 	{
 		a->significant_octets += 1;
 		a->allocated_octets += 1;
@@ -239,16 +250,9 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 		if (newOctets) 
 		{
 			a->octets = newOctets;
-			a->octets[i] = 0;
+			a->octets[i] = carry;
 		}	
 	}	
-	// Adds the carry to bigint a
-	for (i = count; (i < a->significant_octets) && (accumulator!=0); i++)
-	{
-		accumulator += a->octets[i];
-		a->octets[i] = accumulator & 0xFF;
-		accumulator = accumulator >> 8;
-	}
 }
 
 

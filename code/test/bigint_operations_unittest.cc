@@ -74,7 +74,7 @@ TEST(bigint_add_inplace, test_add_size)
 	
 	bigint_add_inplace(&a,&b);
 	ASSERT_TRUE(bigint_are_equal(&a, &c));
-	ASSERT_EQ(a.significant_octets, 1);
+	ASSERT_EQ(a.significant_octets, 3);
 
 	bigint_free(&a);
 	bigint_free(&b);
@@ -88,6 +88,7 @@ TEST(bigint_add_inplace, test_add_inversed)
 	bigint_from_hex_string(&c, "100000100");
 	
 	bigint_add_inplace(&a,&b);
+	printf("BIGINT VALUE IS %s \n", bigint_to_hex_string(&a));
 	ASSERT_TRUE(bigint_are_equal(&a, &c));
 	ASSERT_EQ(a.significant_octets, 5);
 
@@ -192,6 +193,8 @@ TEST(bigint_add_inplace, test_add_mem6)
 	ASSERT_EQ(b.significant_octets, 1);
 	
 	bigint_add_inplace(&a,&b);
+
+	printf("BIGINT VALUE IS %s \n", bigint_to_hex_string(&a));
 	ASSERT_TRUE(bigint_are_equal(&a,&c));
 	ASSERT_EQ(a.significant_octets, 2);
 	bigint_free(&a);
