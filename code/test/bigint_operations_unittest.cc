@@ -365,6 +365,36 @@ TEST(bigint_sub_inplace, test_sub_large)
 	bigint_free(&c);
 }
 
+TEST(bigint_sub_inplace, bad_memory_acces)
+{
+    BigInt a8, b8, c8;
+    int are_equal;
+    bigint_from_hex_string(&a8, "100000");
+    bigint_from_hex_string(&b8, "FFFFF");
+    bigint_from_hex_string(&c8, "1");
+    bigint_sub_inplace(&a8, &b8);
+    are_equal = bigint_are_equal(&a8, &c8);
+    EXPECT_EQ(are_equal, 1);    
+    bigint_free(&a8);
+    bigint_free(&b8);
+    bigint_free(&c8);
+}
+
+TEST(bigint_sub_inplace, very_large_number)
+{
+    int are_equal;
+    BigInt a1, b1, c1;
+    bigint_from_hex_string(&a1, "2A94608F8D29FBB7AF52D1BC1667F505440CC75CABABDC5961BFCC9F54DADD1A4000000000000000000000000000");
+    bigint_from_hex_string(&b1, "2A94608F8D29FBB7AF52D1BC1667F505440CC75CABABDC5961BFCC9F54DADD1A3FFFFFFFFFFFFFFFFFFFFFFFFFFF");
+    bigint_from_hex_string(&c1, "1");
+    bigint_sub_inplace(&a1, &b1);
+    are_equal = bigint_are_equal(&a1, &c1);
+    EXPECT_EQ(are_equal, 1);    
+    bigint_free(&a1);
+    bigint_free(&b1);
+    bigint_free(&c1);
+}
+
 TEST(bigint_greater_than, check_greater_than)
 {
     BigInt a1;
@@ -627,36 +657,5 @@ TEST(bigint_modulo_inplace, test_modulo_large_1)
 	bigint_free(&a);
 	bigint_free(&b);
 	bigint_free(&c);
-}
-
-
-TEST(bigint_sub_inplace, bad_memory_acces)
-{
-    BigInt a8, b8, c8;
-    int are_equal;
-    bigint_from_hex_string(&a8, "100000");
-    bigint_from_hex_string(&b8, "FFFFF");
-    bigint_from_hex_string(&c8, "1");
-    bigint_sub_inplace(&a8, &b8);
-    are_equal = bigint_are_equal(&a8, &c8);
-    EXPECT_EQ(are_equal, 1);    
-    bigint_free(&a8);
-    bigint_free(&b8);
-    bigint_free(&c8);
-}
-
-TEST(bigint_sub_inplace, very_large_number)
-{
-    int are_equal;
-    BigInt a1, b1, c1;
-    bigint_from_hex_string(&a1, "2A94608F8D29FBB7AF52D1BC1667F505440CC75CABABDC5961BFCC9F54DADD1A4000000000000000000000000000");
-    bigint_from_hex_string(&b1, "2A94608F8D29FBB7AF52D1BC1667F505440CC75CABABDC5961BFCC9F54DADD1A3FFFFFFFFFFFFFFFFFFFFFFFFFFF");
-    bigint_from_hex_string(&c1, "1");
-    bigint_sub_inplace(&a1, &b1);
-    are_equal = bigint_are_equal(&a1, &c1);
-    EXPECT_EQ(are_equal, 1);    
-    bigint_free(&a1);
-    bigint_free(&b1);
-    bigint_free(&c1);
 }
 
