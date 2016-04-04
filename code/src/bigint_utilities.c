@@ -55,3 +55,50 @@ void bigint_copy(BigInt* dest, const BigInt* a)
     dest->octets = (uchar*)malloc(dest->allocated_octets);
     memcpy(dest->octets, a->octets, dest->allocated_octets);
 }
+
+int bigint_is_greater(const BigInt* const a, const BigInt* const b)
+{
+	BIGINT_ASSERT_VALID(a);
+	BIGINT_ASSERT_VALID(b);
+	
+	uint64_t a_high = a->significant_octets;
+	uint64_t b_high = b->significant_octets;
+
+	if(a_high > b_high)
+	{
+		return 1;
+	}
+	else if(b_high > a_high)
+	{
+		return 0;
+	}
+	else
+	{
+		uint64_t high_byte = a_high;
+		int i;
+
+		for (i = high_byte; i > 0; --i)
+		{
+			if(a->octets[i-1] > b->octets[i-1])
+			{
+				return 1;
+			}
+			else if(b->octets[i-1] > a->octets[i-1])
+			{
+				return 0;
+			} 
+		}
+		return 0;
+	
+	}
+}
+
+int bigint_is_even(BigInt* a)
+{
+    BIGINT_ASSERT_VALID(a);
+    if((a->octets[0] & 1) == 1)
+    {
+	    return 0;
+    }
+    return 1;
+}

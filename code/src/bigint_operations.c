@@ -7,7 +7,10 @@
 #include "bigint_structure.h"
 #include "bigint_conversion.h"
 #include "bigint_utilities.h"
-
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
 #define WORDSIZE 64
 #define B 2
 
@@ -100,42 +103,6 @@ void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
 	}
 }
 
-int bigint_is_greater(const BigInt* const a, const BigInt* const b)
-{
-	BIGINT_ASSERT_VALID(a);
-	BIGINT_ASSERT_VALID(b);
-	
-	uint64_t a_high = a->significant_octets;
-	uint64_t b_high = b->significant_octets;
-
-	if(a_high > b_high)
-	{
-		return 1;
-	}
-	else if(b_high > a_high)
-	{
-		return 0;
-	}
-	else
-	{
-		uint64_t high_byte = a_high;
-		int i;
-
-		for (i = high_byte; i > 0; --i)
-		{
-			if(a->octets[i-1] > b->octets[i-1])
-			{
-				return 1;
-			}
-			else if(b->octets[i-1] > a->octets[i-1])
-			{
-				return 0;
-			} 
-		}
-		return 0;
-	
-	}
-}
 
 void bigint_left_shift_inplace(BigInt* a)
 {
@@ -196,12 +163,167 @@ void bigint_right_shift_inplace(BigInt* a)
         a->significant_octets--;
 }
 
-int bigint_is_even(BigInt* a)
+void bigint_modulo_inplace(BigInt* a, BigInt* mod)
 {
-    BIGINT_ASSERT_VALID(a);
-    if((a->octets[0] & 1) == 1)
-    {
-	return 0;
+	BigInt test;
+	bigint_from_uint32(&test,0);
+
+	if(bigint_are_equal(&test,mod))
+	{
+		printf("Impossible to apply mod 0");
+	}
+	bigint_free(&test);	
+
+	if(bigint_is_greater(mod,a))
+	{
+		return;
+	}
+	else
+	{
+		while(bigint_is_greater(a,mod))
+		{
+			bigint_sub_inplace(a,mod);
+		}
+	}
+}
+
+void bigint_add_inplace(BigInt* a, BigInt* b)
+{
+	BIGINT_ASSERT_VALID(a);
+    BIGINT_ASSERT_VALID(b);
+
+	uint32_t carry = 0;
+	uint32_t a_bytes = a->significant_octets;
+	
+	// Extends a if b is larger
+	if(a->significant_octets < b->significant_octets)
+	{
+		a->significant_octets = b->significant_octets;
+		a->allocated_octets = b->significant_octets;
+		uchar* new_octets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		if (new_octets) 
+		{
+			a->octets = new_octets;
+			for(uint32_t n = a_bytes; n < a->significant_octets; n++)
+			{
+				a->octets[n] = 0;
+			}
+		}			
+	}
+	a_bytes = a->significant_octets;
+	uint64_t i = 0;
+	// Execute adding and propagate carry
+	for (; i < a_bytes; i++)
+    {	
+		uint32_t atemp;
+		uint32_t btemp;
+		if(i <= b->significant_octets-1)
+		{
+			atemp = (uint32_t)a->octets[i];
+			btemp = (uint32_t)b->octets[i];
+			carry = (carry + atemp + btemp);
+		}
+		else
+		{
+			atemp = (uint32_t)a->octets[i];
+			carry = (carry + atemp);
+		}
+
+		a->octets[i] = carry & 0xFF;	
+		carry = carry>>8;		
     }
-    return 1;
+	// If needed, allocate 1 more byte for the carry
+	if(carry > 0)
+	{
+		a->significant_octets += 1;
+		a->allocated_octets += 1;
+		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		if (newOctets) 
+		{
+			a->octets = newOctets;
+			a->octets[i] = carry;
+		}	
+	}	
+}
+
+
+void bigint_sub_inplace(BigInt* a, BigInt* b)
+{
+    // Negative representation is not implemented
+    if(bigint_is_greater(b,a))
+    {
+	printf("! a < b ");
+    } 
+    else 
+    {
+	BIGINT_ASSERT_VALID(a);
+	BIGINT_ASSERT_VALID(b);
+
+	uint64_t count = a->significant_octets;
+	uint64_t i = 0;
+	uint8_t borrow = 0;
+	uint8_t tmp_borrow = 0;
+	char stop = 0;
+		
+	for (; i < count && !stop; i++)
+	{
+	    uint32_t atemp = (uint32_t)a->octets[i];
+			
+	    uint32_t btemp;
+	    if(i < b->significant_octets)
+	    {
+		btemp = (uint32_t)b->octets[i];
+	    }
+	    else
+	    {
+		stop = 1;
+		btemp = 0;
+	    }
+
+	    if(borrow) 
+	    {
+		stop = 0;
+		btemp++;
+	    }
+
+	    if(btemp > atemp)
+	    {
+		tmp_borrow = 1;
+		atemp = atemp + 0xFF + 1;
+	    }
+	    else
+	    {
+		tmp_borrow = 0;
+	    }
+
+	    atemp = atemp - btemp;
+	    a->octets[i] = atemp;
+	    borrow = tmp_borrow;
+	}
+
+	char reallocate = 0;
+	stop = 0;
+	for(int j = count - 1; j >= 0 && !stop; j--)
+	{
+	    if(a->octets[j] != 0) 
+	    {
+		a->significant_octets = j + 1;
+		stop = 1;
+	    }
+	    else
+	    {
+		reallocate = 1;
+	    }
+	}
+
+	if(reallocate)
+	{
+	    a->allocated_octets += a->significant_octets;
+	    uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+	    if (newOctets) 
+	    {
+		a->octets = newOctets;
+	    }
+	}
+    }
 }

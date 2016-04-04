@@ -1,3 +1,7 @@
+
+#ifndef __BIGINT_OPERATIONS_H_
+#define __BIGINT_OPERATIONS_H_
+
 #include "bigint.h"
 
 /* Checks if GCD of a and b is equal to 1*/
@@ -15,16 +19,16 @@ void __montgomery_revert(BigInt* rev, BigInt* x, BigInt* p);
  */
 void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p);
 
-int bigint_is_even(BigInt* a);
-
 void bigint_left_shift_inplace(BigInt* a);
 
 void bigint_right_shift_inplace(BigInt* a);
 
-//void bigint_add_inplace(BigInt* a, BigInt* b);
+void bigint_add_inplace(BigInt* a, BigInt* b);
+
+void bigint_sub_inplace(BigInt* a, BigInt* b);
 
 //void bigint_mul_inplace(BigInt* a, BigInt* b);
 
-int bigint_is_greater(const BigInt* const a, const BigInt* const b);
+void bigint_modulo_inplace(BigInt* a, BigInt* mod);
 
-//void bigint_sub_inplace(BigInt* a, BigInt* b);
+#endif
