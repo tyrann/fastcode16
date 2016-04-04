@@ -21,6 +21,10 @@ int main(int argc, char *argv[])
 	    fprintf(stderr, "The config file \"%s\" is invalid\n", argv[1]);
 	    return -1;
 	}
+	else
+	{
+	    ec_free(&parameter);
+	}
 	
     }
 
