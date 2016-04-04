@@ -165,6 +165,22 @@ TEST(bigint_add_inplace, test_add_mem6)
 	bigint_free(&b);
 	bigint_free(&c);
 }
+
+TEST(bigint_add_inplace, large_number)
+{
+    BigInt a,b,c;
+    bigint_from_hex_string(&a, "508E4AA1C1FE6527C419418CC50AA59CCDF2E5C4C0A1F3B2452A9DC01397D8D6BF88C311CCA797AEA6DA4AEA3C78808");
+    bigint_from_hex_string(&b, "91BB5C22AE9EF6E7E1FAEED5C31F792082352CF807B7DFE9D300053895AFE1A1E24BBA4EE4092B18F868638C16A626");
+    bigint_from_hex_string(&c, "59AA0063ECE854964238F07A213C9D2ED6163894411D71B0E25A9E139CF2D6F0DDAD7EB6BAE82A603660D122FDE2E2E");
+	
+    bigint_add_inplace(&a,&b);
+
+    ASSERT_TRUE(bigint_are_equal(&a,&c));
+    bigint_free(&a);
+    bigint_free(&b);
+    bigint_free(&c);
+}
+
 TEST(bigint_sub_inplace, sub_test_1)
 {
 	BigInt a5, b5, c5;	
@@ -298,6 +314,51 @@ TEST(bigint_sub_inplace, test_sub)
     bigint_free(&b);
 	bigint_free(&c);
 
+}
+
+TEST(bigint_sub_inplace, test_sub_large)
+{
+	BigInt a,b,c;
+	bigint_from_hex_string(&a, "93FA234AFF0ACC23");
+	bigint_from_hex_string(&b, "8AB44BEFCD89");	
+	bigint_from_hex_string(&c, "93F99896B31AFE9A");
+	
+	bigint_sub_inplace(&a,&b);
+	ASSERT_TRUE(bigint_are_equal(&a, &c));
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+}
+
+TEST(bigint_sub_inplace, bad_memory_acces)
+{
+    BigInt a8, b8, c8;
+    int are_equal;
+    bigint_from_hex_string(&a8, "100000");
+    bigint_from_hex_string(&b8, "FFFFF");
+    bigint_from_hex_string(&c8, "1");
+    bigint_sub_inplace(&a8, &b8);
+    are_equal = bigint_are_equal(&a8, &c8);
+    EXPECT_EQ(are_equal, 1);    
+    bigint_free(&a8);
+    bigint_free(&b8);
+    bigint_free(&c8);
+}
+
+TEST(bigint_sub_inplace, very_large_number)
+{
+    int are_equal;
+    BigInt a1, b1, c1;
+    bigint_from_hex_string(&a1, "2A94608F8D29FBB7AF52D1BC1667F505440CC75CABABDC5961BFCC9F54DADD1A4000000000000000000000000000");
+    bigint_from_hex_string(&b1, "2A94608F8D29FBB7AF52D1BC1667F505440CC75CABABDC5961BFCC9F54DADD1A3FFFFFFFFFFFFFFFFFFFFFFFFFFF");
+    bigint_from_hex_string(&c1, "1");
+    bigint_sub_inplace(&a1, &b1);
+    are_equal = bigint_are_equal(&a1, &c1);
+    EXPECT_EQ(are_equal, 1);    
+    bigint_free(&a1);
+    bigint_free(&b1);
+    bigint_free(&c1);
 }
 
 // Test left shift
@@ -443,3 +504,64 @@ TEST(bigint_right_shift_inplace, test_different_size)
     bigint_free(&a);
     bigint_free(&expected);
 }
+
+TEST(bigint_modulo_inplace, test_modulo_1)
+{
+	BigInt a,b,c;
+	bigint_from_uint64(&a, 2);
+	bigint_from_uint64(&b, 4);
+	bigint_from_uint64(&c, 2);
+	
+	bigint_modulo_inplace(&a,&b);
+	ASSERT_TRUE(bigint_are_equal(&a, &c));
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+}
+
+TEST(bigint_modulo_inplace, test_modulo_2)
+{
+	BigInt a,b,c;
+	bigint_from_uint64(&a, 3245475);
+	bigint_from_uint64(&b, 2394);
+	bigint_from_uint64(&c, 1605);
+	
+	bigint_modulo_inplace(&a,&b);
+	ASSERT_TRUE(bigint_are_equal(&a, &c));
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+}
+
+TEST(bigint_modulo_inplace, test_modulo_z)
+{
+	BigInt a,b,c;
+	bigint_from_uint64(&a, 0);
+	bigint_from_uint64(&b, 2394);
+	bigint_from_uint64(&c, 0);
+	
+	bigint_modulo_inplace(&a,&b);
+	ASSERT_TRUE(bigint_are_equal(&a, &c));
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+}
+
+TEST(bigint_modulo_inplace, test_modulo_large_1)
+{
+	BigInt a,b,c;
+	bigint_from_hex_string(&a, "93FA234AFF0ACC23");
+	bigint_from_hex_string(&b, "8AB44BEFCD89");
+	bigint_from_hex_string(&c, "27E3AAB16A9E");
+	
+	bigint_modulo_inplace(&a,&b);
+	ASSERT_TRUE(bigint_are_equal(&a, &c));
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+}
+

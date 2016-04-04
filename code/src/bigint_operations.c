@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 #define WORDSIZE 64
 #define B 2
 
@@ -160,6 +161,30 @@ void bigint_right_shift_inplace(BigInt* a)
         a->significant_octets--;
 }
 
+void bigint_modulo_inplace(BigInt* a, BigInt* mod)
+{
+	BigInt test;
+	bigint_from_uint32(&test,0);
+
+	if(bigint_are_equal(&test,mod))
+	{
+		printf("Impossible to apply mod 0");
+	}
+	bigint_free(&test);	
+
+	if(bigint_is_greater(mod,a))
+	{
+		return;
+	}
+	else
+	{
+		while(bigint_is_greater(a,mod))
+		{
+			bigint_sub_inplace(a,mod);
+		}
+	}
+}
+
 void bigint_add_inplace(BigInt* a, BigInt* b)
 {
 	BIGINT_ASSERT_VALID(a);
@@ -222,94 +247,81 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 
 void bigint_sub_inplace(BigInt* a, BigInt* b)
 {
-	// Negative representation is not implemented
-	if(bigint_is_greater(b,a))
-	{
-		printf("! a < b ");
-	} 
-	else 
-	{
+    // Negative representation is not implemented
+    if(bigint_is_greater(b,a))
+    {
+	printf("! a < b ");
+    } 
+    else 
+    {
 	BIGINT_ASSERT_VALID(a);
-    BIGINT_ASSERT_VALID(b);
+	BIGINT_ASSERT_VALID(b);
 
-	// count stores the minimum number of digits between a and b
-	uint64_t count = (a->significant_octets > b->significant_octets) ? b->significant_octets : a->significant_octets;	
+	uint64_t count = a->significant_octets;
 	uint64_t i = 0;
-	uint8_t back_carry;
-	uint8_t next_back_carry;
-   	// next_back_carry is created to handle cases where back_carry is needed for i,  yet the both i+1 and i+2 bytes are zeros
-	// Execute the sub from the lowest digits to the digits of count
-	for (; i < count; i++)
-    {
-		uint32_t atemp = (uint32_t)a->octets[i];
-		uint32_t btemp = (uint32_t)b->octets[i];
-		back_carry = 0;
-		back_carry = (atemp < btemp);
-
-		// Two-complement is stored in btemp
-		btemp = ~((uint32_t)b->octets[i])+1;
+	uint8_t borrow = 0;
+	uint8_t tmp_borrow = 0;
+	char stop = 0;
 		
-		if(back_carry || next_back_carry)
-		{
+	for (; i < count && !stop; i++)
+	{
+	    uint32_t atemp = (uint32_t)a->octets[i];
 			
-			// If possible get a unit from the byte above
-			if ((uint32_t)a->octets[i+1]!=0) 
-			{
-				a->octets[i+1] -= 1;
-			}	
-			// Else we need to look further up
-			else
-			{
-				a->octets[i+1] = 0xFF;
-				next_back_carry = 1;
-			}				
-		}
-		atemp = atemp + btemp;
-		a->octets[i] = atemp;	
-    }
-	
-	// We might need to keep retrieving a unit until we reach a non-zero byte 
-	int stopFlag = 0;
-	i=i+1;
-	if(back_carry || next_back_carry)
-	{
-	for (; (i < a->significant_octets)&&(!stopFlag); i++)
-    {
-		if ((uint32_t)a->octets[i] == 0)
-		{
-			a->octets[i] = 0xFF;
-		}
-		else 
-		{
-			a->octets[i] -= 1;
-			stopFlag = 1; 
-		}
-    }
-    }
-	// Empty higher significant bytes that are zeros 
-	uint64_t emptyBytes = 0;
-	stopFlag = 0;
-	for (uint64_t i = a->significant_octets-1; (i>0)&&(!stopFlag); i--)
-	{
-		if((uint32_t)a->octets[i]==0)
-		{
-			emptyBytes +=1;
-		}
-		else
-		{
-			stopFlag = 1;
-		}
+	    uint32_t btemp;
+	    if(i < b->significant_octets)
+	    {
+		btemp = (uint32_t)b->octets[i];
+	    }
+	    else
+	    {
+		stop = 1;
+		btemp = 0;
+	    }
+
+	    if(borrow) 
+	    {
+		stop = 0;
+		btemp++;
+	    }
+
+	    if(btemp > atemp)
+	    {
+		tmp_borrow = 1;
+		atemp = atemp + 0xFF + 1;
+	    }
+	    else
+	    {
+		tmp_borrow = 0;
+	    }
+
+	    atemp = atemp - btemp;
+	    a->octets[i] = atemp;
+	    borrow = tmp_borrow;
 	}
-	// Deallocate most significant bytes that are zero 
-	if(emptyBytes > 0)
+
+	char reallocate = 0;
+	stop = 0;
+	for(int j = count - 1; j >= 0 && !stop; j--)
 	{
-		a->significant_octets -= emptyBytes;
-		a->allocated_octets -= emptyBytes;
-		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
-		if (newOctets) 
-		{
-			a->octets = newOctets;
-		}	
-	}	
+	    if(a->octets[j] != 0) 
+	    {
+		a->significant_octets = j + 1;
+		stop = 1;
+	    }
+	    else
+	    {
+		reallocate = 1;
+	    }
 	}
+
+	if(reallocate)
+	{
+	    a->allocated_octets += a->significant_octets;
+	    uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+	    if (newOctets) 
+	    {
+		a->octets = newOctets;
+	    }
+	}
+    }
 }
