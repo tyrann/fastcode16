@@ -65,17 +65,15 @@ void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
 	uint32_t k = 0;
 	bigint_from_uint32(res, k);
 
-	int n = p->significant_octets * 8;
+	int n = 640;
 	int i;
-	int oct;
 
 	uint8_t y0 = y->octets[0] & 0x1;
-	for (i = 0, oct = 0; i < n; ++i, oct = i/8) 
+	for (i = 0; i < n; ++i) 
 	{
 		// ui <- (z0 +xi*y0)*pbar mod b
 		uint8_t z0 = res->octets[0] & 0x1;
-		int shift = i % oct;
-		uint8_t xi = (x->octets[i] >> shift) & 0x1;
+		uint8_t xi = (x->octets[i] >> i) & 0x1;
 		uint64_t ui = ((z0 + xi*y0)*pbar) % B;
 
 		//Z <- (Z + xiy + ui*p)/b

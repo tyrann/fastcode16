@@ -560,6 +560,7 @@ TEST(bigint_montgomery_revert, test_big_numbers)
     bigint_free(&A);
     bigint_free(&expected);
 }
+
 TEST(bigint_montgomery_mul, bigint_montgomery_mul_1)
 {
 	BigInt res, x, y, p, A, expected;
