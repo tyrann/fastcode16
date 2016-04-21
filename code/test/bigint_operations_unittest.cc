@@ -568,7 +568,6 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_1)
     bigint_from_hex_string(&p, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
     bigint_from_hex_string(&x, "6d09acdef99ad700431e77edcd980a3a54594d6e79a6657a68c7b");
     bigint_from_hex_string(&y, "19f7dd97453df6cb19aa8120882a211ee82d59a584e5b833e16968640");
-	
 	montgomery_mul(&res,&x,&y,&p); 
     __montgomery_revert(&A, &res, &p);
     ASSERT_TRUE(bigint_are_equal(&A, &expected));

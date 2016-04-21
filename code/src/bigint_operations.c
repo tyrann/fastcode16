@@ -60,12 +60,12 @@ void __montgomery_revert(BigInt* rev, BigInt* x,BigInt* p)
 
 void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
 {
+
 	/* This is -p^-1 mod b*/
 	int pbar = 1;
 	uint32_t k = 0;
-	bigint_from_uint32(res, k);
-
-	int n = 640;
+	bigint_from_uint32(res, k); 
+	int n = p->significant_octets * 8;
 	int i;
 
 	uint8_t y0 = y->octets[0] & 0x1;
@@ -73,24 +73,24 @@ void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
 	{
 		// ui <- (z0 +xi*y0)*pbar mod b
 		uint8_t z0 = res->octets[0] & 0x1;
+		printf("HI");
+		fflush(stdout);
 		uint8_t xi = (x->octets[i] >> i) & 0x1;
+		printf("YO");
+		fflush(stdout);
 		uint64_t ui = ((z0 + xi*y0)*pbar) % B;
 
 		//Z <- (Z + xiy + ui*p)/b
-		BigInt xiy;
-		BigInt uip;
 		
 		if(xi)
 		{
-			 bigint_copy(&xiy, y);
+			bigint_add_inplace(res, y);
 		}
 		if(ui)
 		{
-			bigint_copy(&uip, p);
+			bigint_add_inplace(res, p);
 		}
 
-		bigint_add_inplace(&xiy, &uip);
-		bigint_add_inplace(res, &xiy);
 		bigint_right_shift_inplace(res);
 		
 
