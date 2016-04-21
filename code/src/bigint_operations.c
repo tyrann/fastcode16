@@ -62,9 +62,11 @@ void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
 {
 
 	/* This is -p^-1 mod b*/
-	int pbar = 1;
+	int pbar = -1;
 	uint32_t k = 0;
-	bigint_from_uint32(res, k); 
+	bigint_from_uint32(res, k);
+	BigInt inner_x;
+	bigint_copy(&inner_x,x);
 	int n = p->significant_octets * 8;
 	int i;
 
@@ -73,7 +75,8 @@ void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
 	{
 		// ui <- (z0 +xi*y0)*pbar mod b
 		uint8_t z0 = res->octets[0] & 0x1;
-		uint8_t xi = (x->octets[i] >> i) & 0x1;
+		uint8_t xi = (inner_x.octets[0]) & 0x1;
+		bigint_right_shift_inplace(&inner_x);		
 		uint64_t ui = ((z0 + xi*y0)*pbar) % B;
 
 		//Z <- (Z + xiy + ui*p)/b
