@@ -73,11 +73,7 @@ void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
 	{
 		// ui <- (z0 +xi*y0)*pbar mod b
 		uint8_t z0 = res->octets[0] & 0x1;
-		printf("HI");
-		fflush(stdout);
 		uint8_t xi = (x->octets[i] >> i) & 0x1;
-		printf("YO");
-		fflush(stdout);
 		uint64_t ui = ((z0 + xi*y0)*pbar) % B;
 
 		//Z <- (Z + xiy + ui*p)/b
