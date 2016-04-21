@@ -360,22 +360,65 @@ int bigint_is_even(BigInt* a)
     return 1;
 }
 
-void bigint_divide(BigInt* res, BigInt* x, BigInt* y) {
+void bigint_divide(BigInt* res, BigInt* a, BigInt* b) {
     
-    BIGINT_ASSERT_VALID(x);
-    BIGINT_ASSERT_VALID(y);
+    BIGINT_ASSERT_VALID(a);
+    BIGINT_ASSERT_VALID(b);
     assert(res != 0);
+    
+    BigInt x, y;
+    bigint_copy(&x, a);
+    bigint_copy(&y, b);
     
     uint64_t n = x->significant_octets;
     uint64_t t = y->significant_octets
     
     assert(!(t == 1 && y->octets[0] == 0));
-    assert(n >= t);
+    assert(n >= t && t >= 1);
    
-    res->octets = (uchar*)malloc((n-t) * sizeof(uchar));
-    res->allocated_octets = n - t;
+    res->octets = (uchar*)malloc((n-t+1) * sizeof(uchar));
+    res->allocated_octets = n - t + 1;
     
-    for (uint64_t j = 0; j < n - t; j++)
-        res.octets[j] = 0;
+    // Algorithm 14.20 from doc/handbook_crypto.pdf
+    
+    // 1.
+    memset(res->octets, 0, res->allocated_octets);
+    
+    // 2.
+    BigInt yb_nt;
+    yb_nt.allocated_octets = y.significant_octets + (n - t);
+    yb_nt.significant_octets = yb_nt.allocated_octets;
+    yb_nt.octets = (char*)malloc(yb_nt.allocated_octets);
+    memset(yb_nt.octets, 0, n-t);
+    memcpy(yb_nt.octets + (n-t), y.octets, y.significant_octets);
+    
+    while (bigint_is_greater(&yb_nt, &x) == 0)
+    {
+        res->octets[n-t]++;
+        bigint_sub_inplace(&x, &yb_nt);
+    }
+    
+    // 3.
+    for (uint64_t i = n; i >= t + 1; i--)
+    {
+        // 3.1.
+        if (x.octets[i] == y.octets[t])
+            res->octets[i-t-1] = 255;
+        else
+            res->octets[i-t-1] = (uchar)(
+                    (((uint16_t)x.octets[i] << 8) + (uint16_t)x.octets[i-1]) /
+                    y->octets[t]
+                );
+            
+        // 3.2.
+        uint32_t yt = ((uint32_t)y.octets[t] << 8) + ((uint32_t)y.octets[t-1]);
+        uint32_t xi = ((uint32_t)x.octets[i] << 16) + ((uint32_t)x.octets[i-1] << 8) + ((uint32_t)x.octets[i-2]);
+        while ((uint32_t)res->octets[i-t-1] * yt > xt)
+            res->octets[i-t-1]--;
+            
+        // 3.3
         
+    }
+    
+    // TODO: count significant octets
 }
