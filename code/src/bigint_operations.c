@@ -125,9 +125,9 @@ void bigint_left_shift_inplace(BigInt* a)
     {
         uchar cur_carry = carry;
         carry = a->octets[i] >> 7;
-        LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
+        /*LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
             "to the carry (%hhu) resulting in %02hhX", i, a->octets[i],
-            a->octets[i] << 1, cur_carry, cur_carry + (a->octets[i] << 1));
+            a->octets[i] << 1, cur_carry, cur_carry + (a->octets[i] << 1));*/
         a->octets[i] = cur_carry + (a->octets[i] << 1);
     }
     
@@ -135,8 +135,8 @@ void bigint_left_shift_inplace(BigInt* a)
     if (carry > 0)
     {
         a->octets[original_octets] = carry;
-        LOG_DEBUG("Carry (%hhu) added to octet %llu resulting in (%02hhX)",
-            carry, original_octets + 1, a->octets[original_octets + 1]);
+        /*LOG_DEBUG("Carry (%hhu) added to octet %llu resulting in (%02hhX)",
+            carry, original_octets + 1, a->octets[original_octets + 1]);*/
     }
 }
 
@@ -150,9 +150,9 @@ void bigint_right_shift_inplace(BigInt* a)
     {
         uchar cur_carry = carry;
         carry = a->octets[i-1] << 7;
-        LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
+        /*LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
             "to the carry (%hhu) resulting in %02hhX", i-1, a->octets[i-1],
-            a->octets[i-1] << 1, cur_carry, cur_carry + (a->octets[i-1] << 1));
+            a->octets[i-1] << 1, cur_carry, cur_carry + (a->octets[i-1] << 1));*/
         a->octets[i-1] = cur_carry + (a->octets[i-1] >> 1);
     }
     
@@ -324,4 +324,195 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 	    }
 	}
     }
+}
+
+/*
+
+// Implementation not completed, appearently this is unnecessary
+
+// Based on algorithm 14.61 and note 14.64 of /doc/handbook_crypto.pdf
+void __binary_extended_gcd(BigInt* a, BigInt* b, BigInt* v, BigInt* x, BigInt* y)
+{
+	// 1)
+	BigInt g;
+	bigint_from_uint32(&g, 1);
+	
+	// 2)
+	while (bigint_is_even(x) && bigint_is_even(y))
+	{
+		bigint_right_shift_inplace(x);
+		bigint_right_shift_inplace(y);
+		bigint_left_shift_inplace(&g);
+	}
+	
+	// 3)
+	BigInt u, A, B, C, D;
+	bigint_copy(&u, &x);
+	bigint_copy(v, &y);
+	bigint_from_uint32(&A, 1);
+	bigint_from_uint32(&B, 0);
+	bigint_from_uint32(&C, 0);
+	bigint_from_uint32(&D, 1);
+	
+	// 4)
+	int pos_B = 1;
+	while (bigint_is_even(&u))
+	{
+		// 4.1)
+		bigint_right_shift_inplace(&u);
+		
+		// 4.2)
+		if (bigint_is_even(&A) && bigint_is_even(&B))
+		{
+			bigint_right_shift_inplace(&A);
+			bigint_right_shift_inplace(&B);
+		}
+		else
+		{
+			bigint_add_inplace(&A, &y);
+			bigint_right_shift_inplace(&A);
+			
+			// Trick for handling negative numbers
+			if (pos_B)
+			{
+				if (bigint_is_greater(x, &B))
+				{
+					BigInt tB;
+					bigint_copy(&tB, x);
+					bigint_sub_inplace(&tB, &B);
+					bigint_copy(&B, &tB)
+					bigint_free(&tB);
+					pos_B = 0;
+				}
+				else
+				{
+					bigint_sub_inplace(&B, x);
+				}
+			}
+			else
+			{
+				bigint_add_inplace(&B, x);
+			}
+			bigint_right_shift_inplace(&B);
+		}
+	}
+	
+	// 5)
+	int pos_D = 1;
+	while (bigint_is_even(v))
+	{
+		// 5.1)
+		bigint_right_shift_inplace(v);
+		
+		// 5.2)
+		if (bigint_is_even(&C) && bigint_is_even(&D))
+		{
+			bigint_right_shift_inplace(&C);
+			bigint_right_shift_inplace(&D);
+		}
+		else
+		{
+			bigint_add_inplace(&C, &y);
+			bigint_right_shift_inplace(&C);
+			
+			// Trick for handling negative numbers
+			if (pos_D)
+			{
+				if (bigint_is_greater(x, &D))
+				{
+					BigInt tD;
+					bigint_copy(&tD, x);
+					bigint_sub_inplace(&tD, &D);
+					bigint_copy(&D, &tD)
+					bigint_free(&tD);
+					pos_D = 0;
+				}
+				else
+				{
+					bigint_sub_inplace(&D, x);
+				}
+			}
+			else
+			{
+				bigint_add_inplace(&D, x);
+			}
+			bigint_right_shift_inplace(&D);
+		}
+	}
+	
+	// 6)
+	if (bigint_is_greater(&v, &u))
+	{
+		bigint_sub_inplace(v, &u);
+		
+	}
+}*/
+
+// Based on algorithm 2.22 of doc/fields_arithmetic.pdf
+void bigint_divide(BigInt* dest, BigInt* b, BigInt* a, BigInt* p)
+{
+	LOG_DEBUG("Performing division...");
+	
+	#ifndef NDEBUG
+	BigInt zero;
+	bigint_from_uint32(&zero, 0);
+	assert(!bigint_are_equal(&zero, a));
+	assert(!bigint_are_equal(&zero, b));
+	#endif
+	
+	// 1)
+	BigInt u, v;
+	bigint_copy(&u, a);
+	bigint_copy(&v, p);
+	
+	// 2)
+	BigInt x1, x2;
+	bigint_copy(&x1, b);
+	bigint_from_uint32(&x2, 0);
+	
+	// 3)
+	BigInt one;
+	bigint_from_uint32(&one, 1);
+	while (!bigint_are_equal(&u, &one) && !bigint_are_equal(&v, &one))
+	{
+		// 3.1)
+		while (bigint_is_even(&u))
+		{
+			bigint_right_shift_inplace(&u);
+			if (!bigint_is_even(&x1))
+				bigint_add_inplace(&x1, p);
+			bigint_right_shift_inplace(&x1);
+		}
+		
+		// 3.2)
+		while (bigint_is_even(&v))
+		{
+			bigint_right_shift_inplace(&v);
+			if (!bigint_is_even(&x2))
+				bigint_add_inplace(&x2, p);
+			bigint_right_shift_inplace(&x2);
+		}
+		
+		// 3.3
+		if (bigint_is_greater(&v, &u))
+		{
+			bigint_sub_inplace(&v, &u);
+			if (bigint_is_greater(&x1, &x2))
+				bigint_add_inplace(&x2, p);
+			bigint_sub_inplace(&x2, &x1);
+		}
+		else
+		{
+			bigint_sub_inplace(&u, &v);
+			if(bigint_is_greater(&x2, &x1))
+				bigint_add_inplace(&x1, p);
+			bigint_sub_inplace(&x1, &x2);
+		}
+	}
+	
+	// 4)
+	if (bigint_are_equal(&u, &one))
+		bigint_copy(dest, &x1);
+	else
+		bigint_copy(dest, &x2);
 }

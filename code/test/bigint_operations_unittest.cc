@@ -565,3 +565,80 @@ TEST(bigint_modulo_inplace, test_modulo_large_1)
 	bigint_free(&c);
 }
 
+TEST(bigint_division, test_simple)
+{
+	BigInt a, b, c, p, r;
+	bigint_from_hex_string(&a, "2");
+	bigint_from_hex_string(&b, "6");
+	bigint_from_hex_string(&c, "3");
+	bigint_from_hex_string(&p, "7");
+    
+	bigint_divide(&r, &b, &a, &p);
+	ASSERT_TRUE(bigint_are_equal(&r, &c));
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+    bigint_free(&p);
+    bigint_free(&r);
+    
+    bigint_from_hex_string(&a, "635A");
+	bigint_from_hex_string(&b, "161F0A");
+	bigint_from_hex_string(&c, "39");
+	bigint_from_hex_string(&p, "29F6CF");
+    
+	bigint_divide(&r, &b, &a, &p);
+	ASSERT_TRUE(bigint_are_equal(&r, &c));
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+    bigint_free(&p);
+    bigint_free(&r);
+}
+
+TEST(bigint_division, test_field)
+{
+	BigInt a, b, c, p, r;
+	bigint_from_hex_string(&a, "4");
+	bigint_from_hex_string(&b, "1");
+	bigint_from_hex_string(&c, "2");
+	bigint_from_hex_string(&p, "7");
+    
+	bigint_divide(&r, &b, &a, &p);
+	ASSERT_TRUE(bigint_are_equal(&r, &c));
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+    bigint_free(&p);
+    bigint_free(&r);
+    
+    bigint_from_hex_string(&a, "272CC2");
+	bigint_from_hex_string(&b, "207416");
+	bigint_from_hex_string(&c, "F0053");
+	bigint_from_hex_string(&p, "2A13BB");
+    
+	bigint_divide(&r, &b, &a, &p);
+	ASSERT_TRUE(bigint_are_equal(&r, &c));
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+    bigint_free(&p);
+    bigint_free(&r);
+    
+    bigint_from_hex_string(&a, "7cd73b6fc007dfee34a23caf363ae67e8bb8782600000000032accceb");
+	bigint_from_hex_string(&b, "c69d8b898f0e43b4643a018e7b0569de6f8cf328e0bf6d59ace4e3bc2ca28d10");
+	bigint_from_hex_string(&c, "1f7b09f4cadaeba016af3426bfe4b53533e054f6f9646f000000000031e9d354");
+	bigint_from_hex_string(&p, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
+    
+	bigint_divide(&r, &b, &a, &p);
+	ASSERT_TRUE(bigint_are_equal(&r, &c));
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+    bigint_free(&p);
+    bigint_free(&r);
+}

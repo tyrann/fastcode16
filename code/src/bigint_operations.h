@@ -31,4 +31,7 @@ void bigint_sub_inplace(BigInt* a, BigInt* b);
 
 void bigint_modulo_inplace(BigInt* a, BigInt* mod);
 
+// Compute b/a over Fp, storing the result in dest.
+void bigint_divide(BigInt* dest, BigInt* b, BigInt* a, BigInt* p);
+
 #endif
