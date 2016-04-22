@@ -69,9 +69,9 @@ void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
 	/* This is -p^-1 mod b*/
 	int pbar = -1;
 
-	/*Set the results to 0*/
+	/*Set res to 0*/
 	uint32_t k = 0;
-	bigint_from_uint32(res, k);
+	bigint_from_uint32(res,k);
 
 	/*We take the smallest power of 2 that is bigger than p*/
 	int n = p->significant_octets * 8;

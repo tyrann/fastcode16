@@ -573,6 +573,7 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_1)
     ASSERT_TRUE(bigint_are_equal(&A, &expected));
     
     bigint_free(&x);
+	bigint_free(&y);
     bigint_free(&p);
     bigint_free(&A);
     bigint_free(&expected);
@@ -589,6 +590,7 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_2)
     ASSERT_TRUE(bigint_are_equal(&A, &expected));
     
     bigint_free(&x);
+	bigint_free(&y);
     bigint_free(&p);
     bigint_free(&A);
     bigint_free(&expected);
@@ -603,8 +605,10 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_3)
 	montgomery_mul(&res,&x,&y,&p); 
     __montgomery_revert(&A, &res, &p);
     ASSERT_TRUE(bigint_are_equal(&A, &expected));
+
     
     bigint_free(&x);
+	bigint_free(&y);
     bigint_free(&p);
     bigint_free(&A);
     bigint_free(&expected);
