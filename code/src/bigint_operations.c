@@ -65,11 +65,15 @@ void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
 
 	__montgomery_convert(&x_mont,x,p);
 	__montgomery_convert(&y_mont,y,p);
+
 	/* This is -p^-1 mod b*/
 	int pbar = -1;
+
+	/*Set the results to 0*/
 	uint32_t k = 0;
 	bigint_from_uint32(res, k);
 
+	/*We take the smallest power of 2 that is bigger than p*/
 	int n = p->significant_octets * 8;
 	int i;
 
@@ -101,6 +105,8 @@ void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
 	{
 		bigint_sub_inplace(res,p);
 	}
+	bigint_free(&x_mont);
+	bigint_free(&y_mont);
 }
 
 

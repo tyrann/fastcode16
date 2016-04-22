@@ -577,7 +577,38 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_1)
     bigint_free(&A);
     bigint_free(&expected);
 }
-
+TEST(bigint_montgomery_mul, bigint_montgomery_mul_2)
+{
+	BigInt res, x, y, p, A, expected;
+    bigint_from_hex_string(&expected, "8");
+    bigint_from_hex_string(&p, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
+    bigint_from_hex_string(&x, "2");
+    bigint_from_hex_string(&y, "4");
+	montgomery_mul(&res,&x,&y,&p); 
+    __montgomery_revert(&A, &res, &p);
+    ASSERT_TRUE(bigint_are_equal(&A, &expected));
+    
+    bigint_free(&x);
+    bigint_free(&p);
+    bigint_free(&A);
+    bigint_free(&expected);
+}
+TEST(bigint_montgomery_mul, bigint_montgomery_mul_3)
+{
+	BigInt res, x, y, p, A, expected;
+    bigint_from_hex_string(&expected, "10");
+    bigint_from_hex_string(&p, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
+    bigint_from_hex_string(&x, "4");
+    bigint_from_hex_string(&y, "4");
+	montgomery_mul(&res,&x,&y,&p); 
+    __montgomery_revert(&A, &res, &p);
+    ASSERT_TRUE(bigint_are_equal(&A, &expected));
+    
+    bigint_free(&x);
+    bigint_free(&p);
+    bigint_free(&A);
+    bigint_free(&expected);
+}
 TEST(bigint_modulo_inplace, test_modulo_1)
 {
 	BigInt a,b,c;
