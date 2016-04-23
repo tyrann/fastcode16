@@ -18,13 +18,15 @@
 {
 	//TODO
 
-}
-void __montgomery_convert(BigInt* x, BigInt* p, BigInt* res)
+}*/
+void __montgomery_convert(BigInt* res, BigInt* x, BigInt* p)
 {
 	bigint_copy(res,x);
-	/\*n is the R parameter in the Montgomery convertion*\/
-	int n = WORDSIZE * 10;
-	int i;
+	/*n is the R parameter in the Montgomery convertion*/
+
+	uint64_t n = p->significant_octets * 8;
+	uint64_t i;
+    
 	for (i = 0; i < n; ++i)
    	{
 		bigint_left_shift_inplace(res);
@@ -35,12 +37,12 @@ void __montgomery_convert(BigInt* x, BigInt* p, BigInt* res)
 	}
 }
 
-void __montgomery_revert(BigInt* x,BigInt* p, BigInt* rev)
+void __montgomery_revert(BigInt* rev, BigInt* x,BigInt* p)
 {
 	bigint_copy(rev,x);
 
-	int n = WORDSIZE * 10;
-	int i;
+	uint64_t n = p->significant_octets * 8;
+	uint64_t i;
 
 	for (i = 0; i < n; ++i)
 	{
@@ -56,41 +58,45 @@ void __montgomery_revert(BigInt* x,BigInt* p, BigInt* rev)
 	}
 }
 
-void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
+void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
 {
-	/\* This is -p^-1 mod b*\/
-	int pbar = 1;
+	BigInt x_mont;
+	BigInt y_mont;
+
+	__montgomery_convert(&x_mont,x,p);
+	__montgomery_convert(&y_mont,y,p);
+
+	/* This is -p^-1 mod b*/
+	int pbar = -1;
+
+	/*Set res to 0*/
 	uint32_t k = 0;
-	bigint_from_uint32(res, k);
+	bigint_from_uint32(res,k);
 
-	int n = WORDSIZE * 10;
+	/*We take the smallest power of 2 that is bigger than p*/
+	int n = p->significant_octets * 8;
 	int i;
-	int oct;
 
-	uint8_t y0 = y->octets[0] & 0x1;
-	for (i = 0, oct = 0; i < n; ++i, oct = i/8) 
+	uint8_t y0 = y_mont.octets[0] & 0x1;
+	for (i = 0; i < n; ++i) 
 	{
 		// ui <- (z0 +xi*y0)*pbar mod b
 		uint8_t z0 = res->octets[0] & 0x1;
-		int shift = i % oct;
-		uint8_t xi = (x->octets[i] >> shift) & 0x1;
+		uint8_t xi = (x_mont.octets[0]) & 0x1;
+		bigint_right_shift_inplace(&x_mont);		
 		uint64_t ui = ((z0 + xi*y0)*pbar) % B;
 
 		//Z <- (Z + xiy + ui*p)/b
-		BigInt xiy;
-		BigInt uip;
 		
 		if(xi)
 		{
-			 bigint_copy(&xiy, y);
+			bigint_add_inplace(res, &y_mont);
 		}
 		if(ui)
 		{
-			bigint_copy(&uip, p);
+			bigint_add_inplace(res, p);
 		}
 
-		bigint_add_inplace(&xiy, &uip);
-		bigint_add_inplace(res, &xiy);
 		bigint_right_shift_inplace(res);
 		
 
@@ -99,8 +105,10 @@ void montgomery_mul(BigInt* x, BigInt* y, BigInt* p, BigInt* res)
 	{
 		bigint_sub_inplace(res,p);
 	}
+	bigint_free(&x_mont);
+	bigint_free(&y_mont);
 }
-*/
+
 
 void bigint_left_shift_inplace(BigInt* a)
 {
