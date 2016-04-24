@@ -25,8 +25,8 @@ int bigint_are_equal(const BigInt* a, const BigInt* b)
     // numbers are different
     if (a->significant_octets != b->significant_octets)
     {
-        LOG_DEBUG("Two BigInt are different because they have a different "
-            "number of significant octets");
+        /* LOG_DEBUG("Two BigInt are different because they have a different "
+            "number of significant octets"); */
         return 0;
     }
     
@@ -35,13 +35,13 @@ int bigint_are_equal(const BigInt* a, const BigInt* b)
     {
         if (a->octets[i] != b->octets[i])
         {
-            LOG_DEBUG("Two BigInt are different because they have different "
-                "octets");
+            /* LOG_DEBUG("Two BigInt are different because they have different "
+                "octets"); */
             return 0;
         }
     }
     
-    LOG_DEBUG("Two BigInt are equal");
+    // LOG_DEBUG("Two BigInt are equal");
     return 1;
 }
 
