@@ -210,7 +210,7 @@ TEST(bigint_sub_inplace, sub_test_2)
 }
 
 // Test BigInt sub
-TEST(bigint_sub_inplace, sub_test_3)
+TEST(bigint_sub_inplace, test_sub)
 {
     BigInt a1, b1, c1;	
 	bigint_from_uint64(&a1,0);
@@ -222,150 +222,93 @@ TEST(bigint_sub_inplace, sub_test_3)
     bigint_free(&a1);
     bigint_free(&b1);
 	bigint_free(&c1);
-}
-TEST(bigint_sub_inplace, sub_test_4)
-{	
+	
 	BigInt a2, b2, c2;	
 	bigint_from_uint64(&a2,1);
 	bigint_from_uint64(&b2,0);
 	bigint_from_uint64(&c2,1);
     bigint_sub_inplace(&a2, &b2);
-    int are_equal = bigint_are_equal(&a2, &c2);
+    are_equal = bigint_are_equal(&a2, &c2);
     EXPECT_EQ(are_equal, 1);    
     bigint_free(&a2);
     bigint_free(&b2);
 	bigint_free(&c2);
-}
-TEST(bigint_sub_inplace, sub_test_5)
-{		
+	
 	
 	BigInt a3, b3, c3;	
 	bigint_from_hex_string(&a3, "FF");
 	bigint_from_hex_string(&b3, "1");
 	bigint_from_hex_string(&c3, "FE");
     bigint_sub_inplace(&a3, &b3);
-    int are_equal = bigint_are_equal(&a3, &c3);
+    are_equal = bigint_are_equal(&a3, &c3);
     EXPECT_EQ(are_equal, 1);    
     bigint_free(&a3);
     bigint_free(&b3);
 	bigint_free(&c3);
-}
-TEST(bigint_sub_inplace, sub_test_6)
-{		
+	
 	
 	BigInt a4, b4, c4;	
 	bigint_from_uint64(&a4,98349869483274);
 	bigint_from_uint64(&b4,25213123210954);
 	bigint_from_uint64(&c4,73136746272320);
     bigint_sub_inplace(&a4, &b4);
-    int are_equal = bigint_are_equal(&a4, &c4);
+    are_equal = bigint_are_equal(&a4, &c4);
     EXPECT_EQ(are_equal, 1);    
     bigint_free(&a4);
     bigint_free(&b4);
 	bigint_free(&c4);
-}
-TEST(bigint_sub_inplace, sub_test_7)
-{	
+
 	BigInt a6, b6, c6;	
 	bigint_from_hex_string(&a6, "200");
 	bigint_from_hex_string(&b6, "100");
 	bigint_from_hex_string(&c6, "100");
     bigint_sub_inplace(&a6, &b6);
-    int are_equal = bigint_are_equal(&a6, &c6);
+    are_equal = bigint_are_equal(&a6, &c6);
     EXPECT_EQ(are_equal, 1);    
     bigint_free(&a6);
     bigint_free(&b6);
 	bigint_free(&c6);
-}
-TEST(bigint_sub_inplace, sub_test_8)
-{	
+
 	BigInt a7, b7, c7;	
 	bigint_from_hex_string(&a7, "10000000000000");
 	bigint_from_hex_string(&b7, "FF1");
 	bigint_from_hex_string(&c7, "FFFFFFFFFF00F");
     bigint_sub_inplace(&a7, &b7);
-    int are_equal = bigint_are_equal(&a7, &c7);
+    are_equal = bigint_are_equal(&a7, &c7);
     EXPECT_EQ(are_equal, 1);    
     bigint_free(&a7);
     bigint_free(&b7);
 	bigint_free(&c7);
-}
-TEST(bigint_sub_inplace, sub_test_9)
-{		
+	
 	BigInt a8, b8, c8;		
 	bigint_from_hex_string(&a8, "10000000000000");
 	bigint_from_hex_string(&b8, "FFFFFFFFFFFFF");
 	bigint_from_hex_string(&c8, "1");
     bigint_sub_inplace(&a8, &b8);
-    int are_equal = bigint_are_equal(&a8, &c8);
+    are_equal = bigint_are_equal(&a8, &c8);
     EXPECT_EQ(are_equal, 1);    
     bigint_free(&a8);
     bigint_free(&b8);
 	bigint_free(&c8);
-}
-TEST(bigint_sub_inplace, sub_test_10)
-{			
+	
+		
 	BigInt a9, b9, c9;	
 	bigint_from_hex_string(&a9, "10000000000000");
 	bigint_from_hex_string(&b9, "1");
 	bigint_from_hex_string(&c9, "FFFFFFFFFFFFF");
     bigint_sub_inplace(&a9, &b9);
-    int are_equal = bigint_are_equal(&a9, &c9);
+    are_equal = bigint_are_equal(&a9, &c9);
     EXPECT_EQ(are_equal, 1);    
     bigint_free(&a9);
     bigint_free(&b9);
 	bigint_free(&c9);
-}
 
-TEST(bigint_sub_inplace, sub_test_11)
-{			
-	BigInt a9, b9, c9;	
-	bigint_from_hex_string(&a9, "100");
-	bigint_from_hex_string(&b9, "1");
-	bigint_from_hex_string(&c9, "FF");
-    bigint_sub_inplace(&a9, &b9);
-    int are_equal = bigint_are_equal(&a9, &c9);
-    EXPECT_EQ(are_equal, 1);    
-    bigint_free(&a9);
-    bigint_free(&b9);
-	bigint_free(&c9);
-}
-
-TEST(bigint_sub_inplace, sub_test_12)
-{			
-	BigInt a9, b9, c9;	
-	bigint_from_hex_string(&a9, "FF");
-	bigint_from_hex_string(&b9, "1");
-	bigint_from_hex_string(&c9, "FE");
-    bigint_sub_inplace(&a9, &b9);
-    int are_equal = bigint_are_equal(&a9, &c9);
-    EXPECT_EQ(are_equal, 1);    
-    bigint_free(&a9);
-    bigint_free(&b9);
-	bigint_free(&c9);
-}
-
-TEST(bigint_sub_inplace, sub_test_13)
-{			
-	BigInt a9, b9, c9;	
-	bigint_from_hex_string(&a9, "FB00");
-	bigint_from_hex_string(&b9, "1");
-	bigint_from_hex_string(&c9, "FAFF");
-    bigint_sub_inplace(&a9, &b9);
-    int are_equal = bigint_are_equal(&a9, &c9);
-    EXPECT_EQ(are_equal, 1);    
-    bigint_free(&a9);
-    bigint_free(&b9);
-	bigint_free(&c9);
-}
-TEST(bigint_sub_inplace, test_sub)
-{	
 	BigInt a, b, c;	
 	bigint_from_hex_string(&a, "10000000000000");
 	bigint_from_hex_string(&b, "FFFFFFFFFFFF");
 	bigint_from_hex_string(&c, "F000000000001");
     bigint_sub_inplace(&a, &b);
-    int are_equal = bigint_are_equal(&a, &c);
+    are_equal = bigint_are_equal(&a, &c);
     EXPECT_EQ(are_equal, 1);    
     bigint_free(&a);
     bigint_free(&b);

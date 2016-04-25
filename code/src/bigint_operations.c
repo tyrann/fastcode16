@@ -258,7 +258,7 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
     // Negative representation is not implemented
     if(bigint_is_greater(b,a))
     {
-	printf("Warning a < b !");
+	printf("! a < b ");
     } 
     else 
     {
@@ -321,21 +321,10 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 		reallocate = 1;
 	    }
 	}
-	
-	/*
-	Original : 
-	    a->allocated_octets += a->significant_octets;
-	    uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
-	    if (newOctets) 
-	    {
-		a->octets = newOctets;
-	    }
-	
-	*/
-	// Modified to deal with wrong allocated number 
+
 	if(reallocate)
 	{
-	    a->allocated_octets -= (count - a->significant_octets);
+	    a->allocated_octets += a->significant_octets;
 	    uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
 	    if (newOctets) 
 	    {
