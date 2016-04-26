@@ -40,6 +40,42 @@ TEST(create_point_from_hex, create_point_form_hex)
     point_free(&q);
 }
 
+TEST(create_point_uint32, create_point_uint32)
+{
+    Point p, q;
+    BigInt x;
+    BigInt y;
+    bigint_from_uint32(&x, 2000);
+    bigint_from_uint32(&y, 5000);
+    create_point(&p, &x, &y);
+    create_point_from_uint32(&q, 2000, 5000);
+
+    ASSERT_TRUE(point_are_equal(&p,&q));
+
+    bigint_free(&x);
+    bigint_free(&y);
+    point_free(&p);
+    point_free(&q);
+}
+
+TEST(create_point_uint64, create_point_uint64)
+{
+    Point p, q;
+    BigInt x;
+    BigInt y;
+    bigint_from_uint64(&x, 20000000);
+    bigint_from_uint64(&y, 50000000);
+    create_point(&p, &x, &y);
+    create_point_from_uint64(&q, 20000000, 50000000);
+
+    ASSERT_TRUE(point_are_equal(&p,&q));
+
+    bigint_free(&x);
+    bigint_free(&y);
+    point_free(&p);
+    point_free(&q);
+}
+
 TEST(create_point_inf, create_point_inf)
 {
     Point p;
