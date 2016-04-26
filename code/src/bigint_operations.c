@@ -176,7 +176,7 @@ void bigint_modulo_inplace(BigInt* a, BigInt* mod)
 
 	if(bigint_are_equal(&test,mod))
 	{
-		printf("Impossible to apply mod 0");
+		assert("Impossible to apply mod 0");
 	}
 	bigint_free(&test);	
 
@@ -206,7 +206,7 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 	{
 		a->significant_octets = b->significant_octets;
 		a->allocated_octets = b->significant_octets;
-		uchar* new_octets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		uchar* new_octets = realloc(a->octets, sizeof(uchar) * a->allocated_octets);
 		if (new_octets) 
 		{
 			a->octets = new_octets;
@@ -215,6 +215,10 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 				a->octets[n] = 0;
 			}
 		}			
+		else 
+		{
+		assert("bigint_add_inplace, realloc fail");
+		}
 	}
 	a_bytes = a->significant_octets;
 	uint64_t i = 0;
@@ -243,12 +247,16 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 	{
 		a->significant_octets += 1;
 		a->allocated_octets += 1;
-		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->allocated_octets);
 		if (newOctets) 
 		{
 			a->octets = newOctets;
 			a->octets[i] = carry;
 		}	
+		else 
+		{
+		assert("bigint_add_inplace, realloc fail");
+		}
 	}	
 }
 
@@ -258,7 +266,7 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
     // Negative representation is not implemented
     if(bigint_is_greater(b,a))
     {
-	printf("! a < b ");
+		assert("bigint_sub_inplace, Warning a < b !");
     } 
     else 
     {
@@ -321,15 +329,19 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 		reallocate = 1;
 	    }
 	}
-
+	
 	if(reallocate)
 	{
-	    a->allocated_octets += a->significant_octets;
-	    uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+	    a->allocated_octets = a->significant_octets;
+	    uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->allocated_octets);
 	    if (newOctets) 
 	    {
 		a->octets = newOctets;
 	    }
+		else 
+		{
+		assert("bigint_sub_inplace, realloc fail");
+		}
 	}
     }
 }
