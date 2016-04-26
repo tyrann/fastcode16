@@ -752,3 +752,19 @@ TEST(bigint_division, test_field)
     bigint_free(&p);
     bigint_free(&r);
 }
+TEST(bigint_left_shift_opcount, test_opcount)
+{
+	extern uint64_t global_opcount;
+	global_opcount = 0;
+	BigInt a, expected;
+    bigint_from_hex_string(&a, "7F");
+    bigint_from_hex_string(&expected, "FE");
+    bigint_left_shift_inplace(&a);
+    ASSERT_EQ(bigint_are_equal(&a, &expected), 1);
+    ASSERT_EQ(a.allocated_octets, 1);
+    ASSERT_EQ(a.significant_octets, 1);
+	ASSERT_EQ(global_opcount, 1);
+    bigint_free(&a);
+    bigint_free(&expected);
+
+}

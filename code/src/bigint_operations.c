@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "logging/logging.h"
+#include "opcount/opcount.h"
 #include "bigint_operations.h"
 #include "bigint_structure.h"
 #include "bigint_conversion.h"
@@ -13,6 +14,8 @@
 #include <assert.h>
 #define WORDSIZE 64
 #define B 2
+
+uint64_t global_opcount = 0;
 
 /* void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v)
 {
@@ -133,6 +136,7 @@ void bigint_left_shift_inplace(BigInt* a)
     {
         uchar cur_carry = carry;
         carry = a->octets[i] >> 7;
+		__COUNT_OP(&global_opcount);
         /*LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
             "to the carry (%hhu) resulting in %02hhX", i, a->octets[i],
             a->octets[i] << 1, cur_carry, cur_carry + (a->octets[i] << 1));*/
