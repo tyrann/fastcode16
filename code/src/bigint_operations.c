@@ -247,7 +247,7 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 	{
 		a->significant_octets += 1;
 		a->allocated_octets += 1;
-		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->allocated_octets);
 		if (newOctets) 
 		{
 			a->octets = newOctets;
