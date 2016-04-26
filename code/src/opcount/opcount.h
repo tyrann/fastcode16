@@ -13,13 +13,13 @@
 #define OP_COUNT OP_COUNT_ALL
 #endif
 
-void __count_op(uint64_t* op_count);
+void __count_op(uint64_t* op_count, const uint16_t incr);
 
 #if OP_COUNT > OP_COUNT_NONE
-#define __COUNT_OP(op_count) \
-    __count_op(op_count)
+#define __COUNT_OP(op_count, incr) \
+    __count_op(op_count, incr)
 #else
-#define __COUNT_OP(op_count)
+#define __COUNT_OP(op_count, incr)
 #endif
 
 #endif

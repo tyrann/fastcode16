@@ -752,7 +752,7 @@ TEST(bigint_division, test_field)
     bigint_free(&p);
     bigint_free(&r);
 }
-TEST(bigint_left_shift_opcount, test_opcount)
+TEST(bigint_left_shift_opcount, test_shift_opcount)
 {
 	extern uint64_t global_opcount;
 	global_opcount = 0;
@@ -764,8 +764,23 @@ TEST(bigint_left_shift_opcount, test_opcount)
     ASSERT_EQ(bigint_are_equal(&a, &expected), 1);
     ASSERT_EQ(a.allocated_octets, 1);
     ASSERT_EQ(a.significant_octets, 1);
-	ASSERT_EQ(global_opcount, 2);
+	ASSERT_EQ(global_opcount, 14);
     bigint_free(&a);
     bigint_free(&expected);
+
+}
+TEST(bigint_add_opcount, test_add_opcount)
+{
+	extern uint64_t global_opcount;
+	global_opcount = 0;
+	BigInt a,b;
+	bigint_from_uint64(&a, 2);
+	bigint_from_uint32(&b, 4);
+	
+	bigint_add_inplace(&a,&a);
+	ASSERT_TRUE(bigint_are_equal(&a, &b));
+	ASSERT_EQ(global_opcount, 10);
+	bigint_free(&a);
+	bigint_free(&b);	
 
 }
