@@ -703,6 +703,23 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_3)
     bigint_free(&A);
     bigint_free(&expected);
 }
+
+
+TEST(bigint_modulo_inplace, test_modulo_0)
+{
+	BigInt a,b,c;
+	bigint_from_uint64(&a, 11600);
+	bigint_from_uint64(&b, 29);
+	bigint_from_uint64(&c, 0);
+	
+	bigint_modulo_inplace(&a,&b);
+	ASSERT_TRUE(bigint_are_equal(&a, &c));
+
+	bigint_free(&a);
+	bigint_free(&b);
+	bigint_free(&c);
+}
+
 TEST(bigint_modulo_inplace, test_modulo_1)
 {
 	BigInt a,b,c;
