@@ -17,6 +17,26 @@ void create_point_from_hex(Point* p, const char *x, const char *y)
     bigint_free(&p_y);
 }
 
+void create_point_from_uint32(Point* p, uint32_t x, uint32_t y)
+{
+    BigInt p_x, p_y;
+    bigint_from_uint32(&p_x,x);
+    bigint_from_uint32(&p_y,y);
+    create_point(p, &p_x, &p_y);
+    bigint_free(&p_x);
+    bigint_free(&p_y);
+}
+
+void create_point_from_uint64(Point* p, uint64_t x, uint64_t y)
+{
+    BigInt p_x, p_y;
+    bigint_from_uint64(&p_x,x);
+    bigint_from_uint64(&p_y,y);
+    create_point(p, &p_x, &p_y);
+    bigint_free(&p_x);
+    bigint_free(&p_y);
+}
+
 void create_point_inf(Point* p)
 {
     BigInt zero;
