@@ -471,68 +471,78 @@ void __binary_extended_gcd(BigInt* a, BigInt* b, BigInt* v, BigInt* x, BigInt* y
 // Based on algorithm 2.22 of doc/fields_arithmetic.pdf
 void bigint_divide(BigInt* dest, BigInt* b, BigInt* a, BigInt* p)
 {
-	LOG_DEBUG("Performing division...");
-	
-	#ifndef NDEBUG
 	BigInt zero;
 	bigint_from_uint32(&zero, 0);
 	assert(!bigint_are_equal(&zero, a));
-	assert(!bigint_are_equal(&zero, b));
-	#endif
 	
-	// 1)
-	BigInt u, v;
-	bigint_copy(&u, a);
-	bigint_copy(&v, p);
-	
-	// 2)
-	BigInt x1, x2;
-	bigint_copy(&x1, b);
-	bigint_from_uint32(&x2, 0);
-	
-	// 3)
-	BigInt one;
-	bigint_from_uint32(&one, 1);
-	while (!bigint_are_equal(&u, &one) && !bigint_are_equal(&v, &one))
+	if (bigint_are_equal(b, &zero))
 	{
-		// 3.1)
-		while (bigint_is_even(&u))
-		{
-			bigint_right_shift_inplace(&u);
-			if (!bigint_is_even(&x1))
-				bigint_add_inplace(&x1, p);
-			bigint_right_shift_inplace(&x1);
-		}
-		
-		// 3.2)
-		while (bigint_is_even(&v))
-		{
-			bigint_right_shift_inplace(&v);
-			if (!bigint_is_even(&x2))
-				bigint_add_inplace(&x2, p);
-			bigint_right_shift_inplace(&x2);
-		}
-		
-		// 3.3
-		if (bigint_is_greater(&v, &u))
-		{
-			bigint_sub_inplace(&v, &u);
-			if (bigint_is_greater(&x1, &x2))
-				bigint_add_inplace(&x2, p);
-			bigint_sub_inplace(&x2, &x1);
-		}
-		else
-		{
-			bigint_sub_inplace(&u, &v);
-			if(bigint_is_greater(&x2, &x1))
-				bigint_add_inplace(&x1, p);
-			bigint_sub_inplace(&x1, &x2);
-		}
+		bigint_from_uint32(dest, 0);
 	}
-	
-	// 4)
-	if (bigint_are_equal(&u, &one))
-		bigint_copy(dest, &x1);
 	else
-		bigint_copy(dest, &x2);
+	{
+		// 1)
+		BigInt u, v;
+		bigint_copy(&u, a);
+		bigint_copy(&v, p);
+	
+		// 2)
+		BigInt x1, x2;
+		bigint_copy(&x1, b);
+		bigint_from_uint32(&x2, 0);
+	
+		// 3)
+		BigInt one;
+		bigint_from_uint32(&one, 1);
+		while (!bigint_are_equal(&u, &one) && !bigint_are_equal(&v, &one))
+		{
+			// 3.1)
+			while (bigint_is_even(&u))
+			{
+				bigint_right_shift_inplace(&u);
+				if (!bigint_is_even(&x1))
+					bigint_add_inplace(&x1, p);
+				bigint_right_shift_inplace(&x1);
+			}
+			
+			// 3.2)
+			while (bigint_is_even(&v))
+			{
+				bigint_right_shift_inplace(&v);
+				if (!bigint_is_even(&x2))
+					bigint_add_inplace(&x2, p);
+				bigint_right_shift_inplace(&x2);
+			}
+			
+			// 3.3
+			if (bigint_is_greater(&v, &u))
+			{
+				bigint_sub_inplace(&v, &u);
+				if (bigint_is_greater(&x1, &x2))
+					bigint_add_inplace(&x2, p);
+				bigint_sub_inplace(&x2, &x1);
+			}
+			else
+			{
+				bigint_sub_inplace(&u, &v);
+				if(bigint_is_greater(&x2, &x1))
+					bigint_add_inplace(&x1, p);
+				bigint_sub_inplace(&x1, &x2);
+			}
+		}
+	
+		// 4)
+		if (bigint_are_equal(&u, &one))
+			bigint_copy(dest, &x1);
+		else
+			bigint_copy(dest, &x2);
+			
+		bigint_free(&one);
+		bigint_free(&v);
+		bigint_free(&u);
+		bigint_free(&x1);
+		bigint_free(&x2);
+	}
+		
+	bigint_free(&zero);
 }
