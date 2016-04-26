@@ -19,7 +19,7 @@
 	//TODO
 
 }*/
-void __montgomery_convert(BigInt* res, BigInt* x, BigInt* p)
+void __montgomery_convert(BigInt* res, const BigInt* x, const BigInt* p)
 {
 	bigint_copy(res,x);
 	/*n is the R parameter in the Montgomery convertion*/
@@ -37,7 +37,7 @@ void __montgomery_convert(BigInt* res, BigInt* x, BigInt* p)
 	}
 }
 
-void __montgomery_revert(BigInt* rev, BigInt* x,BigInt* p)
+void __montgomery_revert(BigInt* rev, const BigInt* x, const BigInt* p)
 {
 	bigint_copy(rev,x);
 
@@ -58,7 +58,7 @@ void __montgomery_revert(BigInt* rev, BigInt* x,BigInt* p)
 	}
 }
 
-void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
+void montgomery_mul(BigInt* res, const BigInt* x, const BigInt* y, const BigInt* p)
 {
 	BigInt x_mont;
 	BigInt y_mont;
@@ -169,7 +169,7 @@ void bigint_right_shift_inplace(BigInt* a)
         a->significant_octets--;
 }
 
-void bigint_modulo_inplace(BigInt* a, BigInt* mod)
+void bigint_modulo_inplace(BigInt* a, const BigInt* mod)
 {
 	BigInt test;
 	bigint_from_uint32(&test,0);
@@ -193,7 +193,7 @@ void bigint_modulo_inplace(BigInt* a, BigInt* mod)
 	}
 }
 
-void bigint_add_inplace(BigInt* a, BigInt* b)
+void bigint_add_inplace(BigInt* a, const BigInt* b)
 {
 	BIGINT_ASSERT_VALID(a);
     BIGINT_ASSERT_VALID(b);
@@ -261,7 +261,7 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 }
 
 
-void bigint_sub_inplace(BigInt* a, BigInt* b)
+void bigint_sub_inplace(BigInt* a, const BigInt* b)
 {
     // Negative representation is not implemented
     if(bigint_is_greater(b,a))

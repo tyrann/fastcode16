@@ -4,6 +4,26 @@ extern "C" {
 }
 #include "gtest/gtest.h"
 
+void create_parameters(EllipticCurveParameter *params)
+{
+    BigInt p, a, b, n, h;
+    Point G;
+    bigint_from_uint32(&p, 29);
+    bigint_from_uint32(&a, 2);
+    bigint_from_uint32(&b, 3);
+    // This parameters are not relevant for the tests
+    create_point_from_hex(&G, "0", "0");
+    bigint_from_uint32(&n, 0);
+    bigint_from_uint32(&h, 0);
+    ec_create_parameters(params, &p, &a, &b, &G, &n, &h);
+    bigint_free(&p);
+    bigint_free(&a);
+    bigint_free(&b);
+    bigint_free(&n);
+    bigint_free(&h);
+    point_free(&G);
+}
+
 TEST(create_point, create_point)
 {
     Point p;
@@ -89,6 +109,63 @@ TEST(create_point_inf, create_point_inf)
 
     bigint_free(&zero);
     point_free(&p);
+}
+
+TEST(point_is_on_curve, point_inf)
+{
+    EllipticCurveParameter params;
+    create_parameters(&params);
+    Point p;
+    create_point_inf(&p);
+    ASSERT_TRUE(point_is_on_curve(&p, &params));
+    ec_free(&params);
+    point_free(&p);
+}
+
+TEST(point_is_on_curve, point_on_curve)
+{
+    EllipticCurveParameter params;
+    create_parameters(&params);
+    Point p,q,r,s,t;
+    create_point_from_uint32(&p, 16, 10);
+    ASSERT_TRUE(point_is_on_curve(&p, &params));
+    create_point_from_uint32(&q, 17, 7);
+    ASSERT_TRUE(point_is_on_curve(&q, &params));
+    create_point_from_uint32(&r, 27, 22);
+    ASSERT_TRUE(point_is_on_curve(&r, &params));
+    create_point_from_uint32(&s, 1, 8);
+    ASSERT_TRUE(point_is_on_curve(&s, &params));
+    create_point_from_uint32(&t, 3, 23);
+    ASSERT_TRUE(point_is_on_curve(&t, &params));
+    point_free(&p);
+    point_free(&q);
+    point_free(&r);
+    point_free(&s);
+    point_free(&t);
+    ec_free(&params);
+}
+
+TEST(point_is_on_curve, point_not_on_curve)
+{
+    EllipticCurveParameter params;
+    create_parameters(&params);
+    Point p,q,r,s,t;
+    create_point_from_uint32(&p, 0, 0);
+    ASSERT_FALSE(point_is_on_curve(&p, &params));
+    create_point_from_uint32(&q, 17, 8);
+    ASSERT_FALSE(point_is_on_curve(&q, &params));
+    create_point_from_uint32(&r, 27, 21);
+    ASSERT_FALSE(point_is_on_curve(&r, &params));
+    create_point_from_uint32(&s, 1, 4);
+    ASSERT_FALSE(point_is_on_curve(&s, &params));
+    create_point_from_uint32(&t, 3, 12);
+    ASSERT_FALSE(point_is_on_curve(&t, &params));
+    point_free(&p);
+    point_free(&q);
+    point_free(&r);
+    point_free(&s);
+    point_free(&t);
+    ec_free(&params);
 }
 
 TEST(copy_point, copy_point)
