@@ -190,6 +190,8 @@ TEST(bigint_sub_inplace, sub_test_1)
     bigint_sub_inplace(&a5, &b5);
     int are_equal = bigint_are_equal(&a5, &c5);
     EXPECT_EQ(are_equal, 1);    
+	
+	
     bigint_free(&a5);
     bigint_free(&b5);
 	bigint_free(&c5);
@@ -218,6 +220,8 @@ TEST(bigint_sub_inplace, sub_test_3)
 	bigint_from_uint64(&c1,0);
     bigint_sub_inplace(&a1, &b1);
     int are_equal = bigint_are_equal(&a1, &c1);
+	ASSERT_EQ(a1.allocated_octets, 1);
+    ASSERT_EQ(a1.significant_octets, 1);
     EXPECT_EQ(are_equal, 1);    
     bigint_free(&a1);
     bigint_free(&b1);
@@ -232,6 +236,8 @@ TEST(bigint_sub_inplace, sub_test_4)
     bigint_sub_inplace(&a2, &b2);
     int are_equal = bigint_are_equal(&a2, &c2);
     EXPECT_EQ(are_equal, 1);    
+	ASSERT_EQ(a2.allocated_octets, 1);
+    ASSERT_EQ(a2.significant_octets, 1);
     bigint_free(&a2);
     bigint_free(&b2);
 	bigint_free(&c2);
@@ -246,6 +252,8 @@ TEST(bigint_sub_inplace, sub_test_5)
     bigint_sub_inplace(&a3, &b3);
     int are_equal = bigint_are_equal(&a3, &c3);
     EXPECT_EQ(are_equal, 1);    
+	ASSERT_EQ(a3.allocated_octets, 1);
+    ASSERT_EQ(a3.significant_octets, 1);
     bigint_free(&a3);
     bigint_free(&b3);
 	bigint_free(&c3);
@@ -260,6 +268,8 @@ TEST(bigint_sub_inplace, sub_test_6)
     bigint_sub_inplace(&a4, &b4);
     int are_equal = bigint_are_equal(&a4, &c4);
     EXPECT_EQ(are_equal, 1);    
+	ASSERT_EQ(a4.allocated_octets, 6);
+    ASSERT_EQ(a4.significant_octets, 6);
     bigint_free(&a4);
     bigint_free(&b4);
 	bigint_free(&c4);
@@ -272,7 +282,9 @@ TEST(bigint_sub_inplace, sub_test_7)
 	bigint_from_hex_string(&c6, "100");
     bigint_sub_inplace(&a6, &b6);
     int are_equal = bigint_are_equal(&a6, &c6);
-    EXPECT_EQ(are_equal, 1);    
+    EXPECT_EQ(are_equal, 1); 
+	ASSERT_EQ(a6.allocated_octets, 2);
+    ASSERT_EQ(a6.significant_octets, 2);	
     bigint_free(&a6);
     bigint_free(&b6);
 	bigint_free(&c6);
@@ -285,7 +297,9 @@ TEST(bigint_sub_inplace, sub_test_8)
 	bigint_from_hex_string(&c7, "FFFFFFFFFF00F");
     bigint_sub_inplace(&a7, &b7);
     int are_equal = bigint_are_equal(&a7, &c7);
-    EXPECT_EQ(are_equal, 1);    
+    EXPECT_EQ(are_equal, 1);   
+	ASSERT_EQ(a7.allocated_octets, 7);
+    ASSERT_EQ(a7.significant_octets, 7);		
     bigint_free(&a7);
     bigint_free(&b7);
 	bigint_free(&c7);
@@ -299,6 +313,8 @@ TEST(bigint_sub_inplace, sub_test_9)
     bigint_sub_inplace(&a8, &b8);
     int are_equal = bigint_are_equal(&a8, &c8);
     EXPECT_EQ(are_equal, 1);    
+	ASSERT_EQ(a8.allocated_octets, 1);
+    ASSERT_EQ(a8.significant_octets, 1);	
     bigint_free(&a8);
     bigint_free(&b8);
 	bigint_free(&c8);
@@ -311,7 +327,9 @@ TEST(bigint_sub_inplace, sub_test_10)
 	bigint_from_hex_string(&c9, "FFFFFFFFFFFFF");
     bigint_sub_inplace(&a9, &b9);
     int are_equal = bigint_are_equal(&a9, &c9);
-    EXPECT_EQ(are_equal, 1);    
+    EXPECT_EQ(are_equal, 1);   
+	ASSERT_EQ(a9.allocated_octets, 7);
+    ASSERT_EQ(a9.significant_octets, 7);		
     bigint_free(&a9);
     bigint_free(&b9);
 	bigint_free(&c9);
@@ -326,6 +344,8 @@ TEST(bigint_sub_inplace, sub_test_11)
     bigint_sub_inplace(&a9, &b9);
     int are_equal = bigint_are_equal(&a9, &c9);
     EXPECT_EQ(are_equal, 1);    
+	ASSERT_EQ(a9.allocated_octets, 1);
+    ASSERT_EQ(a9.significant_octets, 1);	
     bigint_free(&a9);
     bigint_free(&b9);
 	bigint_free(&c9);
@@ -339,7 +359,9 @@ TEST(bigint_sub_inplace, sub_test_12)
 	bigint_from_hex_string(&c9, "FE");
     bigint_sub_inplace(&a9, &b9);
     int are_equal = bigint_are_equal(&a9, &c9);
-    EXPECT_EQ(are_equal, 1);    
+    EXPECT_EQ(are_equal, 1);   
+	ASSERT_EQ(a9.allocated_octets, 1);
+    ASSERT_EQ(a9.significant_octets, 1);		
     bigint_free(&a9);
     bigint_free(&b9);
 	bigint_free(&c9);
@@ -354,6 +376,8 @@ TEST(bigint_sub_inplace, sub_test_13)
     bigint_sub_inplace(&a9, &b9);
     int are_equal = bigint_are_equal(&a9, &c9);
     EXPECT_EQ(are_equal, 1);    
+	ASSERT_EQ(a9.allocated_octets, 2);
+    ASSERT_EQ(a9.significant_octets, 2);	
     bigint_free(&a9);
     bigint_free(&b9);
 	bigint_free(&c9);
@@ -366,7 +390,9 @@ TEST(bigint_sub_inplace, test_sub)
 	bigint_from_hex_string(&c, "F000000000001");
     bigint_sub_inplace(&a, &b);
     int are_equal = bigint_are_equal(&a, &c);
-    EXPECT_EQ(are_equal, 1);    
+    EXPECT_EQ(are_equal, 1);   
+	ASSERT_EQ(a.allocated_octets, 7);
+    ASSERT_EQ(a.significant_octets, 7);		
     bigint_free(&a);
     bigint_free(&b);
 	bigint_free(&c);
@@ -382,7 +408,8 @@ TEST(bigint_sub_inplace, test_sub_large)
 	
 	bigint_sub_inplace(&a,&b);
 	ASSERT_TRUE(bigint_are_equal(&a, &c));
-
+	ASSERT_EQ(a.allocated_octets, 8);
+    ASSERT_EQ(a.significant_octets, 8);	
 	bigint_free(&a);
 	bigint_free(&b);
 	bigint_free(&c);
@@ -397,6 +424,8 @@ TEST(bigint_sub_inplace, bad_memory_acces)
     bigint_from_hex_string(&c8, "1");
     bigint_sub_inplace(&a8, &b8);
     are_equal = bigint_are_equal(&a8, &c8);
+	ASSERT_EQ(a8.allocated_octets, 1);
+    ASSERT_EQ(a8.significant_octets, 1);	
     EXPECT_EQ(are_equal, 1);    
     bigint_free(&a8);
     bigint_free(&b8);
@@ -413,6 +442,8 @@ TEST(bigint_sub_inplace, very_large_number)
     bigint_sub_inplace(&a1, &b1);
     are_equal = bigint_are_equal(&a1, &c1);
     EXPECT_EQ(are_equal, 1);    
+	ASSERT_EQ(a1.allocated_octets, 1);
+    ASSERT_EQ(a1.significant_octets, 1);	
     bigint_free(&a1);
     bigint_free(&b1);
     bigint_free(&c1);
