@@ -12,7 +12,6 @@ void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticC
     bigint_from_uint32(&two, 2);
     BigInt three;
     bigint_from_uint32(&three, 3);
-    
 
     // SEC 1: Elliptic Curve Cryptography Certicom Research Version 2.0 page 7
     
@@ -202,4 +201,35 @@ void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticC
     bigint_free(&zero);
     bigint_free(&two);
     bigint_free(&three);
+}
+
+void ec_point_mul(Point *result, const BigInt *d, const Point *P, const EllipticCurveParameter *params)
+{
+    Point q1, q2;
+    Point p1, p2;
+    create_point_inf(&q1);
+    create_point_inf(&q2);
+    point_copy(&p2, P);
+
+    for(uint64_t i = 0; i < d->significant_octets; i++)
+    {
+	for(int j = 0; j < 8; j++) 
+	{
+	    if(d->octets[i] & (1 << j)) 
+	    {
+		point_free(&q1);
+		ec_point_add(&q1, &q2, &p2, params);
+		point_free(&q2);
+		point_copy(&q2, &q1);	
+	    }
+	    ec_point_add(&p1, &p2, &p2, params);
+	    point_free(&p2);
+	    point_copy(&p2, &p1);
+	    point_free(&p1);
+	}
+    }
+    point_copy(result, &q1);
+    point_free(&q1);
+    point_free(&p2);
+    point_free(&q2);
 }

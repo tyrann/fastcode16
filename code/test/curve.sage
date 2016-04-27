@@ -1,4 +1,4 @@
-p =  7927;
+p = 7927;
 a = 500;
 b = 0;
 E = EllipticCurve(GF(p), [a, b]);

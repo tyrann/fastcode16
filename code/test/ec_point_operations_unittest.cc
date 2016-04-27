@@ -45,6 +45,7 @@ void create_parameters_2(EllipticCurveParameter *params)
     point_free(&G);
 }
 
+// secp192k1
 void create_parameters_3(EllipticCurveParameter *params)
 {
     BigInt p, a, b, n, h;
@@ -52,10 +53,9 @@ void create_parameters_3(EllipticCurveParameter *params)
     bigint_from_hex_string(&p, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFEE37");
     bigint_from_uint32(&a, 0);
     bigint_from_uint32(&b, 3);
-    // This parameters are not relevant for the tests
-    create_point_from_hex(&G, "0", "0");
-    bigint_from_uint32(&n, 0);
-    bigint_from_uint32(&h, 0);
+    create_point_from_hex(&G, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D", "9B2F2F6D9C5628A7844163D015BE86344082AA88D95E2F9D");
+    bigint_from_hex_string(&n, "FFFFFFFFFFFFFFFFFFFFFFFE26F2FC170F69466A74DEFD8D");
+    bigint_from_uint32(&h, 1);
     ec_create_parameters(params, &p, &a, &b, &G, &n, &h);
     bigint_free(&p);
     bigint_free(&a);
@@ -119,45 +119,6 @@ TEST(ec_point_add, inf_plus_b)
     point_free(&b);
     point_free(&result);
     point_free(&expected);
-    ec_free(&params);
-}
-
-TEST(ec_point_add, a_plus_a_curve_0)
-{
-    EllipticCurveParameter params;
-    create_parameters_1(&params);
-    Point a, b, result, expected;
-
-    create_point_from_uint32(&a, 8, 3);
-    create_point_from_uint32(&b, 8, 3);
-    create_point_from_uint32(&expected, 8, 26);
-    ec_point_add(&result, &a, &b, &params);
-    ASSERT_TRUE(point_are_equal(&result, &expected));
-    point_free(&a);
-    point_free(&b);
-    point_free(&result);
-    point_free(&expected);
-
-    create_point_from_uint32(&a, 14, 7);
-    create_point_from_uint32(&b, 14, 7);
-    create_point_from_uint32(&expected, 24, 19);
-    ec_point_add(&result, &a, &b, &params);
-    ASSERT_TRUE(point_are_equal(&result, &expected));
-    point_free(&a);
-    point_free(&b);
-    point_free(&result);
-    point_free(&expected);
-
-    create_point_from_uint32(&a, 1, 8);
-    create_point_from_uint32(&b, 1, 8);
-    create_point_from_uint32(&expected, 22, 9);
-    ec_point_add(&result, &a, &b, &params);
-    ASSERT_TRUE(point_are_equal(&result, &expected));
-    point_free(&a);
-    point_free(&b);
-    point_free(&result);
-    point_free(&expected);
-
     ec_free(&params);
 }
 
@@ -281,6 +242,136 @@ TEST(ec_point_add, large_number)
     ASSERT_TRUE(point_are_equal(&result, &expected));
     point_free(&a);
     point_free(&b);
+    point_free(&result);
+    point_free(&expected);
+
+    ec_free(&params);
+}
+
+TEST(ec_point_mul, zero_times_point)
+{
+    EllipticCurveParameter params;
+    create_parameters_2(&params);
+    BigInt d;
+    Point P, result, expected;
+
+    create_point_from_uint32(&P, 188, 93);
+    bigint_from_uint32(&d, 0);
+    create_point_inf(&expected);
+    ec_point_mul(&result, &d, &P, &params);
+    ASSERT_TRUE(point_are_equal(&result, &expected));
+    bigint_free(&d);
+    point_free(&P);
+    point_free(&result);
+    point_free(&expected);
+
+    ec_free(&params);
+}
+
+TEST(ec_point_mul, one_times_point)
+{
+    EllipticCurveParameter params;
+    create_parameters_2(&params);
+    BigInt d;
+    Point P, result, expected;
+
+    create_point_from_uint32(&P, 188, 93);
+    bigint_from_uint32(&d, 1);
+    point_copy(&expected, &P);
+    ec_point_mul(&result, &d, &P, &params);
+    ASSERT_TRUE(point_are_equal(&result, &expected));
+    bigint_free(&d);
+    point_free(&P);
+    point_free(&result);
+    point_free(&expected);
+
+    ec_free(&params);
+}
+
+TEST(ec_point_mul, two_times_point)
+{
+    EllipticCurveParameter params;
+    create_parameters_2(&params);
+    BigInt d;
+    Point P, result, expected;
+
+    create_point_from_uint32(&P, 188, 93);
+    bigint_from_uint32(&d, 2);
+    create_point_from_uint32(&expected, 2505, 3126);
+    ec_point_mul(&result, &d, &P, &params);
+    ASSERT_TRUE(point_are_equal(&result, &expected));
+    bigint_free(&d);
+    point_free(&P);
+    point_free(&result);
+    point_free(&expected);
+
+    ec_free(&params);
+}
+
+TEST(ec_point_mul, multiple_tests)
+{
+    EllipticCurveParameter params;
+    create_parameters_2(&params);
+    BigInt d;
+    Point P, result, expected;
+
+    create_point_from_uint32(&P, 188, 93);
+    bigint_from_uint32(&d, 3);
+    create_point_from_uint32(&expected, 6452, 1971);
+    ec_point_mul(&result, &d, &P, &params);
+    ASSERT_TRUE(point_are_equal(&result, &expected));
+    bigint_free(&d);
+    point_free(&P);
+    point_free(&result);
+    point_free(&expected);
+
+    create_point_from_uint32(&P, 188, 93);
+    bigint_from_uint32(&d, 4);
+    create_point_from_uint32(&expected, 3124, 272);
+    ec_point_mul(&result, &d, &P, &params);
+    ASSERT_TRUE(point_are_equal(&result, &expected));
+    bigint_free(&d);
+    point_free(&P);
+    point_free(&result);
+    point_free(&expected);
+
+    create_point_from_uint32(&P, 188, 93);
+    bigint_from_uint32(&d, 10);
+    create_point_from_uint32(&expected, 3025, 1344);
+    ec_point_mul(&result, &d, &P, &params);
+    ASSERT_TRUE(point_are_equal(&result, &expected));
+    bigint_free(&d);
+    point_free(&P);
+    point_free(&result);
+    point_free(&expected);
+
+    create_point_from_uint32(&P, 188, 93);
+    bigint_from_uint32(&d, 1000);
+    create_point_from_uint32(&expected, 2945, 4676);
+    ec_point_mul(&result, &d, &P, &params);
+    ASSERT_TRUE(point_are_equal(&result, &expected));
+    bigint_free(&d);
+    point_free(&P);
+    point_free(&result);
+    point_free(&expected);
+
+    ec_free(&params);
+}
+
+TEST(ec_point_mul, ultimate_test)
+{
+    EllipticCurveParameter params;
+    create_parameters_3(&params);
+    BigInt d;
+    Point P, result, expected;
+
+    point_copy(&P, &(params.generator));
+    bigint_copy(&d, &(params.n));
+    create_point_inf(&expected);
+    ec_point_mul(&result, &d, &P, &params);
+    ASSERT_TRUE(point_are_equal(&result, &expected));
+    bigint_free(&d);
+    point_free(&P);
     point_free(&result);
     point_free(&expected);
 
