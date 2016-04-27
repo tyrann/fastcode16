@@ -476,7 +476,7 @@ void __binary_extended_gcd(BigInt* a, BigInt* b, BigInt* v, BigInt* x, BigInt* y
 }*/
 
 // Based on algorithm 2.22 of doc/fields_arithmetic.pdf
-void bigint_divide(BigInt* dest, BigInt* b, BigInt* a, BigInt* p)
+void bigint_divide(BigInt* dest, const BigInt* b, const BigInt* a, const BigInt* p)
 {
 	BigInt zero;
 	bigint_from_uint32(&zero, 0);
