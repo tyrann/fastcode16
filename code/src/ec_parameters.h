@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include "bigint.h"
 #include "ec_point_structure.h"
-#include "ec_point_utilities.h"
 
 /* General representation of an elliptic curve*/
 typedef struct

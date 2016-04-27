@@ -1,5 +1,6 @@
 #include "ec_parameters.h"
 #include "bigint.h"
+#include "ec_point_utilities.h"
 
 void ec_free(EllipticCurveParameter *ec)
 {

@@ -22,7 +22,7 @@ uint64_t global_opcount = 0;
 	//TODO
 
 }*/
-void __montgomery_convert(BigInt* res, BigInt* x, BigInt* p)
+void __montgomery_convert(BigInt* res, const BigInt* x, const BigInt* p)
 {
 	bigint_copy(res,x);
 	/*n is the R parameter in the Montgomery convertion*/
@@ -40,7 +40,7 @@ void __montgomery_convert(BigInt* res, BigInt* x, BigInt* p)
 	}
 }
 
-void __montgomery_revert(BigInt* rev, BigInt* x,BigInt* p)
+void __montgomery_revert(BigInt* rev, const BigInt* x, const BigInt* p)
 {
 	bigint_copy(rev,x);
 
@@ -61,7 +61,7 @@ void __montgomery_revert(BigInt* rev, BigInt* x,BigInt* p)
 	}
 }
 
-void montgomery_mul(BigInt* res, BigInt* x, BigInt* y, BigInt* p)
+void montgomery_mul(BigInt* res, const BigInt* x, const BigInt* y, const BigInt* p)
 {
 	BigInt x_mont;
 	BigInt y_mont;
@@ -173,14 +173,14 @@ void bigint_right_shift_inplace(BigInt* a)
         a->significant_octets--;
 }
 
-void bigint_modulo_inplace(BigInt* a, BigInt* mod)
+void bigint_modulo_inplace(BigInt* a, const BigInt* mod)
 {
 	BigInt test;
 	bigint_from_uint32(&test,0);
 
 	if(bigint_are_equal(&test,mod))
 	{
-		printf("Impossible to apply mod 0");
+		assert("Impossible to apply mod 0");
 	}
 	bigint_free(&test);	
 
@@ -190,14 +190,14 @@ void bigint_modulo_inplace(BigInt* a, BigInt* mod)
 	}
 	else
 	{
-		while(bigint_is_greater(a,mod))
+		while(bigint_is_greater(a,mod) || bigint_are_equal(a,mod))
 		{
 			bigint_sub_inplace(a,mod);
 		}
 	}
 }
 
-void bigint_add_inplace(BigInt* a, BigInt* b)
+void bigint_add_inplace(BigInt* a, const BigInt* b)
 {
 	BIGINT_ASSERT_VALID(a);
     BIGINT_ASSERT_VALID(b);
@@ -210,7 +210,7 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 	{
 		a->significant_octets = b->significant_octets;
 		a->allocated_octets = b->significant_octets;
-		uchar* new_octets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		uchar* new_octets = realloc(a->octets, sizeof(uchar) * a->allocated_octets);
 		if (new_octets) 
 		{
 			a->octets = new_octets;
@@ -219,6 +219,10 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 				a->octets[n] = 0;
 			}
 		}			
+		else 
+		{
+		assert("bigint_add_inplace, realloc fail");
+		}
 	}
 	a_bytes = a->significant_octets;
 	uint64_t i = 0;
@@ -250,22 +254,26 @@ void bigint_add_inplace(BigInt* a, BigInt* b)
 	{
 		a->significant_octets += 1;
 		a->allocated_octets += 1;
-		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->allocated_octets);
 		if (newOctets) 
 		{
 			a->octets = newOctets;
 			a->octets[i] = carry;
 		}	
+		else 
+		{
+		assert("bigint_add_inplace, realloc fail");
+		}
 	}	
 }
 
 
-void bigint_sub_inplace(BigInt* a, BigInt* b)
+void bigint_sub_inplace(BigInt* a, const BigInt* b)
 {
     // Negative representation is not implemented
     if(bigint_is_greater(b,a))
     {
-	printf("! a < b ");
+		assert("bigint_sub_inplace, Warning a < b !");
     } 
     else 
     {
@@ -328,15 +336,19 @@ void bigint_sub_inplace(BigInt* a, BigInt* b)
 		reallocate = 1;
 	    }
 	}
-
+	
 	if(reallocate)
 	{
-	    a->allocated_octets += a->significant_octets;
-	    uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->significant_octets);
+	    a->allocated_octets = a->significant_octets;
+	    uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->allocated_octets);
 	    if (newOctets) 
 	    {
 		a->octets = newOctets;
 	    }
+		else 
+		{
+		assert("bigint_sub_inplace, realloc fail");
+		}
 	}
     }
 }
@@ -466,68 +478,78 @@ void __binary_extended_gcd(BigInt* a, BigInt* b, BigInt* v, BigInt* x, BigInt* y
 // Based on algorithm 2.22 of doc/fields_arithmetic.pdf
 void bigint_divide(BigInt* dest, BigInt* b, BigInt* a, BigInt* p)
 {
-	LOG_DEBUG("Performing division...");
-	
-	#ifndef NDEBUG
 	BigInt zero;
 	bigint_from_uint32(&zero, 0);
 	assert(!bigint_are_equal(&zero, a));
-	assert(!bigint_are_equal(&zero, b));
-	#endif
 	
-	// 1)
-	BigInt u, v;
-	bigint_copy(&u, a);
-	bigint_copy(&v, p);
-	
-	// 2)
-	BigInt x1, x2;
-	bigint_copy(&x1, b);
-	bigint_from_uint32(&x2, 0);
-	
-	// 3)
-	BigInt one;
-	bigint_from_uint32(&one, 1);
-	while (!bigint_are_equal(&u, &one) && !bigint_are_equal(&v, &one))
+	if (bigint_are_equal(b, &zero))
 	{
-		// 3.1)
-		while (bigint_is_even(&u))
-		{
-			bigint_right_shift_inplace(&u);
-			if (!bigint_is_even(&x1))
-				bigint_add_inplace(&x1, p);
-			bigint_right_shift_inplace(&x1);
-		}
-		
-		// 3.2)
-		while (bigint_is_even(&v))
-		{
-			bigint_right_shift_inplace(&v);
-			if (!bigint_is_even(&x2))
-				bigint_add_inplace(&x2, p);
-			bigint_right_shift_inplace(&x2);
-		}
-		
-		// 3.3
-		if (bigint_is_greater(&v, &u))
-		{
-			bigint_sub_inplace(&v, &u);
-			if (bigint_is_greater(&x1, &x2))
-				bigint_add_inplace(&x2, p);
-			bigint_sub_inplace(&x2, &x1);
-		}
-		else
-		{
-			bigint_sub_inplace(&u, &v);
-			if(bigint_is_greater(&x2, &x1))
-				bigint_add_inplace(&x1, p);
-			bigint_sub_inplace(&x1, &x2);
-		}
+		bigint_from_uint32(dest, 0);
 	}
-	
-	// 4)
-	if (bigint_are_equal(&u, &one))
-		bigint_copy(dest, &x1);
 	else
-		bigint_copy(dest, &x2);
+	{
+		// 1)
+		BigInt u, v;
+		bigint_copy(&u, a);
+		bigint_copy(&v, p);
+	
+		// 2)
+		BigInt x1, x2;
+		bigint_copy(&x1, b);
+		bigint_from_uint32(&x2, 0);
+	
+		// 3)
+		BigInt one;
+		bigint_from_uint32(&one, 1);
+		while (!bigint_are_equal(&u, &one) && !bigint_are_equal(&v, &one))
+		{
+			// 3.1)
+			while (bigint_is_even(&u))
+			{
+				bigint_right_shift_inplace(&u);
+				if (!bigint_is_even(&x1))
+					bigint_add_inplace(&x1, p);
+				bigint_right_shift_inplace(&x1);
+			}
+			
+			// 3.2)
+			while (bigint_is_even(&v))
+			{
+				bigint_right_shift_inplace(&v);
+				if (!bigint_is_even(&x2))
+					bigint_add_inplace(&x2, p);
+				bigint_right_shift_inplace(&x2);
+			}
+			
+			// 3.3
+			if (bigint_is_greater(&v, &u))
+			{
+				bigint_sub_inplace(&v, &u);
+				if (bigint_is_greater(&x1, &x2))
+					bigint_add_inplace(&x2, p);
+				bigint_sub_inplace(&x2, &x1);
+			}
+			else
+			{
+				bigint_sub_inplace(&u, &v);
+				if(bigint_is_greater(&x2, &x1))
+					bigint_add_inplace(&x1, p);
+				bigint_sub_inplace(&x1, &x2);
+			}
+		}
+	
+		// 4)
+		if (bigint_are_equal(&u, &one))
+			bigint_copy(dest, &x1);
+		else
+			bigint_copy(dest, &x2);
+			
+		bigint_free(&one);
+		bigint_free(&v);
+		bigint_free(&u);
+		bigint_free(&x1);
+		bigint_free(&x2);
+	}
+		
+	bigint_free(&zero);
 }
