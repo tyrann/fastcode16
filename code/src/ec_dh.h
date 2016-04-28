@@ -4,6 +4,7 @@
 #include "bigint.h"
 #include "ec_point_structure.h"
 #include "ec_point_operations.h"
+#include "ec_parameters.h"
 
 /* General representation of an ECDH */
 typedef struct
@@ -19,7 +20,7 @@ typedef struct
 	
 	The return value should be 1 if succeed and 0 otherwise
 */
-int ecdh_generate_key(DH *dh);
+int ecdh_generate_key(ECDH *dh);
 /*
 	ec_compute_key() computes the shared secret from the private ECDH value in dhU and the other party's public value in dhV and returns it shared secret.
 	
