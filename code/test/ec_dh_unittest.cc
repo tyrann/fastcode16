@@ -80,6 +80,8 @@ TEST(ec_dh, ecdh_compute_key)
 	ecdh_generate_key(&vECDH, &dV);
 	
 	ASSERT_TRUE(ecdh_compute_key(&uECDH, &vECDH));
+	ASSERT_TRUE(ecdh_compute_key(&vECDH, &uECDH));
+
 	ASSERT_TRUE(ecdh_verification(&uECDH, &vECDH));
 
 	
@@ -128,15 +130,13 @@ TEST(ec_dh, ecdh_compute_keySharedInfoCheck)
 	
 	
 	ASSERT_TRUE(ecdh_compute_key(&uECDH, &vECDH));
-	ASSERT_TRUE(ecdh_verification(&uECDH, &vECDH));
 
 	BigInt uToV, vToU;
 	bigint_copy(&uToV,&(uECDH.sharedInfo));
 	
 	ASSERT_TRUE(ecdh_compute_key(&vECDH, &uECDH));
-	bigint_copy(&vToU,&(uECDH.sharedInfo));
-	
-	
+	bigint_copy(&vToU,&(vECDH.sharedInfo));
+	ASSERT_TRUE(ecdh_verification(&uECDH, &vECDH));	
 	ASSERT_TRUE(bigint_are_equal(&uToV,&vToU));	
 	
 	ec_free(&params);
