@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "ec_point_structure.h"
 #include "ec_parameters.h"
+#include "ec_point_utilities.h"
 
 /* Addition of two points on a curve*/
 void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticCurveParameter *p);

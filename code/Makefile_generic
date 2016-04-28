@@ -1,16 +1,22 @@
-SOURCES_TESTING = logging.c bigint_utilities.c bigint_conversion.c \
+SOURCES_TESTING = opcount.c logging.c bigint_utilities.c bigint_conversion.c \
     bigint_conversion_unittest.cc bigint_utilities_unittest.cc \
 	bigint_operations.c bigint_operations_unittest.cc \
 	ec_point_utilities.c ec_point_utilities_unittest.cc \
+	ec_point_operations.c ec_point_operations_unittest.cc \
 	ec_parameters.c ec_parameters_unittest.cc \
 	config.c config_unittest.cc
 
 SOURCES_MAIN = main.c \
 	bigint_utilities.c bigint_conversion.c bigint_operations.c \
+<<<<<<< HEAD
 	ec_point_utilities.c ec_parameters.c ec_dh.c\
 	config.c logging.c
+=======
+	ec_point_utilities.c ec_parameters.c \
+	config.c logging.c opcount.c
+>>>>>>> refs/remotes/origin/master
 
-VPATH = ./src:./test:./src/logging:./src/config:./test/config
+VPATH = ./src:./test:./src/logging:./src/opcount:./src/config:./test/config
 
 # GCC architecture flags
 AFLAGS = 

@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "logging/logging.h"
+#include "opcount/opcount.h"
 #include "bigint_operations.h"
 #include "bigint_structure.h"
 #include "bigint_conversion.h"
@@ -13,6 +14,8 @@
 #include <assert.h>
 #define WORDSIZE 64
 #define B 2
+
+uint64_t global_opcount = 0;
 
 /* void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v)
 {
@@ -133,6 +136,7 @@ void bigint_left_shift_inplace(BigInt* a)
     {
         uchar cur_carry = carry;
         carry = a->octets[i] >> 7;
+		__COUNT_OP(&global_opcount, 7);
         /*LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
             "to the carry (%hhu) resulting in %02hhX", i, a->octets[i],
             a->octets[i] << 1, cur_carry, cur_carry + (a->octets[i] << 1));*/
@@ -232,15 +236,18 @@ void bigint_add_inplace(BigInt* a, const BigInt* b)
 			atemp = (uint32_t)a->octets[i];
 			btemp = (uint32_t)b->octets[i];
 			carry = (carry + atemp + btemp);
+			__COUNT_OP(&global_opcount, 2);
 		}
 		else
 		{
 			atemp = (uint32_t)a->octets[i];
 			carry = (carry + atemp);
+			__COUNT_OP(&global_opcount, 1);
 		}
 
 		a->octets[i] = carry & 0xFF;	
-		carry = carry>>8;		
+		carry = carry>>8;
+		__COUNT_OP(&global_opcount, 8);
     }
 	// If needed, allocate 1 more byte for the carry
 	if(carry > 0)
@@ -469,7 +476,7 @@ void __binary_extended_gcd(BigInt* a, BigInt* b, BigInt* v, BigInt* x, BigInt* y
 }*/
 
 // Based on algorithm 2.22 of doc/fields_arithmetic.pdf
-void bigint_divide(BigInt* dest, BigInt* b, BigInt* a, BigInt* p)
+void bigint_divide(BigInt* dest, const BigInt* b, const BigInt* a, const BigInt* p)
 {
 	BigInt zero;
 	bigint_from_uint32(&zero, 0);
