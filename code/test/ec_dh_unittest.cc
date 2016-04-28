@@ -128,6 +128,8 @@ TEST(ec_dh, ecdh_compute_keySharedInfoCheck)
 	
 
 	ASSERT_TRUE(ecdh_compute_shared_secret(&uECDH, &vECDH));
+	ASSERT_TRUE(ecdh_compute_shared_secret(&vECDH, &uECDH));
+
 	ASSERT_TRUE(ecdh_verification(&uECDH, &vECDH));
 
 	BigInt uToV, vToU;
