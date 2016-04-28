@@ -65,6 +65,26 @@ void create_parameters_3(EllipticCurveParameter *params)
     point_free(&G);
 }
 
+// secp521r1
+void create_parameters_4(EllipticCurveParameter *params)
+{
+    BigInt p, a, b, n, h;
+    Point G;
+    bigint_from_hex_string(&p, "01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+    bigint_from_hex_string(&a, "01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC");
+    bigint_from_hex_string(&b, "0051953EB9618E1C9A1F929A21A0B68540EEA2DA725B99B315F3B8B489918EF109E156193951EC7E937B1652C0BD3BB1BF073573DF883D2C34F1EF451FD46B503F00");
+    create_point_from_hex(&G, "00C6858E06B70404E9CD9E3ECB662395B4429C648139053FB521F828AF606B4D3DBAA14B5E77EFE75928FE1DC127A2FFA8DE3348B3C1856A429BF97E7E31C2E5BD66", "011839296A789A3BC0045C8A5FB42C7D1BD998F54449579B446817AFBD17273E662C97EE72995EF42640C550B9013FAD0761353C7086A272C24088BE94769FD16650");
+    bigint_from_hex_string(&n, "01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409");
+    bigint_from_uint32(&h, 1);
+    ec_create_parameters(params, &p, &a, &b, &G, &n, &h);
+    bigint_free(&p);
+    bigint_free(&a);
+    bigint_free(&b);
+    bigint_free(&n);
+    bigint_free(&h);
+    point_free(&G);
+}
+
 TEST(ec_point_add, inf_plus_inf)
 {
     EllipticCurveParameter params;
@@ -362,6 +382,26 @@ TEST(ec_point_mul, ultimate_test)
 {
     EllipticCurveParameter params;
     create_parameters_3(&params);
+    BigInt d;
+    Point P, result, expected;
+
+    point_copy(&P, &(params.generator));
+    bigint_copy(&d, &(params.n));
+    create_point_inf(&expected);
+    ec_point_mul(&result, &d, &P, &params);
+    ASSERT_TRUE(point_are_equal(&result, &expected));
+    bigint_free(&d);
+    point_free(&P);
+    point_free(&result);
+    point_free(&expected);
+
+    ec_free(&params);
+}
+
+TEST(DISABLED_ec_point_mul, ultimate_test_2)
+{
+    EllipticCurveParameter params;
+    create_parameters_4(&params);
     BigInt d;
     Point P, result, expected;
 
