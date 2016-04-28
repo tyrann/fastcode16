@@ -23,6 +23,18 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
+	    BigInt d;
+	    Point P, result, expected;
+
+	    point_copy(&P, &(parameter.generator));
+	    bigint_copy(&d, &(parameter.n));
+	    create_point_inf(&expected);
+	    ec_point_mul(&result, &d, &P, &parameter);
+	    printf("%i", point_are_equal(&result, &expected));
+	    bigint_free(&d);
+	    point_free(&P);
+	    point_free(&result);
+	    point_free(&expected);
 	    ec_free(&parameter);
 	}
 	
