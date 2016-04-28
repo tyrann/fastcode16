@@ -27,7 +27,7 @@ void ec_ECDHfree(ECDH *ecdh);
 *	The return value should be 1 if succeed and 0 otherwise
 */
 
-int ecdh_generate_key(ECDH *dh, BigInt *d);
+int ecdh_generate_public_key(ECDH *dh, const BigInt *d);
 
 /*
 *	ec_compute_key() computes the shared secret from the private ECDH value in dhU and the other party's public value in dhV and returns it shared secret.
@@ -35,7 +35,7 @@ int ecdh_generate_key(ECDH *dh, BigInt *d);
 *	The return value should be 1 if succeed and 0 otherwise
 */
 
-int ecdh_compute_key(ECDH *dhU, ECDH *dhV);
+int ecdh_compute_shared_secret(ECDH *dhU, ECDH *dhV);
 
 /*
 *	ecdh_verification() verifies if the two parties have the same sharedInfo and parameters
