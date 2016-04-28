@@ -51,7 +51,7 @@ int ecdh_compute_shared_secret(ECDH *dhU, ECDH *dhV)
 	{		
 		bigint_copy(&(dhU->sharedInfo),&sharedPoint.x);
 	}
-	printf("After ecdh_generate_key dh sharedPoint = %s \n", bigint_to_hex_string(&(sharedPoint.x)));
+	// printf("After ecdh_generate_key dh sharedPoint = %s \n", bigint_to_hex_string(&(sharedPoint.x)));
     point_free(&sharedPoint);
 	return (int)!ret;
 }
