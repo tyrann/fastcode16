@@ -41,7 +41,7 @@ TEST(ec_dh, ecdh_generate_key)
 	BigInt sharedInfo;
 	bigint_from_uint32(&sharedInfo, 0);
 	ec_create_ECDH(&uECDH, &params, &pub_key, &d, &sharedInfo);
-	ASSERT_TRUE(ecdh_generate_key(&uECDH, &d));
+	ASSERT_TRUE(ecdh_generate_public_key(&uECDH, &d));
 	
 	ec_free(&params);
 	bigint_free(&d);
@@ -68,7 +68,6 @@ TEST(ec_dh, ecdh_compute_key)
 	bigint_from_uint32(&sharedInfoU, 0);
 	ec_create_ECDH(&uECDH, &params, &pub_keyU, &dU, &sharedInfoU);
 	
-	
 	ECDH vECDH;
     Point pub_keyV;
     create_point_inf(&pub_keyV);
@@ -76,15 +75,14 @@ TEST(ec_dh, ecdh_compute_key)
 	bigint_from_uint32(&sharedInfoV, 1);
 	ec_create_ECDH(&vECDH, &params, &pub_keyV, &dV, &sharedInfoV);
 	
-	ecdh_generate_key(&uECDH, &dU);
-	ecdh_generate_key(&vECDH, &dV);
-	
-	ASSERT_TRUE(ecdh_compute_key(&uECDH, &vECDH));
-	ASSERT_TRUE(ecdh_compute_key(&vECDH, &uECDH));
+	ecdh_generate_public_key(&uECDH, &dU);
+	ecdh_generate_public_key(&vECDH, &dV);
+
+	ASSERT_TRUE(ecdh_compute_shared_secret(&uECDH, &vECDH));
+	ASSERT_TRUE(ecdh_compute_shared_secret(&vECDH, &uECDH));
 
 	ASSERT_TRUE(ecdh_verification(&uECDH, &vECDH));
 
-	
 	ec_free(&params);
 	bigint_free(&dU);
 	bigint_free(&dV);
@@ -93,7 +91,6 @@ TEST(ec_dh, ecdh_compute_key)
 	bigint_free(&sharedInfoU);
 	ec_ECDHfree(&uECDH);
 
-	
 	point_free(&pub_keyV);
 	bigint_free(&sharedInfoV);
 	ec_ECDHfree(&vECDH);	
@@ -125,18 +122,21 @@ TEST(ec_dh, ecdh_compute_keySharedInfoCheck)
 	bigint_from_uint32(&sharedInfoV, 1);
 	ec_create_ECDH(&vECDH, &params, &pub_keyV, &dV, &sharedInfoV);
 	
-	ecdh_generate_key(&uECDH, &dU);
-	ecdh_generate_key(&vECDH, &dV);
+	ecdh_generate_public_key(&uECDH, &dU);
+	ecdh_generate_public_key(&vECDH, &dV);
 	
 	
-	ASSERT_TRUE(ecdh_compute_key(&uECDH, &vECDH));
+
+	ASSERT_TRUE(ecdh_compute_shared_secret(&uECDH, &vECDH));
+	ASSERT_TRUE(ecdh_verification(&uECDH, &vECDH));
 
 	BigInt uToV, vToU;
 	bigint_copy(&uToV,&(uECDH.sharedInfo));
 	
-	ASSERT_TRUE(ecdh_compute_key(&vECDH, &uECDH));
-	bigint_copy(&vToU,&(vECDH.sharedInfo));
-	ASSERT_TRUE(ecdh_verification(&uECDH, &vECDH));	
+
+	ASSERT_TRUE(ecdh_compute_shared_secret(&vECDH, &uECDH));
+	bigint_copy(&vToU,&(uECDH.sharedInfo));	
+	ASSERT_TRUE(ecdh_verification(&uECDH, &vECDH));		
 	ASSERT_TRUE(bigint_are_equal(&uToV,&vToU));	
 	
 	ec_free(&params);

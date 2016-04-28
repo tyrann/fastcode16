@@ -17,7 +17,7 @@ void ec_ECDHfree(ECDH *ecdh)
     bigint_free(&(ecdh->sharedInfo));
 }
 
-int ecdh_generate_key(ECDH *dh, BigInt *d)
+int ecdh_generate_public_key(ECDH *dh, const BigInt *d)
 {
 	//Compute Q = dG 
 	//void ec_point_mul(Point *result, const BigInt *d, const Point *P, const EllipticCurveParameter *p);
@@ -33,7 +33,7 @@ int ecdh_generate_key(ECDH *dh, BigInt *d)
 }
 
 
-int ecdh_compute_key(ECDH *dhU, ECDH *dhV)
+int ecdh_compute_shared_secret(ECDH *dhU, ECDH *dhV)
 {
 	Point sharedPoint;
 	create_point_from_hex(&sharedPoint, "0", "0");
