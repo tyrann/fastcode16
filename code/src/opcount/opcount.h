@@ -7,7 +7,8 @@
 // #TODO Split operations types
 
 #define OP_COUNT_NONE 0      // Counts nothing
-#define OP_COUNT_ALL 1       // Counts all
+#define OP_COUNT_INDEX 1       // Counts all
+#define OP_COUNT_ALL 2
 
 #ifndef OP_COUNT
 #define OP_COUNT OP_COUNT_ALL
@@ -20,6 +21,13 @@ void __count_op(uint64_t* op_count, const uint16_t incr);
     __count_op(op_count, incr)
 #else
 #define __COUNT_OP(op_count, incr)
+#endif
+
+#if OP_COUNT > OP_COUNT_INDEX
+#define __COUNT_INDEX(op_count, incr) \
+    __count_op(op_count, incr)
+#else
+#define __COUNT_INDEX(op_count, incr)
 #endif
 
 #endif

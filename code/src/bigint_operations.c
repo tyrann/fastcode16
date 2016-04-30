@@ -16,6 +16,7 @@
 #define B 2
 
 uint64_t global_opcount = 0;
+uint64_t global_index_count = 0;
 
 /* void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v)
 {
@@ -122,11 +123,13 @@ void bigint_left_shift_inplace(BigInt* a)
     if (a->octets[a->significant_octets-1] > 0x7F)
     {
         uchar* new_octets = (uchar*)malloc(a->significant_octets + 1);
+		__COUNT_INDEX(&global_index_count, 1);
         memcpy(new_octets, a->octets, a->significant_octets);
         free(a->octets);
         
         a->octets = new_octets;
         a->significant_octets += 1;
+		__COUNT_INDEX(&global_index_count, 1);
         a->allocated_octets = a->significant_octets;
     }
     
@@ -136,11 +139,12 @@ void bigint_left_shift_inplace(BigInt* a)
     {
         uchar cur_carry = carry;
         carry = a->octets[i] >> 7;
-		__COUNT_OP(&global_opcount, 7);
+		__COUNT_OP(&global_opcount, 1);
         /*LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
             "to the carry (%hhu) resulting in %02hhX", i, a->octets[i],
             a->octets[i] << 1, cur_carry, cur_carry + (a->octets[i] << 1));*/
         a->octets[i] = cur_carry + (a->octets[i] << 1);
+		__COUNT_INDEX(&global_index_count, 1);
     }
     
     // Add carry to last octet if necessary
