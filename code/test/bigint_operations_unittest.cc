@@ -860,6 +860,8 @@ TEST(bigint_division, test_field)
 TEST(bigint_left_shift_opcount, test_shift_opcount)
 {
 	extern uint64_t global_opcount;
+	extern uint64_t global_index_count;
+	global_index_count = 0;
 	global_opcount = 0;
 	BigInt a, expected;
     bigint_from_hex_string(&a, "2");
@@ -869,7 +871,8 @@ TEST(bigint_left_shift_opcount, test_shift_opcount)
     ASSERT_EQ(bigint_are_equal(&a, &expected), 1);
     ASSERT_EQ(a.allocated_octets, 1);
     ASSERT_EQ(a.significant_octets, 1);
-	ASSERT_EQ(global_opcount, 14);
+	ASSERT_EQ(global_opcount, 2);
+	ASSERT_EQ(global_index_count, 2);
     bigint_free(&a);
     bigint_free(&expected);
 
@@ -884,7 +887,7 @@ TEST(bigint_add_opcount, test_add_opcount)
 	
 	bigint_add_inplace(&a,&a);
 	ASSERT_TRUE(bigint_are_equal(&a, &b));
-	ASSERT_EQ(global_opcount, 10);
+	ASSERT_EQ(global_opcount, 4);
 	bigint_free(&a);
 	bigint_free(&b);	
 
