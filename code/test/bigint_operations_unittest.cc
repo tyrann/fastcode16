@@ -887,7 +887,7 @@ TEST(bigint_add_opcount, test_add_opcount)
 	
 	bigint_add_inplace(&a,&a);
 	ASSERT_TRUE(bigint_are_equal(&a, &b));
-	ASSERT_EQ(global_opcount, 10);
+	ASSERT_EQ(global_opcount, 4);
 	bigint_free(&a);
 	bigint_free(&b);	
 
