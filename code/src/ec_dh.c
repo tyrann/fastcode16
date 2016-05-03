@@ -36,7 +36,7 @@ int ecdh_generate_public_key(ECDH *dh, const BigInt *d)
 int ecdh_compute_shared_secret(ECDH *dhU, ECDH *dhV)
 {
 	Point sharedPoint;
-	create_point_from_hex(&sharedPoint, "0", "0");
+	//create_point_from_hex(&sharedPoint, "0", "0");
 
 	// Compute the elliptic curve point P = (xP , yP ) = priv_keyU*pub_keyV
 	ec_point_mul(&sharedPoint, &(dhU->priv_key), &(dhV->pub_key), &(dhU->parameters));
