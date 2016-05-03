@@ -16,6 +16,7 @@
 #define B 2
 
 uint64_t global_opcount = 0;
+uint64_t global_index_count = 0;
 
 /* void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v)
 {
@@ -28,6 +29,7 @@ void __montgomery_convert(BigInt* res, const BigInt* x, const BigInt* p)
 	/*n is the R parameter in the Montgomery convertion*/
 
 	uint64_t n = p->significant_octets * 8;
+	__COUNT_OP(&global_opcount, 1);
 	uint64_t i;
     
 	for (i = 0; i < n; ++i)
@@ -45,6 +47,7 @@ void __montgomery_revert(BigInt* rev, const BigInt* x, const BigInt* p)
 	bigint_copy(rev,x);
 
 	uint64_t n = p->significant_octets * 8;
+	__COUNT_OP(&global_opcount, 1);
 	uint64_t i;
 
 	for (i = 0; i < n; ++i)
@@ -78,6 +81,7 @@ void montgomery_mul(BigInt* res, const BigInt* x, const BigInt* y, const BigInt*
 
 	/*We take the smallest power of 2 that is bigger than p*/
 	int n = p->significant_octets * 8;
+	__COUNT_OP(&global_opcount, 1);
 	int i;
 
 	uint8_t y0 = y_mont.octets[0] & 0x1;
@@ -88,6 +92,7 @@ void montgomery_mul(BigInt* res, const BigInt* x, const BigInt* y, const BigInt*
 		uint8_t xi = (x_mont.octets[0]) & 0x1;
 		bigint_right_shift_inplace(&x_mont);		
 		uint64_t ui = ((z0 + xi*y0)*pbar) % B;
+		__COUNT_OP(&global_opcount, 4);
 
 		//Z <- (Z + xiy + ui*p)/b
 		
@@ -122,11 +127,15 @@ void bigint_left_shift_inplace(BigInt* a)
     if (a->octets[a->significant_octets-1] > 0x7F)
     {
         uchar* new_octets = (uchar*)malloc(a->significant_octets + 1);
+		__COUNT_INDEX(&global_index_count, 1);
+
         memcpy(new_octets, a->octets, a->significant_octets);
         free(a->octets);
         
         a->octets = new_octets;
         a->significant_octets += 1;
+		__COUNT_OP(&global_opcount, 1);
+
         a->allocated_octets = a->significant_octets;
     }
     
@@ -136,11 +145,12 @@ void bigint_left_shift_inplace(BigInt* a)
     {
         uchar cur_carry = carry;
         carry = a->octets[i] >> 7;
-		__COUNT_OP(&global_opcount, 7);
+		__COUNT_OP(&global_opcount, 1);
         /*LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
             "to the carry (%hhu) resulting in %02hhX", i, a->octets[i],
             a->octets[i] << 1, cur_carry, cur_carry + (a->octets[i] << 1));*/
         a->octets[i] = cur_carry + (a->octets[i] << 1);
+		__COUNT_INDEX(&global_index_count, 1);
     }
     
     // Add carry to last octet if necessary
@@ -162,6 +172,7 @@ void bigint_right_shift_inplace(BigInt* a)
     {
         uchar cur_carry = carry;
         carry = a->octets[i-1] << 7;
+		__COUNT_OP(&global_opcount, 1);
         /*LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
             "to the carry (%hhu) resulting in %02hhX", i-1, a->octets[i-1],
             a->octets[i-1] << 1, cur_carry, cur_carry + (a->octets[i-1] << 1));*/
@@ -171,6 +182,7 @@ void bigint_right_shift_inplace(BigInt* a)
     // Check if the number of significant octets decreased
     if (a->octets[a->significant_octets-1] == 0 && a->significant_octets > 1)
         a->significant_octets--;
+		__COUNT_OP(&global_opcount, 1);
 }
 
 void bigint_modulo_inplace(BigInt* a, const BigInt* mod)
@@ -231,6 +243,7 @@ void bigint_add_inplace(BigInt* a, const BigInt* b)
     {	
 		uint32_t atemp;
 		uint32_t btemp;
+		__COUNT_OP(&global_opcount, 1);
 		if(i <= b->significant_octets-1)
 		{
 			atemp = (uint32_t)a->octets[i];
@@ -247,13 +260,14 @@ void bigint_add_inplace(BigInt* a, const BigInt* b)
 
 		a->octets[i] = carry & 0xFF;	
 		carry = carry>>8;
-		__COUNT_OP(&global_opcount, 8);
+		__COUNT_OP(&global_opcount, 1);
     }
 	// If needed, allocate 1 more byte for the carry
 	if(carry > 0)
 	{
 		a->significant_octets += 1;
 		a->allocated_octets += 1;
+		__COUNT_OP(&global_opcount, 2);
 		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->allocated_octets);
 		if (newOctets) 
 		{
@@ -311,6 +325,7 @@ void bigint_sub_inplace(BigInt* a, const BigInt* b)
 	    {
 		tmp_borrow = 1;
 		atemp = atemp + 0xFF + 1;
+		__COUNT_OP(&global_opcount, 2);
 	    }
 	    else
 	    {
@@ -318,6 +333,7 @@ void bigint_sub_inplace(BigInt* a, const BigInt* b)
 	    }
 
 	    atemp = atemp - btemp;
+		__COUNT_OP(&global_opcount, 1);
 	    a->octets[i] = atemp;
 	    borrow = tmp_borrow;
 	}
@@ -329,6 +345,7 @@ void bigint_sub_inplace(BigInt* a, const BigInt* b)
 	    if(a->octets[j] != 0) 
 	    {
 		a->significant_octets = j + 1;
+		__COUNT_OP(&global_opcount, 1);
 		stop = 1;
 	    }
 	    else
