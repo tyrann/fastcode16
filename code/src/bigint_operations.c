@@ -185,9 +185,11 @@ void bigint_right_shift_inplace(BigInt* a)
     
     // Check if the number of significant octets decreased
     if (a->octets[a->significant_octets-1] == 0 && a->significant_octets > 1)
+	{
 		__COUNT_OP(&global_opcount, 1);
         a->significant_octets--;
 		__COUNT_OP(&global_opcount, 1);
+	}
 }
 
 void bigint_modulo_inplace(BigInt* a, const BigInt* mod)
