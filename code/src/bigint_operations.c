@@ -126,8 +126,9 @@ void bigint_left_shift_inplace(BigInt* a)
     uint64_t original_octets = a->significant_octets;
     if (a->octets[a->significant_octets-1] > 0x7F)
     {
+		__COUNT_OP(&global_opcount, 1);
         uchar* new_octets = (uchar*)malloc(a->significant_octets + 1);
-		__COUNT_INDEX(&global_index_count, 1);
+		__COUNT_OP(&global_opcount, 1);
 
         memcpy(new_octets, a->octets, a->significant_octets);
         free(a->octets);
@@ -150,12 +151,14 @@ void bigint_left_shift_inplace(BigInt* a)
             "to the carry (%hhu) resulting in %02hhX", i, a->octets[i],
             a->octets[i] << 1, cur_carry, cur_carry + (a->octets[i] << 1));*/
         a->octets[i] = cur_carry + (a->octets[i] << 1);
+		__COUNT_OP(&global_opcount, 1);
 		__COUNT_INDEX(&global_index_count, 1);
     }
     
     // Add carry to last octet if necessary
     if (carry > 0)
     {
+		__COUNT_OP(&global_opcount, 1);
         a->octets[original_octets] = carry;
         /*LOG_DEBUG("Carry (%hhu) added to octet %llu resulting in (%02hhX)",
             carry, original_octets + 1, a->octets[original_octets + 1]);*/
@@ -177,10 +180,12 @@ void bigint_right_shift_inplace(BigInt* a)
             "to the carry (%hhu) resulting in %02hhX", i-1, a->octets[i-1],
             a->octets[i-1] << 1, cur_carry, cur_carry + (a->octets[i-1] << 1));*/
         a->octets[i-1] = cur_carry + (a->octets[i-1] >> 1);
+		__COUNT_OP(&global_opcount, 1);
     }
     
     // Check if the number of significant octets decreased
     if (a->octets[a->significant_octets-1] == 0 && a->significant_octets > 1)
+		__COUNT_OP(&global_opcount, 1);
         a->significant_octets--;
 		__COUNT_OP(&global_opcount, 1);
 }
@@ -220,6 +225,7 @@ void bigint_add_inplace(BigInt* a, const BigInt* b)
 	// Extends a if b is larger
 	if(a->significant_octets < b->significant_octets)
 	{
+		__COUNT_OP(&global_opcount, 1);
 		a->significant_octets = b->significant_octets;
 		a->allocated_octets = b->significant_octets;
 		uchar* new_octets = realloc(a->octets, sizeof(uchar) * a->allocated_octets);
@@ -323,6 +329,7 @@ void bigint_sub_inplace(BigInt* a, const BigInt* b)
 
 	    if(btemp > atemp)
 	    {
+		__COUNT_OP(&global_opcount, 1);
 		tmp_borrow = 1;
 		atemp = atemp + 0xFF + 1;
 		__COUNT_OP(&global_opcount, 2);
