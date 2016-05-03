@@ -164,17 +164,28 @@ int main(){
   printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
   
   printf("n = 20\n");
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFF","26F2FC170F69466A74DE"); // r = circles 
+  r = rdtsc("FFFFFFFFFFFFFFFFFFFF","26F2FC170F69466A74DE"); 
   printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
   
   printf("n = 30\n");
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE26F2FC","FFFFFE26F2FC170F69466A74DEFD8D"); // r = circles 
+  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE26F2FC","FFFFFE26F2FC170F69466A74DEFD8D");  
   printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
   
   printf("n = 40\n");
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE26F2FCFFFFFFFFFF","FFFFFE26F2FC170F69466A74DEFD8D26F2FC170F"); // r = circles 
+  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE26F2FCFFFFFFFFFF","FFFFFE26F2FC170F69466A74DEFD8D26F2FC170F");  
   printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
-
+  
+  printf("n = 50\n");
+  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE26F2FCFFFFFFFFFFFFFFFFFFFF","26F2FC170FFFFFFE26F2FC170F69466A74DEFD8D26F2FC170F");
+  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
+  
+  printf("n = 80\n");
+  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE26F2FCFFFFFFFFFFFFFFFFFFFFFFFFFE26F2FC170F69466A74DEFD8D","26F2FC170FFFFFFE26F2FC170F69466A74DEFD8D26F2FC170FFFFFFFFFFFFFFFFFFFFFFFFE26F2FC");
+  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
+  
+  printf("n = 100\n");
+  r = rdtsc("FFFFFFFFFFFFFFFFF26F2FC170F69466A74DEFFFFFFE26F2FCFFFFFFFFFFFFFFFFFFFFFFFFFE26F2FC170F69466A74DEFD8D","26F2FC170FFFFFFE26F2FC170F69466A74DEFD8D26F2FCFFFFFFFFFFFFFFFFFFFF170FFFFFFFFFFFFFFFFFFFFFFFFE26F2FC");
+  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
   return 0;
 }
 

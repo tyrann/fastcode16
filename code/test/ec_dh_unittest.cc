@@ -28,7 +28,7 @@ void create_parameters_ECDH(EllipticCurveParameter *params)
     point_free(&G);
 }
 
-TEST(ec_dh, ecdh_generate_key)
+TEST(ec_dh, ecdh_generate_public_key)
 {
     EllipticCurveParameter params;
     create_parameters_ECDH(&params);
@@ -51,7 +51,7 @@ TEST(ec_dh, ecdh_generate_key)
 	ec_ECDHfree(&uECDH);
 }
 
-TEST(ec_dh, ecdh_compute_key)
+TEST(ec_dh, ecdh_compute_shared_secret)
 {
     EllipticCurveParameter params;
     create_parameters_ECDH(&params);
