@@ -24,10 +24,9 @@ void ec_ECDHfree(ECDH *ecdh);
 /*
 *	ecdh_generate_key() performs the first step of a Diffie-Hellman key exchange by generating private and public DH values. By calling ecdh_generate_key(), these are combined with *	 the other party's public value to compute the shared key.
 *	
-*	The return value should be 1 if succeed and 0 otherwise
 */
 
-int ecdh_generate_public_key(ECDH *dh, const BigInt *d);
+void ecdh_generate_public_key(Point *publicKey, const BigInt *d, const EllipticCurveParameter *parameters);
 
 /*
 *	ec_compute_key() computes the shared secret from the private ECDH value in dhU and the other party's public value in dhV and returns it shared secret.
@@ -35,7 +34,7 @@ int ecdh_generate_public_key(ECDH *dh, const BigInt *d);
 *	The return value should be 1 if succeed and 0 otherwise
 */
 
-int ecdh_compute_shared_secret(ECDH *dhU, ECDH *dhV);
+int ecdh_compute_shared_secret(BigInt *sharedInfo, const BigInt *privateKey, const Point *publicKey, const EllipticCurveParameter *parameters);
 
 /*
 *	ecdh_verification() verifies if the two parties have the same sharedInfo and parameters
