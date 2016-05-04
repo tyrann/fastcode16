@@ -1,7 +1,5 @@
-
 #ifndef __EC_PARAMETERS_H_
 #define __EC_PARAMETERS_H_
-
 #include <stdio.h>
 #include "bigint.h"
 #include "ec_point_structure.h"
