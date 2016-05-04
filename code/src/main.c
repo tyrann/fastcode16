@@ -232,12 +232,11 @@ int main(){
   global_opcount = 0;
   global_index_count = 0; 
  /* */
-// secp192
+  // secp192
   rdtsc("FEFFFFFFFFFFFFFFFFFFFFFE62F2FC170F69466A74DEFD8D","FEFFFFFFFFFFFFFFFFFFFFFE26F2FC710F69466A74DEFD8D",192); 
   global_opcount = 0;
   global_index_count = 0;   
- 
-// secp224
+  // secp224
   rdtsc("FEFFFFFFFFFFFFFFFFFFFFFFFFFF61A2E0B8F03E13DD29455C5C2A3D","FEFFFFFFFFFFFFFFFFFFFFFFFFFF16A2E0B8F03E13DD29545C5C2A3D",224); 
   global_opcount = 0;
   global_index_count = 0;    
