@@ -7,7 +7,7 @@
 // #TODO Split operations types
 
 #define OP_COUNT_NONE 0      // Counts nothing
-#define OP_COUNT_INDEX 1       // Counts all
+#define OP_COUNT_OP 1       // Counts all
 #define OP_COUNT_ALL 2
 
 #ifndef OP_COUNT
