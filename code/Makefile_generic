@@ -17,4 +17,4 @@ VPATH = ./src:./test:./src/logging:./src/opcount:./src/config:./test/config
 
 # GCC architecture flags
 AFLAGS = 
-CFLAGS = -g -Wall -Wextra -std=c99 -DLOG_LEVEL=0 $(AFLAGS)
+CFLAGS = -g -Wall -Wextra -std=c99 -DLOG_LEVEL=0 $(AFLAGS) -DNDEBUG -O3
