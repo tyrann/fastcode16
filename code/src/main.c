@@ -1,5 +1,6 @@
 #ifndef WIN32
 #include <sys/time.h>
+#include <inttypes.h>
 #include "main.h"
 #endif
 #include <stdlib.h>
@@ -12,7 +13,8 @@
 #define OP_COUNT 1
 
 unsigned short int n;
-
+extern uint64_t global_opcount; 
+extern uint64_t global_index_count; 
 /* 
  * Compute ECDH
  * 
@@ -142,41 +144,7 @@ void computeECDH(char* dURand, char* dVRand,int keyLength) {
       default :
   		create_parameters_ECDH192(&params);
    }
-   /*
-	BigInt dU;
-	bigint_from_hex_string(&dU, dURand); // Randome number between 0 and n 
-	
-	BigInt dV;
-	bigint_from_hex_string(&dV, dVRand); // Randome number between 0 and n 
-
-	ECDH uECDH;
-    Point pub_keyU;
-
-	BigInt sharedInfoU;
-	bigint_from_uint32(&sharedInfoU, 0);
-	ec_create_ECDH(&uECDH, &params, &pub_keyU, &dU, &sharedInfoU);	
-	ECDH vECDH;
-    Point pub_keyV;
-    create_point_inf(&pub_keyV);
-	BigInt sharedInfoV;
-	bigint_from_uint32(&sharedInfoV, 1);
-	ec_create_ECDH(&vECDH, &params, &pub_keyV, &dV, &sharedInfoV);
-	
-	ecdh_generate_public_key(&uECDH, &dU);
-	ecdh_generate_public_key(&vECDH, &dV);
-	ec_free(&params);
-	bigint_free(&dU);
-	bigint_free(&dV);
-
-    point_free(&pub_keyU);
-	bigint_free(&sharedInfoU);
-	ec_ECDHfree(&uECDH);
-
-	point_free(&pub_keyV);
-	bigint_free(&sharedInfoV);
-	ec_ECDHfree(&vECDH);		
-	*/
-	
+   
     BigInt dU;
     bigint_from_hex_string(&dU, dURand); // Random number between 0 and n 
 	
@@ -190,8 +158,6 @@ void computeECDH(char* dURand, char* dVRand,int keyLength) {
     ECDH vECDH;
     Point pub_keyV;
     BigInt sharedInfoV;
-	
-
 	
     ecdh_generate_public_key(&pub_keyU, &dU, &params);
     ecdh_generate_public_key(&pub_keyV, &dV, &params);
@@ -233,7 +199,7 @@ double rdtsc(char* dURand, char* dVRand, int keyLength) {
  * avoid measurements bias due to the timing overhead.
  */
 #ifdef CALIBRATE
-  while(num_runs < (1 << 14)) { // run 14 times 
+  while(num_runs < (1 << 1)) { // Changed, only run 1 time now. Originally 14 times
       start = start_tsc();
       for (i = 0; i < num_runs; ++i) {		  
           computeECDH(dURand,dVRand,keyLength);
@@ -252,148 +218,43 @@ double rdtsc(char* dURand, char* dVRand, int keyLength) {
   }
 
   cycles = stop_tsc(start)/num_runs;
+  global_opcount = global_opcount/num_runs;
+  global_index_count = global_index_count/num_runs;
+  double r;  
+  r = cycles;
+  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);  
+  printf("global_opcount = %" PRIu64 "\n", global_opcount);
+  printf("global_index_count = %" PRIu64 "\n", global_index_count);
   return cycles;
 }
 
 int main(){
-
-  double r;  
-  extern uint64_t global_opcount; 
-  extern uint64_t global_index_count; 
   global_opcount = 0;
   global_index_count = 0; 
  /* */
 // secp192
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE62F2FC170F69466A74DEFD8D","FFFFFFFFFFFFFFFFFFFFFFFE26F2FC710F69466A74DEFD8D",192); // r = circles 
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);  
-  printf("global_opcount = %d\n", global_opcount);
-  printf("global_index_count = %d\n", global_index_count);
+  rdtsc("FEFFFFFFFFFFFFFFFFFFFFFE62F2FC170F69466A74DEFD8D","FEFFFFFFFFFFFFFFFFFFFFFE26F2FC710F69466A74DEFD8D",192); 
   global_opcount = 0;
   global_index_count = 0;   
  
 // secp224
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFFFFFF61A2E0B8F03E13DD29455C5C2A3D","FFFFFFFFFFFFFFFFFFFFFFFFFFFF16A2E0B8F03E13DD29545C5C2A3D",224); // r = circles 
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);  
-  printf("global_opcount = %d\n", global_opcount);
-  printf("global_index_count = %d\n", global_index_count);
+  rdtsc("FEFFFFFFFFFFFFFFFFFFFFFFFFFF61A2E0B8F03E13DD29455C5C2A3D","FEFFFFFFFFFFFFFFFFFFFFFFFFFF16A2E0B8F03E13DD29545C5C2A3D",224); 
   global_opcount = 0;
   global_index_count = 0;    
   
   // secp256
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF84A03BBFD25E8CD0364141","FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0361441",256); // r = circles 
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);  
-  printf("global_opcount = %d\n", global_opcount);
-  printf("global_index_count = %d\n", global_index_count);
+  rdtsc("FEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF84A03BBFD25E8CD0364141","FEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0361441",256); 
   global_opcount = 0;
   global_index_count = 0;  
  
   // secp384
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F4372DDF851A0DB248B0A77AECEC196ACCC52973","FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F3472DDF581A0DB248B0A77AECEC196ACCC52973",384); // r = circles 
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);  
-  printf("global_opcount = %d\n", global_opcount);
-  printf("global_index_count = %d\n", global_index_count);
+  rdtsc("FEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F4372DDF851A0DB248B0A77AECEC196ACCC52973","FEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F3472DDF581A0DB248B0A77AECEC196ACCC52973",384);  
   global_opcount = 0;
   global_index_count = 0;
   
   // secp521
-  r = rdtsc("01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA15868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409","01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868738BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409",521); // r = circles 
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);  
-  printf("global_opcount = %d\n", global_opcount);
-  printf("global_index_count = %d\n", global_index_count);
+  rdtsc("01EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA15868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409","01EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868738BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409",521);
   global_opcount = 0;
   global_index_count = 0;  
   return 0;
 }
-  /*
-  
-  printf("n = 20\n");
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFF","26F2FC170F69466A74DE"); // r = circles 
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
-  
-  printf("n = 30\n");
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE26F2FC","FFFFFE26F2FC170F69466A74DEFD8D"); // r = circles 
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
-  
-  printf("n = 40\n");
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE26F2FCFFFFFFFFFF","FFFFFE26F2FC170F69466A74DEFD8D26F2FC170F"); // r = circles 
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
-  
-  
-  
-  // secp521r1
-  printf("======EC secp521r1=====\n");
-  printf("n = 10\n");
-  r = rdtsc("FFFFFFFFFF","26F2FC170F"); // r = circles 
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
-  
-  printf("n = 20\n");
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFF","26F2FC170F69466A74DE"); 
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
-  
-  printf("n = 30\n");
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE26F2FC","FFFFFE26F2FC170F69466A74DEFD8D");  
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
-  
-  printf("n = 40\n");
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE26F2FCFFFFFFFFFF","FFFFFE26F2FC170F69466A74DEFD8D26F2FC170F");  
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
-  
-  printf("n = 50\n");
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE26F2FCFFFFFFFFFFFFFFFFFFFF","26F2FC170FFFFFFE26F2FC170F69466A74DEFD8D26F2FC170F");
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
-  
-  printf("n = 80\n");
-  r = rdtsc("FFFFFFFFFFFFFFFFFFFFFFFE26F2FCFFFFFFFFFFFFFFFFFFFFFFFFFE26F2FC170F69466A74DEFD8D","26F2FC170FFFFFFE26F2FC170F69466A74DEFD8D26F2FC170FFFFFFFFFFFFFFFFFFFFFFFFE26F2FC");
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
-  
-  printf("n = 100\n");
-  r = rdtsc("FFFFFFFFFFFFFFFFF26F2FC170F69466A74DEFFFFFFE26F2FCFFFFFFFFFFFFFFFFFFFFFFFFFE26F2FC170F69466A74DEFD8D","26F2FC170FFFFFFE26F2FC170F69466A74DEFD8D26F2FCFFFFFFFFFFFFFFFFFFFF170FFFFFFFFFFFFFFFFFFFFFFFFE26F2FC");
-  printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n\n", r, r/(FREQUENCY), (FREQUENCY)/1e6);
-
-}
-*/
-
-/*
-int main(int argc, char *argv[])
-{
-    if(argc != 2)
-    {
-	printf("elliptic curve cryptography expects one parameter\n");
-	printf("example ./ecc configfile.txt\n");
-    }
-    else
-    {
-	EllipticCurveParameter parameter;
-	int code = read_config_file(&parameter, argv[1]);
-	if(code == CONFIG_COULD_NOT_OPEN_FILE)
-	{
-	    fprintf(stderr, "Could not open file \"%s\"\n", argv[1]);
-	    return -1;
-	}
-	else if(code == CONFIG_INVALID_FORMAT)
-	{
-	    fprintf(stderr, "The config file \"%s\" is invalid\n", argv[1]);
-	    return -1;
-	}
-	else
-	{
-	    BigInt d;
-	    Point P, result, expected;
-
-	    point_copy(&P, &(parameter.generator));
-	    bigint_copy(&d, &(parameter.n));
-	    create_point_inf(&expected);
-	    ec_point_mul(&result, &d, &P, &parameter);
-	    printf("%i", point_are_equal(&result, &expected));
-	    bigint_free(&d);
-	    point_free(&P);
-	    point_free(&result);
-	    point_free(&expected);
-	    ec_free(&parameter);
-	}
-	
-    }
-
-    return 0;
-}
-*/
