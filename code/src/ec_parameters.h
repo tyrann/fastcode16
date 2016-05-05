@@ -15,7 +15,7 @@ typedef struct
 	BigInt h;
 } EllipticCurveParameter;
 
-typedef enum {SECP192K1, SECP521R1} CurveParameter;
+typedef enum {SECP192K1, SECP224R1, SECP256K1, SECP384R1, SECP521R1} CurveParameter;
 
 /*
 This function generates parameters, that are often used in crypto
