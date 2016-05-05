@@ -9,7 +9,7 @@
 #define OP_COUNT_NONE 0      // Counts nothing
 #define OP_COUNT_OP 1       // Counts all
 #define OP_COUNT_ALL 2
-
+#define OP_COUNT 0
 #ifndef OP_COUNT
 #define OP_COUNT OP_COUNT_ALL
 #endif
