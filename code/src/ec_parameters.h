@@ -19,6 +19,12 @@ typedef enum {SECP192K1, SECP224R1, SECP256K1, SECP384R1, SECP521R1} CurveParame
 
 /*
 This function generates parameters, that are often used in crypto
+The values are taken from
+
+SEC 2: Recommended Elliptic Curve Domain Parameters
+Certicom Research
+January 27, 2010
+Version 2.0
 
 */
 void ec_generate_parameter(EllipticCurveParameter *parameter, const CurveParameter name);
