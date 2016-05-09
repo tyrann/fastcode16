@@ -15,7 +15,6 @@ void ec_generate_parameter(EllipticCurveParameter *parameter, const CurveParamet
 	create_point_from_hex(&G, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D", "9B2F2F6D9C5628A7844163D015BE86344082AA88D95E2F9D");
 	bigint_from_hex_string(&n, "FFFFFFFFFFFFFFFFFFFFFFFE26F2FC170F69466A74DEFD8D");
 	bigint_from_uint32(&h, 1);
-	ec_create_parameters(parameter, &p, &a, &b, &G, &n, &h);
     }
     else if(name == SECP224R1)
     {
@@ -24,6 +23,7 @@ void ec_generate_parameter(EllipticCurveParameter *parameter, const CurveParamet
 	bigint_from_hex_string(&b, "B4050A850C04B3ABF54132565044B0B7D7BFD8BA270B39432355FFB4");
 	create_point_from_hex(&G, "B70E0CBD6BB4BF7F321390B94A03C1D356C21122343280D6115C1D21", "BD376388B5F723FB4C22DFE6CD4375A05A07476444D5819985007E34");
 	bigint_from_hex_string(&n, "FFFFFFFFFFFFFFFFFFFFFFFFFFFF16A2E0B8F03E13DD29455C5C2A3D");
+	bigint_from_uint32(&h, 1);
     }
     else if(name == SECP256K1)
     {
@@ -53,6 +53,7 @@ void ec_generate_parameter(EllipticCurveParameter *parameter, const CurveParamet
 	bigint_from_uint32(&h, 1);
     }
     
+    ec_create_parameters(parameter, &p, &a, &b, &G, &n, &h);
     bigint_free(&p);
     bigint_free(&a);
     bigint_free(&b);
