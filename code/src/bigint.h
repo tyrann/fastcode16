@@ -6,5 +6,6 @@
 #include "bigint_conversion.h"
 #include "bigint_utilities.h"
 #include "bigint_operations.h"
+#include "bigint_memory.h"
 
 #endif
