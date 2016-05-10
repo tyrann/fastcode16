@@ -8,31 +8,10 @@ extern "C" {
 }
 #include "gtest/gtest.h"
 
-// secp192k1
-void create_parameters_ECDH(EllipticCurveParameter *params)
-{
-    BigInt p, a, b, n, h;
-    Point G;
-    bigint_from_hex_string(&p, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFEE37");
-    bigint_from_uint32(&a, 0);
-    bigint_from_uint32(&b, 3);
-    create_point_from_hex(&G, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D", "9B2F2F6D9C5628A7844163D015BE86344082AA88D95E2F9D");
-    bigint_from_hex_string(&n, "FFFFFFFFFFFFFFFFFFFFFFFE26F2FC170F69466A74DEFD8D");
-    bigint_from_uint32(&h, 1);
-    ec_create_parameters(params, &p, &a, &b, &G, &n, &h);
-    bigint_free(&p);
-    bigint_free(&a);
-    bigint_free(&b);
-    bigint_free(&n);
-    bigint_free(&h);
-    point_free(&G);
-}
-
-
 TEST(ec_dh, ecdh_compute_shared_secret)
 {
     EllipticCurveParameter params;
-    create_parameters_ECDH(&params);
+    ec_generate_parameter(&params, SECP192K1);
     BigInt dU;
     bigint_from_hex_string(&dU, "FFFFFFFFFFFFFFFFFFFFFFF"); // Random number between 0 and n 
 	
