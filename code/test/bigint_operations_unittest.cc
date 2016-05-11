@@ -1,6 +1,6 @@
 
 extern "C" {
-    #include "../src/bigint.h"
+    #include "bigint.h"
 }
 #include "gtest/gtest.h"
 

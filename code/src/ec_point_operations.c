@@ -41,7 +41,7 @@ void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticC
 		BigInt x_add_inverse = GET_BIGINT_PTR(BI_POINTADD_XADDINVERSE_TAG);
 		BigInt y_3 = GET_BIGINT_PTR(BI_POINTADD_Y3_TAG);
 		BigInt y_3_rev = GET_BIGINT_PTR(BI_POINTADD_Y3REV_TAG);
-		BigInt x_1_minus_x_3 = GET_BIGINT_PTR(BI_POINTADD_X1MINUSY3_TAG);
+		BigInt x_1_minus_x_3 = GET_BIGINT_PTR(BI_POINTADD_X1MINUSX3_TAG);
 		BigInt y_1_add_inverse = GET_BIGINT_PTR(BI_POINTADD_Y1ADDINVERSE_TAG);
 
 		// numerator
@@ -72,7 +72,7 @@ void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticC
 		bigint_sub_inplace(dummy, x_twice_rev);
 
 		bigint_copy(x_3, lambda_squared_rev);
-		bigint_add_inplace(x_3, &dummy);
+		bigint_add_inplace(x_3, dummy);
 		bigint_modulo_inplace(x_3, params->p);
 	
 		// calculate y
@@ -98,7 +98,7 @@ void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticC
     // Rule 3
     else if(bigint_are_equal(a->x, b->x))
     {
-		resul->is_at_infinity = 1;
+		result->is_at_infinity = 1;
     }
     // Rule 4
     else if(!bigint_are_equal(a->x, b->x))
@@ -120,7 +120,7 @@ void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticC
 		BigInt x_3_add_inverse = GET_BIGINT_PTR(BI_POINTADD_X3ADDINVERSE_TAG);
 		BigInt y_3 = GET_BIGINT_PTR(BI_POINTADD_Y3_TAG);
 		BigInt y_3_rev = GET_BIGINT_PTR(BI_POINTADD_Y3REV_TAG);
-		BigInt x_1_minus_x_3 = GET_BIGINT_PTR(BI_POINTADD_X1MINUSY3_TAG);
+		BigInt x_1_minus_x_3 = GET_BIGINT_PTR(BI_POINTADD_X1MINUSX3_TAG);
 	
 		//Calculate y_2 - y_1
 		bigint_copy(y_1, a->y);
@@ -163,13 +163,13 @@ void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticC
 		bigint_modulo_inplace(x_3, params->p);
 
 		// Calculate y_3
-		bigint_copy(x_3_add_inverse, params->p));
+		bigint_copy(x_3_add_inverse, params->p);
 		bigint_sub_inplace(x_3_add_inverse, x_3);
 
-		bigint_copy(x_1_minus_x3, x_1);
-		bigint_add_inplace(x_1_minus_x3, x_3_add_inverse);
+		bigint_copy(x_1_minus_x_3, x_1);
+		bigint_add_inplace(x_1_minus_x_3, x_3_add_inverse);
 
-		montgomery_mul(y_3, lambda, x_1_minus_x3, params->p);
+		montgomery_mul(y_3, lambda, x_1_minus_x_3, params->p);
 		__montgomery_revert(y_3_rev, y_3, params->p);
 		bigint_add_inplace(y_3_rev, y_1_add_inverse);
 		bigint_modulo_inplace(y_3_rev, params->p);

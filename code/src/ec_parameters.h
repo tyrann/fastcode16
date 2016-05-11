@@ -29,8 +29,6 @@ Version 2.0
 */
 void ec_generate_parameter(EllipticCurveParameter *parameter, const CurveParameter name);
 
-void ec_free(EllipticCurveParameter *ec);
-
 void ec_create_parameters(EllipticCurveParameter *ec, BigInt p, BigInt a, BigInt b, Point const *generator, BigInt n, BigInt h);
 
 #endif

@@ -1,6 +1,6 @@
 extern "C" {
-    #include "../src/ec_point.h"
-    #include "../src/bigint.h"
+    #include "ec_point.h"
+    #include "bigint.h"
 }
 #include "gtest/gtest.h"
 
@@ -91,7 +91,6 @@ TEST(point_is_on_curve, point_inf)
     p.is_at_infinity = 1;
     
     ASSERT_TRUE(point_is_on_curve(&p, &params));
-    ec_free(&params);
 
 	bigint_destroy_buffer();
 }
@@ -115,7 +114,6 @@ TEST(point_is_on_curve, point_on_curve)
     create_point_from_uint32(&q, BI_TESTS_QX_TAG, BI_TESTS_QY_TAG, 3, 23);
     ASSERT_TRUE(point_is_on_curve(&q, &params));
     
-    ec_free(&params);
 	bigint_destroy_buffer();
 }
 
@@ -138,7 +136,6 @@ TEST(point_is_on_curve, point_not_on_curve)
     create_point_from_uint32(&q, BI_TESTS_QX_TAG, BI_TESTS_QY_TAG, 3, 12);
     ASSERT_FALSE(point_is_on_curve(&q, &params));
     
-    ec_free(&params);
 	bigint_destroy_buffer();
 }
 

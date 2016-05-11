@@ -1,9 +1,9 @@
 extern "C" {
-#include "../src/ec_point.h"
-#include "../src/bigint.h"
-#include "../src/ec_parameters.h"
-#include "../src/ec_dh.h"
-#include "../src/ec_point_operations.h"
+#include "ec_point.h"
+#include "bigint.h"
+#include "ec_parameters.h"
+#include "ec_dh.h"
+#include "ec_point_operations.h"
 
 }
 #include "gtest/gtest.h"
@@ -12,42 +12,29 @@ TEST(ec_dh, ecdh_compute_shared_secret)
 {
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP192K1);
-    BigInt dU;
-    bigint_from_hex_string(&dU, "FFFFFFFFFFFFFFFFFFFFFFF"); // Random number between 0 and n 
-	
-    BigInt dV;
-    bigint_from_hex_string(&dV, "26F2FC170F69466A74DEFD8"); // Random number between 0 and n 
+    BigInt dU = bigint_from_hex_string(BI_TESTS_DU_TAG, "FFFFFFFFFFFFFFFFFFFFFFF"); // Random number between 0 and n 
+    BigInt dV = bigint_from_hex_string(BI_TESTS_DV_TAG, "26F2FC170F69466A74DEFD8"); // Random number between 0 and n 
 
     ECDH uECDH;
     Point pub_keyU;
-    BigInt sharedInfoU;
+    create_point_from_uint32(&pub_keyU, BI_TESTS_PUBKEYUX_TAG, BI_TESTS_PUBKEYUY_TAG, 0, 0);
+    BigInt sharedInfoU = GET_BIGINT_PTR(BI_TESTS_SHAREDU_TAG);
    
     ECDH vECDH;
     Point pub_keyV;
-    BigInt sharedInfoV;
+    create_point_from_uint32(&pub_keyV, BI_TESTS_PUBKEYVX_TAG, BI_TESTS_PUBKEYVY_TAG, 0, 0);
+    BigInt sharedInfoV = GET_BIGINT_PTR(BI_TESTS_SHAREDV_TAG);
 	
-    ecdh_generate_public_key(&pub_keyU, &dU, &params);
-    ecdh_generate_public_key(&pub_keyV, &dV, &params);
+    ecdh_generate_public_key(&pub_keyU, dU, &params);
+    ecdh_generate_public_key(&pub_keyV, dV, &params);
 
-    ASSERT_TRUE(ecdh_compute_shared_secret(&sharedInfoU, &dU, &pub_keyV, &params));
-    ASSERT_TRUE(ecdh_compute_shared_secret(&sharedInfoV, &dV, &pub_keyU, &params));
+    ASSERT_TRUE(ecdh_compute_shared_secret(sharedInfoU, dU, &pub_keyV, &params));
+    ASSERT_TRUE(ecdh_compute_shared_secret(sharedInfoV, dV, &pub_keyU, &params));
 
-    ec_create_ECDH(&uECDH, &params, &pub_keyU, &dU, &sharedInfoU);
-    ec_create_ECDH(&vECDH, &params, &pub_keyV, &dV, &sharedInfoV);
+    ec_create_ECDH(&uECDH, &params, &pub_keyU, dU, sharedInfoU);
+    ec_create_ECDH(&vECDH, &params, &pub_keyV, dV, sharedInfoV);
 
     ASSERT_TRUE(ecdh_verification(&uECDH, &vECDH));
-
-    ec_free(&params);
-    bigint_free(&dU);
-    bigint_free(&dV);
-
-    point_free(&pub_keyU);
-    bigint_free(&sharedInfoU);
-    ec_ECDHfree(&uECDH);
-
-    point_free(&pub_keyV);
-    bigint_free(&sharedInfoV);
-    ec_ECDHfree(&vECDH);	
 }
 
 /*TEST(ec_dh, ecdh_compute_keySharedInfoCheck)
