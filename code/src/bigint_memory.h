@@ -7,6 +7,8 @@
 extern uchar* __bigint_buffer;
 extern BigInt bigint_zero;
 extern BigInt bigint_one;
+extern BigInt bigint_two;
+extern BigInt bigint_three;
 
 void bigint_create_buffer();
 void bigint_destroy_buffer();

@@ -13,8 +13,6 @@ void create_point_from_uint32(Point* p, uint32_t tag_x, uint32_t tag_y, uint32_t
 
 void create_point_from_uint64(Point* p, uint32_t tag_x, uint32_t tag_y, uint64_t x, uint64_t y);
 
-void create_point_inf(Point* p, uint32_t tag_x, uint32_t tag_y);
-
 char point_is_on_curve(const Point* p, const EllipticCurveParameter *params);
 
 void point_copy(Point* dest, Point const *source);

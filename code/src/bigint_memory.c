@@ -10,6 +10,8 @@
 uchar* __bigint_buffer = 0;
 BigInt bigint_zero;
 BigInt bigint_one;
+BigInt bigint_two;
+BigInt bigint_three;
 
 void __create_default_bigints()
 {
@@ -20,6 +22,14 @@ void __create_default_bigints()
     bigint_one = GET_BIGINT_PTR(BI_COMMONS_ONE_TAG);
     bigint_one->significant_octets = 1;
     bigint_one->octets[0] = 0x1;
+    
+    bigint_two = GET_BIGINT_PTR(BI_COMMONS_TWO_TAG);
+    bigint_two->significant_octets = 1;
+    bigint_two->octets[0] = 0x2;
+    
+    bigint_three = GET_BIGINT_PTR(BI_COMMONS_THREE_TAG);
+    bigint_three->significant_octets = 1;
+    bigint_three->octets[0] = 0x3;
 }
 
 void bigint_create_buffer()
