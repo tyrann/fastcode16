@@ -149,8 +149,8 @@ TEST(copy_point, copy_point)
         bigint_from_hex_string(BI_TESTS_PX_TAG, "FFCC"),
         bigint_from_hex_string(BI_TESTS_PY_TAG, "CCFF"));
     create_point(&q,
-        bigint_from_uint32(BI_TESTS_PX_TAG, 0),
-        bigint_from_uint32(BI_TESTS_PY_TAG, 0));
+        bigint_from_uint32(BI_TESTS_QX_TAG, 0),
+        bigint_from_uint32(BI_TESTS_QY_TAG, 0));
     point_copy(&q, &p);
 
     ASSERT_TRUE(bigint_are_equal(p.x, q.x));
