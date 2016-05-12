@@ -10,8 +10,11 @@ extern "C" {
 
 TEST(ec_dh, ecdh_compute_shared_secret)
 {
+    bigint_create_buffer();
+    
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP192K1);
+ 
     BigInt dU = bigint_from_hex_string(BI_TESTS_DU_TAG, "FFFFFFFFFFFFFFFFFFFFFFF"); // Random number between 0 and n 
     BigInt dV = bigint_from_hex_string(BI_TESTS_DV_TAG, "26F2FC170F69466A74DEFD8"); // Random number between 0 and n 
 
@@ -19,6 +22,7 @@ TEST(ec_dh, ecdh_compute_shared_secret)
     Point pub_keyU;
     create_point_from_uint32(&pub_keyU, BI_TESTS_PUBKEYUX_TAG, BI_TESTS_PUBKEYUY_TAG, 0, 0);
     BigInt sharedInfoU = GET_BIGINT_PTR(BI_TESTS_SHAREDU_TAG);
+
    
     ECDH vECDH;
     Point pub_keyV;
@@ -35,6 +39,8 @@ TEST(ec_dh, ecdh_compute_shared_secret)
     ec_create_ECDH(&vECDH, &params, &pub_keyV, dV, sharedInfoV);
 
     ASSERT_TRUE(ecdh_verification(&uECDH, &vECDH));
+    
+    bigint_destroy_buffer();
 }
 
 /*TEST(ec_dh, ecdh_compute_keySharedInfoCheck)

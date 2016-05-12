@@ -2,10 +2,10 @@
 #include "bigint.h"
 
 void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticCurveParameter *params)
-{
+{	
     assert(point_is_on_curve(a, params));
     assert(point_is_on_curve(b, params));
-
+	
     // SEC 1: Elliptic Curve Cryptography Certicom Research Version 2.0 page 7
     
     // Rule 1
@@ -93,7 +93,9 @@ void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticC
 		bigint_add_inplace(y_3_rev, y_1_add_inverse);
 		bigint_modulo_inplace(y_3_rev, params->p);
 
-		create_point(result, x_3, y_3_rev);
+		bigint_copy(result->x, x_3);
+		bigint_copy(result->y, y_3_rev);
+		result->is_at_infinity = 0;
     } 
     // Rule 3
     else if(bigint_are_equal(a->x, b->x))
@@ -102,7 +104,7 @@ void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticC
     }
     // Rule 4
     else if(!bigint_are_equal(a->x, b->x))
-    {
+    {	
 		// Get BigInt objects
 		BigInt numerator = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
 		BigInt denominator = GET_BIGINT_PTR(BI_POINTADD_DENOMINATOR_TAG);
@@ -174,7 +176,9 @@ void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticC
 		bigint_add_inplace(y_3_rev, y_1_add_inverse);
 		bigint_modulo_inplace(y_3_rev, params->p);
 	
-		create_point(result, x_3, y_3_rev);
+		bigint_copy(result->x, x_3);
+		bigint_copy(result->y, y_3_rev);
+		result->is_at_infinity = 0;
     }
     else
     {

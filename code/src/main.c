@@ -8,7 +8,7 @@
 #include <time.h>
 #define NUM_RUNS 2
 #define CYCLES_REQUIRED 1e8
-#define FREQUENCY 1.8e9
+#define FREQUENCY 3.4e9
 #define CALIBRATE
 #define OP_COUNT 1
 
@@ -65,6 +65,8 @@ void computeECDH(char* dURand, char* dVRand, int keyLength) {
 	
     ec_create_ECDH(&uECDH, &params, &pub_keyU, dU, sharedInfoU);
     ec_create_ECDH(&vECDH, &params, &pub_keyV, dV, sharedInfoV);
+    
+    assert(ecdh_verification(&uECDH, &vECDH) != 0);
 }
 
 /* 

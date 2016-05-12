@@ -10,7 +10,7 @@ void ec_generate_parameter(EllipticCurveParameter *parameter, const CurveParamet
     if(name == SECP192K1)
     {
 	    p = bigint_from_hex_string(BI_PARAMS_P_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFEE37");
-	    a = bigint_from_uint32(BI_PARAMS_A_TAG, 0);
+		a = bigint_from_uint32(BI_PARAMS_A_TAG, 0);
 	    b = bigint_from_uint32(BI_PARAMS_B_TAG, 3);
 	    create_point_from_hex(&G, BI_PARAMS_GX_TAG, BI_PARAMS_GY_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D", "9B2F2F6D9C5628A7844163D015BE86344082AA88D95E2F9D");
 	    n = bigint_from_hex_string(BI_PARAMS_N_TAG, "FFFFFFFFFFFFFFFFFFFFFFFE26F2FC170F69466A74DEFD8D");
@@ -52,24 +52,19 @@ void ec_generate_parameter(EllipticCurveParameter *parameter, const CurveParamet
 	    n = bigint_from_hex_string(BI_PARAMS_N_TAG, "01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409");
 	    h = bigint_from_uint32(BI_PARAMS_H_TAG, 1);
     }
-    
     ec_create_parameters(parameter, p, a, b, &G, n, h);
 }
 
 void ec_create_parameters(EllipticCurveParameter *ec, BigInt p, BigInt a, BigInt b, Point const *generator, BigInt n, BigInt h)
 {
-    ec->p = GET_BIGINT_PTR(BI_PARAMS_P_TAG);
-    ec->a = GET_BIGINT_PTR(BI_PARAMS_A_TAG);
-    ec->b = GET_BIGINT_PTR(BI_PARAMS_B_TAG);
-    ec->n = GET_BIGINT_PTR(BI_PARAMS_N_TAG);
-    ec->h = GET_BIGINT_PTR(BI_PARAMS_H_TAG);
-    
-    bigint_copy(ec->p, p);
-    bigint_copy(ec->a, a);
-    bigint_copy(ec->b, b);
-    point_copy(&(ec->generator), generator);
-    bigint_copy(ec->n, n);
-    bigint_copy(ec->h, h);
+    ec->p = p;
+    ec->a = a;
+    ec->b = b;
+    ec->n = n;
+    ec->h = h;
+	ec->generator.x = generator->x;
+	ec->generator.y = generator->y;
+	ec->generator.is_at_infinity = generator->is_at_infinity;
 }
 
 

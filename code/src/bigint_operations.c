@@ -87,7 +87,7 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 		bigint_right_shift_inplace(x_mont);		
 		uint64_t ui = ((z0 + xi*y0)*pbar) % B;
 		__COUNT_OP(&global_opcount, 4);
-
+		
 		//Z <- (Z + xiy + ui*p)/b
 		
 		if(xi)
@@ -179,9 +179,10 @@ void bigint_add_inplace(BigInt a, const BigInt b)
 	if(a->significant_octets < b->significant_octets)
 	{
 		__COUNT_OP(&global_opcount, 1);
+		memset(a->octets + a->significant_octets, 0, b->significant_octets - a->significant_octets);
 		a->significant_octets = b->significant_octets;
 	}
-	
+
 	a_bytes = a->significant_octets;
 	uint64_t i = 0;
 	// Execute adding and propagate carry

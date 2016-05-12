@@ -124,10 +124,11 @@
 #define BI_ECDH_PUBKEYUY_TAG 94
 #define BI_ECDH_PUBKEYVX_TAG 95
 #define BI_ECDH_PUBKEYVY_TAG 96
+#define BI_ECDH_SHAREDSECRETY_TAG 97
 
 // Update the number of tags
 // after defining a new one:
-#define BI_TAGS_COUNT 97
+#define BI_TAGS_COUNT 98
 // ==========================
 
 #endif

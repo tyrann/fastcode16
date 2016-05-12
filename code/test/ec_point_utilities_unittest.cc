@@ -15,6 +15,7 @@ void create_parameters(EllipticCurveParameter *params)
     create_point_from_hex(&G, BI_PARAMS_GX_TAG, BI_PARAMS_GY_TAG, "0", "0");
     BigInt n = bigint_from_uint32(BI_PARAMS_N_TAG, 0);
     BigInt h = bigint_from_uint32(BI_PARAMS_H_TAG, 0);
+    
     ec_create_parameters(params, p, a, b, &G, n, h);
 }
 
@@ -144,9 +145,12 @@ TEST(copy_point, copy_point)
 	bigint_create_buffer();
 
     Point p, q;
-    BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "FFCC");
-    BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "CCFF");
-    create_point(&p, x, y);
+    create_point(&p,
+        bigint_from_hex_string(BI_TESTS_PX_TAG, "FFCC"),
+        bigint_from_hex_string(BI_TESTS_PY_TAG, "CCFF"));
+    create_point(&q,
+        bigint_from_uint32(BI_TESTS_PX_TAG, 0),
+        bigint_from_uint32(BI_TESTS_PY_TAG, 0));
     point_copy(&q, &p);
 
     ASSERT_TRUE(bigint_are_equal(p.x, q.x));

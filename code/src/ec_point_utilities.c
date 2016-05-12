@@ -29,7 +29,7 @@ void create_point_from_uint64(Point* p, uint32_t tag_x, uint32_t tag_y, uint64_t
 }
 
 char point_is_on_curve(const Point* p, const EllipticCurveParameter *params)
-{
+{    
     char result;
     if(p->is_at_infinity)
     {
@@ -47,8 +47,8 @@ char point_is_on_curve(const Point* p, const EllipticCurveParameter *params)
         BigInt a_x_rev = GET_BIGINT_PTR(BI_POINTISONCURVE_AXREV_TAG);
         
         montgomery_mul(x_squared, p->x, p->x, params->p);
-	    __montgomery_revert(x_squared_rev, x_squared, params->p);
-	
+        __montgomery_revert(x_squared_rev, x_squared, params->p);
+    
 	    montgomery_mul(x_result, x_squared_rev, p->x, params->p);
 	    __montgomery_revert(x_result_rev, x_result, params->p);
 
@@ -77,9 +77,17 @@ void point_copy(Point* dest, const Point *source)
 
 int point_are_equal(const Point *p, const Point *q)
 {
-    if(!bigint_are_equal(p->x, q->x) || !bigint_are_equal(p->y, q->y) || p->is_at_infinity != q->is_at_infinity)
+    if(p->is_at_infinity == q->is_at_infinity)
 	{
-		return 0;
+        if (q->is_at_infinity == 1)
+            return 1;
+        else if (!bigint_are_equal(p->x, q->x) || !bigint_are_equal(p->y, q->y))
+            return 0;
+		else
+            return 1;
     }
-    return 1;
+    else
+    {
+        return 0;
+    }
 }

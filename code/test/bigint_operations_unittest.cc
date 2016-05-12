@@ -69,8 +69,8 @@ TEST(bigint_add_inplace, test_add_mem)
 	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "1");
 	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "FFFF");
 	
-	ASSERT_EQ(a->significant_octets, 2);
-	ASSERT_EQ(b->significant_octets, 1);
+	ASSERT_EQ(a->significant_octets, 1);
+	ASSERT_EQ(b->significant_octets, 2);
 
 	bigint_add_inplace(a, b);
 	ASSERT_EQ(a->significant_octets, 3);
@@ -543,7 +543,7 @@ TEST(bigint_right_shift_inplace, test_different_size)
     bigint_destroy_buffer();
 }
 
-TEST(bigint_montgomery_convert, test_big_numbers)
+TEST(bigint_montgomery_convert, test_big_numbers_1)
 {
     bigint_create_buffer();
     
@@ -560,12 +560,12 @@ TEST(bigint_montgomery_convert, test_big_numbers)
     expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "22975b43cd66ef93e142e006ab5bb9522981ab20121a661f432bc566544a9f61");
     
     __montgomery_convert(b, a, p);
-    ASSERT_TRUE(bigint_are_equal(a, expected));
+    ASSERT_TRUE(bigint_are_equal(b, expected));
     
     bigint_destroy_buffer();
 }
 
-TEST(bigint_montgomery_revert, test_big_numbers)
+TEST(bigint_montgomery_revert, test_big_numbers_2)
 {
     bigint_create_buffer();
     
@@ -758,6 +758,7 @@ TEST(bigint_division, test_field)
 	p = bigint_from_hex_string(BI_TESTS_P_TAG, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
     
 	bigint_divide(x, b, a, p);
+	
 	ASSERT_TRUE(bigint_are_equal(x, c));
 
 	bigint_destroy_buffer();
