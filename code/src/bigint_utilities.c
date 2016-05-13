@@ -86,10 +86,12 @@ int bigint_is_greater(const BigInt* const a, const BigInt* const b)
 		{
 			if(a->octets[i-1] > b->octets[i-1])
 			{
+				__COUNT_OP(&global_opcount,2);
 				return 1;
 			}
 			else if(b->octets[i-1] > a->octets[i-1])
 			{
+				__COUNT_OP(&global_opcount,2);
 				return 0;
 			} 
 
@@ -105,8 +107,8 @@ int bigint_is_even(BigInt* a)
     BIGINT_ASSERT_VALID(a);
     if((a->octets[0] & 1) == 1)
     {
+		__COUNT_OP(&global_index_count,1);
 	    return 0;
     }
-	__COUNT_OP(&global_index_count,1);
     return 1;
 }
