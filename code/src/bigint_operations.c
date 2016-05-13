@@ -317,6 +317,7 @@ void bigint_sub_inplace(BigInt* a, const BigInt* b)
 		
 	for (; i < count && !stop; i++)
 	{
+		__COUNT_OP(&global_opcount, 2);
 	    uint32_t atemp = (uint32_t)a->octets[i];
 			
 	    uint32_t btemp;
@@ -359,7 +360,7 @@ void bigint_sub_inplace(BigInt* a, const BigInt* b)
 	stop = 0;
 	for(int j = count - 1; j >= 0 && !stop; j--)
 	{
-		__COUNT_OP(&global_opcount, 1);
+		__COUNT_OP(&global_opcount, 3);
 	    if(a->octets[j] != 0) 
 	    {
 		a->significant_octets = j + 1;
@@ -540,6 +541,7 @@ void bigint_divide(BigInt* dest, const BigInt* b, const BigInt* a, const BigInt*
 		bigint_from_uint32(&one, 1);
 		while (!bigint_are_equal(&u, &one) && !bigint_are_equal(&v, &one))
 		{
+			__COUNT_OP(&global_opcount, 1);
 			// 3.1)
 			while (bigint_is_even(&u))
 			{
