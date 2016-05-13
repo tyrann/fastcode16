@@ -1,4 +1,8 @@
 #include "ec_point_utilities.h"
+#include "opcount/opcount.h"
+
+extern uint64_t global_opcount;
+extern uint64_t global_index_count;
 
 void create_point(Point* p, const BigInt *a, const BigInt * b)
 {
@@ -106,6 +110,7 @@ int point_are_equal(const Point *p, const Point *q)
 {
     if(!bigint_are_equal(&(p->x), &q->x) || !bigint_are_equal(&(p->y), &q->y) || p->is_at_infinity != q->is_at_infinity)
 	{
+		__COUNT_OP(&global_opcount, 3);
 		return 0;
     }
     return 1;
