@@ -34,6 +34,7 @@ void __montgomery_convert(BigInt res, const BigInt x, const BigInt p)
 		{
 			bigint_sub_inplace(res, p);
 		} 
+	__COUNT_INDEX(&global_index_count, 1);
 	}
 }
 
@@ -56,6 +57,7 @@ void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p)
 			bigint_add_inplace(rev, p);
 			bigint_right_shift_inplace(rev);
 		}
+		__COUNT_INDEX(&global_index_count, 1);
 	}
 }
 
@@ -100,6 +102,7 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 		}
 
 		bigint_right_shift_inplace(res);
+		__COUNT_INDEX(&global_index_count, 1);
 	}
 	
 	if(bigint_is_greater(res, p))
@@ -145,15 +148,17 @@ void bigint_right_shift_inplace(BigInt a)
     {
         uchar cur_carry = carry;
         carry = a->octets[i-1] << 7;
-		__COUNT_OP(&global_opcount, 1);
+		__COUNT_OP(&global_opcount, 2);
+
         a->octets[i-1] = cur_carry + (a->octets[i-1] >> 1);
-		__COUNT_OP(&global_opcount, 1);
+		__COUNT_OP(&global_opcount, 3);
+		__COUNT_INDEX(&global_index_count, 1);
     }
     
     // Check if the number of significant octets decreased
     if (a->octets[a->significant_octets-1] == 0 && a->significant_octets > 1)
 	{
-		__COUNT_OP(&global_opcount, 1);
+		__COUNT_OP(&global_opcount, 2);
         a->significant_octets--;
 		__COUNT_OP(&global_opcount, 1);
 	}
@@ -178,9 +183,10 @@ void bigint_add_inplace(BigInt a, const BigInt b)
 	// Extends a if b is larger
 	if(a->significant_octets < b->significant_octets)
 	{
-		__COUNT_OP(&global_opcount, 1);
 		memset(a->octets + a->significant_octets, 0, b->significant_octets - a->significant_octets);
+		__COUNT_OP(&global_opcount, 2);
 		a->significant_octets = b->significant_octets;
+
 	}
 
 	a_bytes = a->significant_octets;
@@ -190,9 +196,9 @@ void bigint_add_inplace(BigInt a, const BigInt b)
     {	
 		uint32_t atemp;
 		uint32_t btemp;
-		__COUNT_OP(&global_opcount, 1);
 		if(i <= b->significant_octets-1)
 		{
+			__COUNT_OP(&global_opcount, 1);
 			atemp = (uint32_t)a->octets[i];
 			btemp = (uint32_t)b->octets[i];
 			carry = (carry + atemp + btemp);
@@ -208,6 +214,7 @@ void bigint_add_inplace(BigInt a, const BigInt b)
 		a->octets[i] = carry & 0xFF;	
 		carry = carry >> 8;
 		__COUNT_OP(&global_opcount, 1);
+		__COUNT_INDEX(&global_index_count, 1);
     }
 	// If needed, allocate 1 more byte for the carry
 	if(carry > 0)
@@ -234,6 +241,7 @@ void bigint_sub_inplace(BigInt a, const BigInt b)
 		
 	for (; i < count && !stop; i++)
 	{
+		__COUNT_OP(&global_opcount, 2);
 	    uint32_t atemp = (uint32_t)a->octets[i];
 	    uint32_t btemp;
 	    if(i < b->significant_octets)
@@ -248,13 +256,13 @@ void bigint_sub_inplace(BigInt a, const BigInt b)
 
 	    if(borrow) 
 	    {
-			stop = 0;
-			btemp++;
+		stop = 0;
+		btemp++;
+		__COUNT_OP(&global_opcount, 1);
 	    }
 
 	    if(btemp > atemp)
 	    {
-			__COUNT_OP(&global_opcount, 1);
 			tmp_borrow = 1;
 			atemp = atemp + 0xFF + 1;
 			__COUNT_OP(&global_opcount, 2);
@@ -268,11 +276,13 @@ void bigint_sub_inplace(BigInt a, const BigInt b)
 		__COUNT_OP(&global_opcount, 1);
 	    a->octets[i] = atemp;
 	    borrow = tmp_borrow;
+		__COUNT_INDEX(&global_index_count, 1);
 	}
 
 	stop = 0;
 	for(int j = count - 1; j >= 0 && !stop; j--)
 	{
+		__COUNT_OP(&global_opcount, 3);
 	    if(a->octets[j] != 0) 
 	    {
 			a->significant_octets = j + 1;
@@ -307,6 +317,7 @@ void bigint_divide(BigInt dest, const BigInt b, const BigInt a, const BigInt p)
 		// 3)
 		while (!bigint_are_equal(u, bigint_one) && !bigint_are_equal(v, bigint_one))
 		{
+			__COUNT_OP(&global_opcount, 1);
 			// 3.1)
 			while (bigint_is_even(u))
 			{

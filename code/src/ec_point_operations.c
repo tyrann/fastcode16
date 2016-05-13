@@ -1,5 +1,9 @@
 #include "ec_point.h"
 #include "bigint.h"
+#include "opcount/opcount.h"
+
+extern uint64_t global_opcount;
+extern uint64_t global_index_count;
 
 void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticCurveParameter *params)
 {	
@@ -204,6 +208,7 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
     {
 		for(int j = 0; j < 8; j++) 
 		{
+			__COUNT_OP(&global_opcount,2);
 	    	if(d->octets[i] & (1 << j)) 
 	    	{
 				ec_point_add(&q1, &q2, &p2, params);
@@ -211,7 +216,10 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
 	   		}
 	    	ec_point_add(&p1, &p2, &p2, params);
 	    	point_copy(&p2, &p1);
+			__COUNT_OP(&global_index_count,1);
 		}
+
+		__COUNT_OP(&global_index_count,1);
     }
     point_copy(result, &q1);
 }
