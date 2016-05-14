@@ -65,7 +65,7 @@ TEST(bigint_is_even, check_even)
     a1 = bigint_from_hex_string(BI_TESTS_A_TAG, "7FFFFFFFFFFFFFFE");
     ASSERT_TRUE(bigint_is_even(a1));
     
-    bigint_create_buffer();
+    bigint_destroy_buffer();
 }
 
 TEST(bigint_is_even, check_odd)
