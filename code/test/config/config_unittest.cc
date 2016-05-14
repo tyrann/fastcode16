@@ -1,6 +1,6 @@
 extern "C" {
-    #include "../../src/config/config.h"
-    #include "../../src/ec_parameters.h"
+    #include "config/config.h"
+    #include "ec_parameters.h"
 }
 #include "gtest/gtest.h"
 #include <unistd.h>

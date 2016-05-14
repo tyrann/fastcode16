@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "./config/config.h"
+#include "config/config.h"
 #include "bigint.h"
 #include "ec_point_structure.h"
 #include "ec_point_operations.h"

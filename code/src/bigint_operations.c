@@ -18,14 +18,9 @@
 uint64_t global_opcount = 0;
 uint64_t global_index_count = 0;
 
-/* void __extended_gcd(BigInt* a, BigInt* b, BigInt* u, BigInt* v)
+void __montgomery_convert(BigInt res, const BigInt x, const BigInt p)
 {
-	//TODO
-
-}*/
-void __montgomery_convert(BigInt* res, const BigInt* x, const BigInt* p)
-{
-	bigint_copy(res,x);
+	bigint_copy(res, x);
 	/*n is the R parameter in the Montgomery convertion*/
 
 	uint64_t n = p->significant_octets * 8;
@@ -35,17 +30,17 @@ void __montgomery_convert(BigInt* res, const BigInt* x, const BigInt* p)
 	for (i = 0; i < n; ++i)
    	{
 		bigint_left_shift_inplace(res);
-		if(bigint_is_greater(res,p))
+		if(bigint_is_greater(res, p))
 		{
-			bigint_sub_inplace(res,p);
+			bigint_sub_inplace(res, p);
 		} 
 	__COUNT_INDEX(&global_index_count, 1);
 	}
 }
 
-void __montgomery_revert(BigInt* rev, const BigInt* x, const BigInt* p)
+void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p)
 {
-	bigint_copy(rev,x);
+	bigint_copy(rev, x);
 
 	uint64_t n = p->significant_octets * 8;
 	__COUNT_OP(&global_opcount, 1);
@@ -59,48 +54,47 @@ void __montgomery_revert(BigInt* rev, const BigInt* x, const BigInt* p)
 		}
 		else
 		{
-			bigint_add_inplace(rev,p);
+			bigint_add_inplace(rev, p);
 			bigint_right_shift_inplace(rev);
 		}
 		__COUNT_INDEX(&global_index_count, 1);
 	}
 }
 
-void montgomery_mul(BigInt* res, const BigInt* x, const BigInt* y, const BigInt* p)
+void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 {
-	BigInt x_mont;
-	BigInt y_mont;
+	BigInt x_mont = GET_BIGINT_PTR(BI_MONTGOMERYMUL_XMONT_TAG);
+	BigInt y_mont = GET_BIGINT_PTR(BI_MONTGOMERYMUL_YMONT_TAG);
 
-	__montgomery_convert(&x_mont,x,p);
-	__montgomery_convert(&y_mont,y,p);
+	__montgomery_convert(x_mont, x, p);
+	__montgomery_convert(y_mont, y, p);
 
 	/* This is -p^-1 mod b*/
 	int pbar = -1;
 
 	/*Set res to 0*/
-	uint32_t k = 0;
-	bigint_from_uint32(res,k);
+	bigint_copy(res, bigint_zero);
 
 	/*We take the smallest power of 2 that is bigger than p*/
 	int n = p->significant_octets * 8;
 	__COUNT_OP(&global_opcount, 1);
 	int i;
 
-	uint8_t y0 = y_mont.octets[0] & 0x1;
+	uint8_t y0 = y_mont->octets[0] & 0x1;
 	for (i = 0; i < n; ++i) 
 	{
 		// ui <- (z0 +xi*y0)*pbar mod b
 		uint8_t z0 = res->octets[0] & 0x1;
-		uint8_t xi = (x_mont.octets[0]) & 0x1;
-		bigint_right_shift_inplace(&x_mont);		
+		uint8_t xi = (x_mont->octets[0]) & 0x1;
+		bigint_right_shift_inplace(x_mont);		
 		uint64_t ui = ((z0 + xi*y0)*pbar) % B;
 		__COUNT_OP(&global_opcount, 4);
-
+		
 		//Z <- (Z + xiy + ui*p)/b
 		
 		if(xi)
 		{
-			bigint_add_inplace(res, &y_mont);
+			bigint_add_inplace(res, y_mont);
 		}
 		if(ui)
 		{
@@ -108,51 +102,28 @@ void montgomery_mul(BigInt* res, const BigInt* x, const BigInt* y, const BigInt*
 		}
 
 		bigint_right_shift_inplace(res);
-		
-
 		__COUNT_INDEX(&global_index_count, 1);
 	}
-	if(bigint_is_greater(res,p))
+	
+	if(bigint_is_greater(res, p))
 	{
-		bigint_sub_inplace(res,p);
+		bigint_sub_inplace(res, p);
 	}
-	bigint_free(&x_mont);
-	bigint_free(&y_mont);
 }
 
 
-void bigint_left_shift_inplace(BigInt* a)
+void bigint_left_shift_inplace(BigInt a)
 {
     BIGINT_ASSERT_VALID(a);
     
-    // Increase size of the buffer if necessary
-    uint64_t original_octets = a->significant_octets;
-    if (a->octets[a->significant_octets-1] > 0x7F)
-    {
-		__COUNT_OP(&global_opcount, 1);
-        uchar* new_octets = (uchar*)malloc(a->significant_octets + 1);
-		__COUNT_OP(&global_opcount, 1);
-
-        memcpy(new_octets, a->octets, a->significant_octets);
-        free(a->octets);
-        
-        a->octets = new_octets;
-        a->significant_octets += 1;
-		__COUNT_OP(&global_opcount, 1);
-
-        a->allocated_octets = a->significant_octets;
-    }
-    
     // Left shift octets by one, propagating the carry across octets.
     uchar carry = 0;
-    for (uint64_t i = 0; i < original_octets; i++)
+    for (uint64_t i = 0; i < a->significant_octets; i++)
     {
         uchar cur_carry = carry;
         carry = a->octets[i] >> 7;
 		__COUNT_OP(&global_opcount, 1);
-        /*LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
-            "to the carry (%hhu) resulting in %02hhX", i, a->octets[i],
-            a->octets[i] << 1, cur_carry, cur_carry + (a->octets[i] << 1));*/
+    
         a->octets[i] = cur_carry + (a->octets[i] << 1);
 		__COUNT_OP(&global_opcount, 1);
 		__COUNT_INDEX(&global_index_count, 1);
@@ -162,13 +133,12 @@ void bigint_left_shift_inplace(BigInt* a)
     if (carry > 0)
     {
 		__COUNT_OP(&global_opcount, 1);
-        a->octets[original_octets] = carry;
-        /*LOG_DEBUG("Carry (%hhu) added to octet %llu resulting in (%02hhX)",
-            carry, original_octets + 1, a->octets[original_octets + 1]);*/
+        a->octets[a->significant_octets] = carry;
+		a->significant_octets++;
     }
 }
 
-void bigint_right_shift_inplace(BigInt* a)
+void bigint_right_shift_inplace(BigInt a)
 {
     BIGINT_ASSERT_VALID(a);
     
@@ -179,9 +149,7 @@ void bigint_right_shift_inplace(BigInt* a)
         uchar cur_carry = carry;
         carry = a->octets[i-1] << 7;
 		__COUNT_OP(&global_opcount, 2);
-        /*LOG_DEBUG("Octet %llu (%02hhX) is shifted by one (%02hhX) and added "
-            "to the carry (%hhu) resulting in %02hhX", i-1, a->octets[i-1],
-            a->octets[i-1] << 1, cur_carry, cur_carry + (a->octets[i-1] << 1));*/
+
         a->octets[i-1] = cur_carry + (a->octets[i-1] >> 1);
 		__COUNT_OP(&global_opcount, 3);
 		__COUNT_INDEX(&global_index_count, 1);
@@ -196,31 +164,15 @@ void bigint_right_shift_inplace(BigInt* a)
 	}
 }
 
-void bigint_modulo_inplace(BigInt* a, const BigInt* mod)
+void bigint_modulo_inplace(BigInt a, const BigInt mod)
 {
-	BigInt test;
-	bigint_from_uint32(&test,0);
+	assert(bigint_are_equal(bigint_zero, mod) != 1);
 
-	if(bigint_are_equal(&test,mod))
-	{
-		assert("Impossible to apply mod 0");
-	}
-	bigint_free(&test);	
-
-	if(bigint_is_greater(mod,a))
-	{
-		return;
-	}
-	else
-	{
-		while(bigint_is_greater(a,mod) || bigint_are_equal(a,mod))
-		{
-			bigint_sub_inplace(a,mod);
-		}
-	}
+	while(!bigint_is_greater(mod, a))
+		bigint_sub_inplace(a, mod);
 }
 
-void bigint_add_inplace(BigInt* a, const BigInt* b)
+void bigint_add_inplace(BigInt a, const BigInt b)
 {
 	BIGINT_ASSERT_VALID(a);
     BIGINT_ASSERT_VALID(b);
@@ -231,24 +183,12 @@ void bigint_add_inplace(BigInt* a, const BigInt* b)
 	// Extends a if b is larger
 	if(a->significant_octets < b->significant_octets)
 	{
+		memset(a->octets + a->significant_octets, 0, b->significant_octets - a->significant_octets);
+		__COUNT_OP(&global_opcount, 2);
 		a->significant_octets = b->significant_octets;
-		a->allocated_octets = b->significant_octets;
-		uchar* new_octets = realloc(a->octets, sizeof(uchar) * a->allocated_octets);
-		__COUNT_OP(&global_opcount, 1);
-		if (new_octets) 
-		{
-			a->octets = new_octets;
-			for(uint32_t n = a_bytes; n < a->significant_octets; n++)
-			{
-				a->octets[n] = 0;
-				__COUNT_INDEX(&global_index_count, 1);
-			}
-		}			
-		else 
-		{
-		assert("bigint_add_inplace, realloc fail");
-		}
+
 	}
+
 	a_bytes = a->significant_octets;
 	uint64_t i = 0;
 	// Execute adding and propagate carry
@@ -272,7 +212,7 @@ void bigint_add_inplace(BigInt* a, const BigInt* b)
 		}
 
 		a->octets[i] = carry & 0xFF;	
-		carry = carry>>8;
+		carry = carry >> 8;
 		__COUNT_OP(&global_opcount, 1);
 		__COUNT_INDEX(&global_index_count, 1);
     }
@@ -280,34 +220,18 @@ void bigint_add_inplace(BigInt* a, const BigInt* b)
 	if(carry > 0)
 	{
 		a->significant_octets += 1;
-		a->allocated_octets += 1;
-		__COUNT_OP(&global_opcount, 2);
-		uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->allocated_octets);
 		__COUNT_OP(&global_opcount, 1);
-		if (newOctets) 
-		{
-			a->octets = newOctets;
-			a->octets[i] = carry;
-		}	
-		else 
-		{
-		assert("bigint_add_inplace, realloc fail");
-		}
+		a->octets[i] = carry;
 	}	
 }
 
-
-void bigint_sub_inplace(BigInt* a, const BigInt* b)
+void bigint_sub_inplace(BigInt a, const BigInt b)
 {
-    // Negative representation is not implemented
-    if(bigint_is_greater(b,a))
-    {
-		assert("bigint_sub_inplace, Warning a < b !");
-    } 
-    else 
-    {
 	BIGINT_ASSERT_VALID(a);
 	BIGINT_ASSERT_VALID(b);
+	
+    // Negative representation is not implemented
+    assert(!bigint_is_greater(b, a));
 
 	uint64_t count = a->significant_octets;
 	uint64_t i = 0;
@@ -319,16 +243,15 @@ void bigint_sub_inplace(BigInt* a, const BigInt* b)
 	{
 		__COUNT_OP(&global_opcount, 2);
 	    uint32_t atemp = (uint32_t)a->octets[i];
-			
 	    uint32_t btemp;
 	    if(i < b->significant_octets)
 	    {
-		btemp = (uint32_t)b->octets[i];
+			btemp = (uint32_t)b->octets[i];
 	    }
 	    else
 	    {
-		stop = 1;
-		btemp = 0;
+			stop = 1;
+			btemp = 0;
 	    }
 
 	    if(borrow) 
@@ -340,13 +263,13 @@ void bigint_sub_inplace(BigInt* a, const BigInt* b)
 
 	    if(btemp > atemp)
 	    {
-		tmp_borrow = 1;
-		atemp = atemp + 0xFF + 1;
-		__COUNT_OP(&global_opcount, 2);
+			tmp_borrow = 1;
+			atemp = atemp + 0xFF + 1;
+			__COUNT_OP(&global_opcount, 2);
 	    }
 	    else
 	    {
-		tmp_borrow = 0;
+			tmp_borrow = 0;
 	    }
 
 	    atemp = atemp - btemp;
@@ -356,239 +279,84 @@ void bigint_sub_inplace(BigInt* a, const BigInt* b)
 		__COUNT_INDEX(&global_index_count, 1);
 	}
 
-	char reallocate = 0;
 	stop = 0;
 	for(int j = count - 1; j >= 0 && !stop; j--)
 	{
 		__COUNT_OP(&global_opcount, 3);
 	    if(a->octets[j] != 0) 
 	    {
-		a->significant_octets = j + 1;
-		__COUNT_OP(&global_opcount, 1);
-		stop = 1;
+			a->significant_octets = j + 1;
+			__COUNT_OP(&global_opcount, 1);
+			stop = 1;
 	    }
-	    else
-	    {
-		reallocate = 1;
-	    }
-		__COUNT_INDEX(&global_index_count, 1);
 	}
-	
-	if(reallocate)
-	{
-	    a->allocated_octets = a->significant_octets;
-	    uchar* newOctets = realloc(a->octets, sizeof(uchar) * a->allocated_octets);
-		__COUNT_OP(&global_opcount, 1);
-	    if (newOctets) 
-	    {
-		a->octets = newOctets;
-	    }
-		else 
-		{
-		assert("bigint_sub_inplace, realloc fail");
-		}
-	}
-    }
 }
 
-/*
-
-// Implementation not completed, appearently this is unnecessary
-
-// Based on algorithm 14.61 and note 14.64 of /doc/handbook_crypto.pdf
-void __binary_extended_gcd(BigInt* a, BigInt* b, BigInt* v, BigInt* x, BigInt* y)
-{
-	// 1)
-	BigInt g;
-	bigint_from_uint32(&g, 1);
-	
-	// 2)
-	while (bigint_is_even(x) && bigint_is_even(y))
-	{
-		bigint_right_shift_inplace(x);
-		bigint_right_shift_inplace(y);
-		bigint_left_shift_inplace(&g);
-	}
-	
-	// 3)
-	BigInt u, A, B, C, D;
-	bigint_copy(&u, &x);
-	bigint_copy(v, &y);
-	bigint_from_uint32(&A, 1);
-	bigint_from_uint32(&B, 0);
-	bigint_from_uint32(&C, 0);
-	bigint_from_uint32(&D, 1);
-	
-	// 4)
-	int pos_B = 1;
-	while (bigint_is_even(&u))
-	{
-		// 4.1)
-		bigint_right_shift_inplace(&u);
-		
-		// 4.2)
-		if (bigint_is_even(&A) && bigint_is_even(&B))
-		{
-			bigint_right_shift_inplace(&A);
-			bigint_right_shift_inplace(&B);
-		}
-		else
-		{
-			bigint_add_inplace(&A, &y);
-			bigint_right_shift_inplace(&A);
-			
-			// Trick for handling negative numbers
-			if (pos_B)
-			{
-				if (bigint_is_greater(x, &B))
-				{
-					BigInt tB;
-					bigint_copy(&tB, x);
-					bigint_sub_inplace(&tB, &B);
-					bigint_copy(&B, &tB)
-					bigint_free(&tB);
-					pos_B = 0;
-				}
-				else
-				{
-					bigint_sub_inplace(&B, x);
-				}
-			}
-			else
-			{
-				bigint_add_inplace(&B, x);
-			}
-			bigint_right_shift_inplace(&B);
-		}
-	}
-	
-	// 5)
-	int pos_D = 1;
-	while (bigint_is_even(v))
-	{
-		// 5.1)
-		bigint_right_shift_inplace(v);
-		
-		// 5.2)
-		if (bigint_is_even(&C) && bigint_is_even(&D))
-		{
-			bigint_right_shift_inplace(&C);
-			bigint_right_shift_inplace(&D);
-		}
-		else
-		{
-			bigint_add_inplace(&C, &y);
-			bigint_right_shift_inplace(&C);
-			
-			// Trick for handling negative numbers
-			if (pos_D)
-			{
-				if (bigint_is_greater(x, &D))
-				{
-					BigInt tD;
-					bigint_copy(&tD, x);
-					bigint_sub_inplace(&tD, &D);
-					bigint_copy(&D, &tD)
-					bigint_free(&tD);
-					pos_D = 0;
-				}
-				else
-				{
-					bigint_sub_inplace(&D, x);
-				}
-			}
-			else
-			{
-				bigint_add_inplace(&D, x);
-			}
-			bigint_right_shift_inplace(&D);
-		}
-	}
-	
-	// 6)
-	if (bigint_is_greater(&v, &u))
-	{
-		bigint_sub_inplace(v, &u);
-		
-	}
-}*/
-
 // Based on algorithm 2.22 of doc/fields_arithmetic.pdf
-void bigint_divide(BigInt* dest, const BigInt* b, const BigInt* a, const BigInt* p)
+void bigint_divide(BigInt dest, const BigInt b, const BigInt a, const BigInt p)
 {
-	BigInt zero;
-	bigint_from_uint32(&zero, 0);
-	assert(!bigint_are_equal(&zero, a));
+	assert(!bigint_are_equal(bigint_zero, a));
 	
-	if (bigint_are_equal(b, &zero))
+	if (bigint_are_equal(b, bigint_zero))
 	{
-		bigint_from_uint32(dest, 0);
+		bigint_copy(dest, bigint_zero);
 	}
 	else
 	{
 		// 1)
-		BigInt u, v;
-		bigint_copy(&u, a);
-		bigint_copy(&v, p);
+		BigInt u = GET_BIGINT_PTR(BI_DIVIDE_U_TAG);
+		BigInt v = GET_BIGINT_PTR(BI_DIVIDE_V_TAG);
+		bigint_copy(u, a);
+		bigint_copy(v, p);
 	
 		// 2)
-		BigInt x1, x2;
-		bigint_copy(&x1, b);
-		bigint_from_uint32(&x2, 0);
+		BigInt x1 = GET_BIGINT_PTR(BI_DIVIDE_X1_TAG);
+		bigint_copy(x1, b);
+		BigInt x2 = bigint_from_uint32(BI_DIVIDE_X2_TAG, 0);
 	
 		// 3)
-		BigInt one;
-		bigint_from_uint32(&one, 1);
-		while (!bigint_are_equal(&u, &one) && !bigint_are_equal(&v, &one))
+		while (!bigint_are_equal(u, bigint_one) && !bigint_are_equal(v, bigint_one))
 		{
 			__COUNT_OP(&global_opcount, 1);
 			// 3.1)
-			while (bigint_is_even(&u))
+			while (bigint_is_even(u))
 			{
-				bigint_right_shift_inplace(&u);
-				if (!bigint_is_even(&x1))
-					bigint_add_inplace(&x1, p);
-				bigint_right_shift_inplace(&x1);
+				bigint_right_shift_inplace(u);
+				if (!bigint_is_even(x1))
+					bigint_add_inplace(x1, p);
+				bigint_right_shift_inplace(x1);
 			}
 			
 			// 3.2)
-			while (bigint_is_even(&v))
+			while (bigint_is_even(v))
 			{
-				bigint_right_shift_inplace(&v);
-				if (!bigint_is_even(&x2))
-					bigint_add_inplace(&x2, p);
-				bigint_right_shift_inplace(&x2);
+				bigint_right_shift_inplace(v);
+				if (!bigint_is_even(x2))
+					bigint_add_inplace(x2, p);
+				bigint_right_shift_inplace(x2);
 			}
 			
 			// 3.3
-			if (bigint_is_greater(&v, &u))
+			if (bigint_is_greater(v, u))
 			{
-				bigint_sub_inplace(&v, &u);
-				if (bigint_is_greater(&x1, &x2))
-					bigint_add_inplace(&x2, p);
-				bigint_sub_inplace(&x2, &x1);
+				bigint_sub_inplace(v, u);
+				if (bigint_is_greater(x1, x2))
+					bigint_add_inplace(x2, p);
+				bigint_sub_inplace(x2, x1);
 			}
 			else
 			{
-				bigint_sub_inplace(&u, &v);
-				if(bigint_is_greater(&x2, &x1))
-					bigint_add_inplace(&x1, p);
-				bigint_sub_inplace(&x1, &x2);
+				bigint_sub_inplace(u, v);
+				if(bigint_is_greater(x2, x1))
+					bigint_add_inplace(x1, p);
+				bigint_sub_inplace(x1, x2);
 			}
 		}
 	
 		// 4)
-		if (bigint_are_equal(&u, &one))
-			bigint_copy(dest, &x1);
+		if (bigint_are_equal(u, bigint_one))
+			bigint_copy(dest, x1);
 		else
-			bigint_copy(dest, &x2);
-			
-		bigint_free(&one);
-		bigint_free(&v);
-		bigint_free(&u);
-		bigint_free(&x1);
-		bigint_free(&x2);
+			bigint_copy(dest, x2);
 	}
-		
-	bigint_free(&zero);
 }

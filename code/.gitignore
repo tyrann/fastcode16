@@ -8,3 +8,5 @@ tags
 .syntastic*
 .gitignore
 unittests.exe.stackdump
+.VC.db
+.vs/*

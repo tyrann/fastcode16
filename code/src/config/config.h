@@ -1,9 +1,9 @@
 #ifndef __CONFIG_H_
 #define __CONFIG_H_
 
-#include "../ec_parameters.h"
-#include "../bigint.h"
-#include "../ec_point_utilities.h"
+#include "ec_parameters.h"
+#include "bigint.h"
+#include "ec_point_utilities.h"
 #include <stdlib.h> 
 #include <stdio.h>
 #include <string.h>

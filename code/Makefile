@@ -23,9 +23,7 @@ GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 
 CC = gcc
 
-CFLAGS = -Wall -Wextra -std=c99 -DLOG_LEVEL=0
-
-CPPFLAGS += -isystem $(GTEST_DIR)/include
+CPPFLAGS += -I ./src -isystem $(GTEST_DIR)/include
 
 CXXFLAGS += -g -Wall -Wextra -pthread
 

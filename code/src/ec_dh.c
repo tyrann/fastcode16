@@ -2,22 +2,17 @@
 #include "ec_point_operations.h"
 #include "logging/logging.h"
 
-void ec_create_ECDH(ECDH *ecdh, EllipticCurveParameter *parameters, Point *pub_key, BigInt *priv_key, BigInt *sharedInfo)
+void ec_create_ECDH(ECDH *ecdh, EllipticCurveParameter *parameters, Point *pub_key, BigInt priv_key, BigInt sharedInfo)
 {
     ecdh->parameters = *parameters;
-    point_copy(&(ecdh->pub_key), pub_key);
-    bigint_copy(&(ecdh->priv_key), priv_key);
-    bigint_copy(&(ecdh->sharedInfo), sharedInfo);
+    ecdh->priv_key = priv_key;
+    ecdh->sharedInfo = sharedInfo;
+	ecdh->pub_key.x = pub_key->x;
+	ecdh->pub_key.y = pub_key->y;
+	ecdh->pub_key.is_at_infinity = pub_key->is_at_infinity;
 }
 
-void ec_ECDHfree(ECDH *ecdh)
-{
-    point_free(&(ecdh->pub_key));
-    bigint_free(&(ecdh->priv_key));
-    bigint_free(&(ecdh->sharedInfo));
-}
-
-void ecdh_generate_public_key(Point *public_key, const BigInt *d, const EllipticCurveParameter *parameters)
+void ecdh_generate_public_key(Point *public_key, BigInt d, const EllipticCurveParameter *parameters)
 {
     //Compute Q = dG 
     //void ec_point_mul(Point *result, const BigInt *d, const Point *P, const EllipticCurveParameter *p);
@@ -27,10 +22,12 @@ void ecdh_generate_public_key(Point *public_key, const BigInt *d, const Elliptic
 }
 
 
-int ecdh_compute_shared_secret(BigInt *shared_info, const BigInt *private_key, const Point *public_key, const EllipticCurveParameter *parameters)
-{
+int ecdh_compute_shared_secret(BigInt shared_info, BigInt private_key, const Point *public_key, const EllipticCurveParameter *parameters)
+{	
 	Point shared_point;
-
+	shared_point.x = shared_info;
+	shared_point.y = GET_BIGINT_PTR(BI_ECDH_SHAREDSECRETY_TAG);
+	
 	// Compute the elliptic curve point P = (xP , yP ) = priv_keyU*pub_keyV
 	ec_point_mul(&shared_point, private_key, public_key, parameters);
 	
@@ -40,12 +37,8 @@ int ecdh_compute_shared_secret(BigInt *shared_info, const BigInt *private_key, c
 	{
 	    assert("ecdh_compute_key, invalid shared Point");
 	}
-	else
-	{		
-	    bigint_copy(shared_info, &shared_point.x);
-	}
+	
 	// printf("After ecdh_generate_key dh sharedPoint = %s \n", bigint_to_hex_string(&(sharedPoint.x)));
-	point_free(&shared_point);
 	return (int)!ret;
 }
 
@@ -53,6 +46,6 @@ int ecdh_compute_shared_secret(BigInt *shared_info, const BigInt *private_key, c
 int ecdh_verification(ECDH *dhU, ECDH *dhV)
 {
 	// check if dhU.sharedIno == dhV.sharedIno
-	int ret = bigint_are_equal(&(dhU->sharedInfo),&(dhV->sharedInfo));
+	int ret = bigint_are_equal(dhU->sharedInfo, dhV->sharedInfo);
 	return ret;
 }
