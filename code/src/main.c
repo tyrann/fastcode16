@@ -9,7 +9,7 @@
 
 #include <openssl/ec.h>
 #include <openssl/bn.h>
-#include <openssl/evp.h>
+#include <openssl/crypto.h>
 #include <stdlib.h>
 
 #define NUM_RUNS 1
@@ -143,7 +143,7 @@ void compute_ECDH_open_ssl(char* dURand, char* dVRand, int keyLength)
 
     EC_GROUP * group_non_optimized = EC_GROUP_new_curve_GFp(p, a, b, ctx);
     EC_POINT *G = EC_POINT_new(group_non_optimized);
-    EC_POINT_set_affine_coordinates_GFp(group_non_optimized, G, x, y, NULL);
+    EC_POINT_set_affine_coordinates_GFp(group_non_optimized, G, x, y, ctx);
     EC_GROUP_set_generator(group_non_optimized, G, n, NULL);
     
     BN_hex2bn(&dU, dURand);
@@ -156,10 +156,10 @@ void compute_ECDH_open_ssl(char* dURand, char* dVRand, int keyLength)
     start = start_tsc();
     for(int i = 0; i < num_runs; i++)
     {
-	EC_POINT_mul(group_non_optimized, public_keyU, dU, NULL, NULL, NULL);
-	EC_POINT_mul(group_non_optimized, public_keyV, dV, NULL, NULL, NULL);
-	EC_POINT_mul(group_non_optimized, resultU, NULL, public_keyV, dU, NULL);
-	EC_POINT_mul(group_non_optimized, resultV, NULL, public_keyU, dV, NULL);
+	EC_POINT_mul(group_non_optimized, public_keyU, dU, NULL, NULL, ctx);
+	EC_POINT_mul(group_non_optimized, public_keyV, dV, NULL, NULL, ctx);
+	EC_POINT_mul(group_non_optimized, resultU, NULL, public_keyV, dU, ctx);
+	EC_POINT_mul(group_non_optimized, resultV, NULL, public_keyU, dV, ctx);
     }
     cycles = stop_tsc(start);
 
