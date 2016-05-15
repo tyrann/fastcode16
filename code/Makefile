@@ -57,7 +57,7 @@ $(BIN_DIR)/unittests : $(OBJ_DIR)/gtest_main.a $(addprefix $(OBJ_DIR)/,$(OBJECTS
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
 $(BIN_DIR)/ecc : $(addprefix $(OBJ_DIR)/,$(OBJECTS_MAIN)) | $(BIN_DIR)
-	$(CC) $(CFLAS) $^ -o $@
+	$(CC) $(CFLAS) $^ -lcrypto -o $@
 
 $(BIN_DIR):
 	 mkdir $(BIN_DIR)
