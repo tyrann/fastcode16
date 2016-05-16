@@ -38,7 +38,11 @@ void bigint_create_buffer()
         (void**)&__bigint_buffer,
         BIGINT_ALIGNMENT,
         BI_TAGS_COUNT * BIGINT_SIZE);
-    assert(res == 0);
+    
+    if (res == 0)
+    {
+        assert("posix_memalign failed!");
+    }
     assert(__bigint_buffer != 0);
     
     memset(__bigint_buffer, 0, BI_TAGS_COUNT * BIGINT_SIZE);
