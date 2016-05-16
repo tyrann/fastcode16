@@ -15,7 +15,7 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
     // Rule 1
     if(a->is_at_infinity && b->is_at_infinity)
     {
-		a->is_at_infinity = 1;
+		// Nothing to do here
     }
     // Rule 2
     else if(a->is_at_infinity)
