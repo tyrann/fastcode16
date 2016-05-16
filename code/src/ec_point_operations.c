@@ -15,7 +15,7 @@ void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticC
     // Rule 1
     if(a->is_at_infinity && b->is_at_infinity)
     {
-		result->is_at_infinity = 1;
+				// Nothing to do here
     }
     // Rule 2
     else if(a->is_at_infinity)
