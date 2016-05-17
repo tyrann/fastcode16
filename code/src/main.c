@@ -6,18 +6,31 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-
 #include <openssl/ec.h>
 #include <openssl/bn.h>
 #include <openssl/crypto.h>
 #include <stdlib.h>
-
+#include <openssl_benchmark.h>
 #define NUM_RUNS 1
 #define CYCLES_REQUIRED 1e8
 #define FREQUENCY 3.4e9
 #define CALIBRATE
 #define OP_COUNT 1
 
+myInt64 start_tsc(void) {
+    tsc_counter start;
+    CPUID();
+    RDTSC(start);
+    return COUNTER_VAL(start);
+}
+
+myInt64 stop_tsc(myInt64 start) {
+	tsc_counter end;
+	RDTSC(end);
+	CPUID();
+	return COUNTER_VAL(end) - start;
+}
+/*
 unsigned short int n;
 extern uint64_t global_opcount; 
 extern uint64_t global_index_count; 
@@ -202,9 +215,9 @@ void compute_ECDH_open_ssl(char* dURand, char* dVRand, int keyLength)
     EC_POINT_free(resultV);
     EC_GROUP_free(group_non_optimized);
 }
-
+*/
 int main(){
-    
+    /*
     bigint_create_buffer();
     
     global_opcount = 0;
@@ -244,7 +257,8 @@ int main(){
     global_index_count = 0;
     compute_ECDH_open_ssl("01EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA15868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409","01EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868738BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409", 521);
     
-    bigint_destroy_buffer();
-  
-    return 0;
+    bigint_destroy_buffer();  
+  */
+	openssl_Benchmark();
+    return 0;	
 }

@@ -10,6 +10,7 @@ SOURCES_MAIN = main.c \
 	bigint_utilities.c bigint_conversion.c bigint_operations.c \
 	ec_point_utilities.c ec_point_operations.c ec_parameters.c \
 	ec_dh.c \
+	openssl_benchmark.c \
 	logging.c opcount.c bigint_memory.c
 
 VPATH = ./src:./test:./src/logging:./src/opcount:./src/config:./test/config
