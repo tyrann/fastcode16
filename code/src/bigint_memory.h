@@ -4,7 +4,7 @@
 #include "bigint_constants.h"
 #include "bigint_structure.h"
 
-extern uchar* __bigint_buffer;
+extern block* __bigint_buffer;
 extern BigInt bigint_zero;
 extern BigInt bigint_one;
 extern BigInt bigint_two;

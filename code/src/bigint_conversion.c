@@ -6,28 +6,14 @@
 #include "bigint.h"
 #include "logging/logging.h"
 
-BigInt bigint_from_uint32(uint32_t tag, uint32_t num)
-{
-    return bigint_from_uint64(tag, (uint64_t)num);
-}
-
 BigInt bigint_from_uint64(uint32_t tag, uint64_t num)
 {
     BigInt dest = GET_BIGINT_PTR(tag);
     
-    // Find number of octets needed
-    uint64_t num_octets;
-    for (num_octets = 8; num_octets > 1; num_octets--)
-    {
-        uint64_t mask = 0xFFULL << (8 * (num_octets - 1));
-        uint64_t octet = num & mask;
-        if (octet != 0) break;
-    }
-    
     // Copy the number to the allocate doctets
-    dest->significant_octets = num_octets;
-    for (uint64_t i = 0; i < num_octets; i++)
-        dest->octets[i] = (uchar)((num >> i * 8) & 0xFFULL);
+    dest->significant_blocks = 1;
+    dest->blocks[0] = num;
+    memset(dest->blocks, 8, 24);
     
     return dest;
 }
@@ -54,12 +40,12 @@ BigInt bigint_from_hex_string(uint32_t tag, const char* num)
     if (num_octets == 0) num_octets = 1;
     
     // Create result object
-    dest->significant_octets = num_octets;
+    dest->significant_octets = (num_octets + 7) / 8;
     
     // Copy digits
     if (significant_digits == 0)
     {
-        dest->octets[0] = 0;
+        ((uchar*)dest->blocks)[0] = 0;
     }
     else
     {
@@ -72,7 +58,7 @@ BigInt bigint_from_hex_string(uint32_t tag, const char* num)
         if (significant_digits % 2 == 1)
         {
             octet_string[1] = num[j];
-            dest->octets[octet_id] = (uchar)strtol(octet_string, 0, 16);
+            ((uchar*)dest->blocks)[octet_id] = (uchar)strtol(octet_string, 0, 16);
             octet_id--;
             j++;
         }
@@ -80,7 +66,7 @@ BigInt bigint_from_hex_string(uint32_t tag, const char* num)
         {
             octet_string[0] = num[j];
             octet_string[1] = num[j+1];
-            dest->octets[octet_id] = (uchar)strtol(octet_string, 0, 16);
+            ((uchar*)dest->blocks)[octet_id] = (uchar)strtol(octet_string, 0, 16);
             octet_id--;
         }
     }
