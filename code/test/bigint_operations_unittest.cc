@@ -1,6 +1,7 @@
 
 extern "C" {
     #include "bigint.h"
+	#include "logging/logging.h"
 }
 #include "gtest/gtest.h"
 
@@ -189,7 +190,7 @@ TEST(bigint_sub_inplace, sub_test_1)
 	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FFFFFFFFFFFFFFFF");
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
-    EXPECT_EQ(are_equal, 1);    
+    EXPECT_EQ(are_equal, 1);
 	
 	bigint_destroy_buffer();
 }
@@ -287,8 +288,8 @@ TEST(bigint_sub_inplace, sub_test_8)
 	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10000000000000000");
 	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "FF1");
 	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FFFFFFFFFFFFF00F");
-    bigint_sub_inplace(a, b);
-    ASSERT_EQ(a->significant_blocks, 2);	
+    ASSERT_EQ(a->significant_blocks, 2);
+	bigint_sub_inplace(a, b);	
 	int are_equal = bigint_are_equal(a, c);
 	EXPECT_EQ(are_equal, 1);
     ASSERT_EQ(a->significant_blocks, 1);		
@@ -319,7 +320,7 @@ TEST(bigint_sub_inplace, sub_test_10)
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
     EXPECT_EQ(are_equal, 1);   
-    ASSERT_EQ(a->significant_blocks, 7);
+    ASSERT_EQ(a->significant_blocks, 1);
     
     bigint_destroy_buffer();
 }
@@ -500,10 +501,10 @@ TEST(bigint_left_shift_inplace, test_different_size)
 	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "100");
     bigint_left_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_blocks, 2);
+    ASSERT_EQ(a->significant_blocks, 1);
 
 	a = bigint_from_hex_string(BI_TESTS_A_TAG, "FFFFFFFFFFFFFFFF");
-	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "1FEFFFFFFFFFFFFFF");
+	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "1FFFFFFFFFFFFFFFE");
     bigint_left_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
     ASSERT_EQ(a->significant_blocks, 2);

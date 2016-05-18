@@ -12,6 +12,6 @@ extern BigInt bigint_three;
 
 void bigint_create_buffer();
 void bigint_destroy_buffer();
-#define GET_BIGINT_PTR(tag) ((BigInt)(__bigint_buffer + (tag * BIGINT_SIZE)))
+#define GET_BIGINT_PTR(tag) ((BigInt)(__bigint_buffer + (tag * (BIGINT_SIZE / 8))))
 
 #endif

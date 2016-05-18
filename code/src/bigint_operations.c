@@ -10,7 +10,7 @@
 #include "bigint_utilities.h"
 #include <stdint.h>
 
-#include <immintrin.h>
+#include <x86intrin.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -120,10 +120,10 @@ void bigint_left_shift_inplace(BigInt a)
     BIGINT_ASSERT_VALID(a);
     
     // Left shift octets by one, propagating the carry across octets.
-    uchar carry = 0;
+    uint64_t carry = 0;
     for (uint64_t i = 0; i < a->significant_blocks; i++)
     {
-        uchar cur_carry = carry;
+        uint64_t cur_carry = carry;
         carry = a->blocks[i] >> 63;
 		__COUNT_OP(&global_opcount, 1);
     
@@ -147,10 +147,10 @@ void bigint_right_shift_inplace(BigInt a)
     BIGINT_ASSERT_VALID(a);
     
     // Right shift octets by one, propagating the carry across octets.
-    uchar carry = 0;
+    uint64_t carry = 0;
     for (uint64_t i = a->significant_blocks; i > 0; i--)
     {
-        uchar cur_carry = carry;
+        uint64_t cur_carry = carry;
         carry = a->blocks[i-1] << 63;
 		__COUNT_OP(&global_opcount, 2);
 
@@ -198,13 +198,13 @@ void bigint_add_inplace(BigInt a, const BigInt b)
 		__COUNT_INDEX(&global_index_count, 1);
 		if(i < b->significant_blocks)
 		{
-			carry = _addcarry_u64(carry, a->blocks[i], b->blocks[i], &a->blocks[i]);
+			carry = _addcarry_u64(carry, a->blocks[i], b->blocks[i], (unsigned long long*)&(a->blocks)[i]);
 			__COUNT_OP(&global_opcount, 2);
 		}
 		else
 		{
 			if (carry == 0) break;
-			carry = _addcarry_u64(carry, a->blocks[i], 0, &a->blocks[i]);
+			carry = _addcarry_u64(carry, a->blocks[i], 0, (unsigned long long*)&(a->blocks)[i]);
 			__COUNT_OP(&global_opcount, 1);
 		}
     }
@@ -232,13 +232,13 @@ void bigint_sub_inplace(BigInt a, const BigInt b)
 		__COUNT_INDEX(&global_index_count, 1);
 	    if(i < b->significant_blocks)
 	    {
-			borrow = _subborrow_u64(borrow, a->blocks[i], b->blocks[i], &a->blocks[i]);
+			borrow = _subborrow_u64(borrow, b->blocks[i], a->blocks[i], (unsigned long long*)&(a->blocks)[i]);
 			__COUNT_OP(&global_opcount, 1);
 	    }
 	    else
 	    {
 			if (borrow == 0) break;
-			borrow = _subborrow_u64(borrow, a->blocks[i], 0, &a->blocks[i]);
+			borrow = _subborrow_u64(borrow, 0, a->blocks[i], (unsigned long long*)&(a->blocks)[i]);
 			__COUNT_OP(&global_opcount, 1);
 	    }
 	}
