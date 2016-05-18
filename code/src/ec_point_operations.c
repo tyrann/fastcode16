@@ -160,19 +160,19 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
 {
 	Point p2;
 
-	create_point_from_uint32(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG, 0, 0);
+	create_point_from_uint64(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG, 0, 0);
 	bigint_copy(result->x, bigint_zero);
 	bigint_copy(result->y, bigint_zero);
 	result->is_at_infinity = 1;
 	
     point_copy(&p2, P);
 
-    for(uint64_t i = 0; i < d->significant_octets; i++)
+    for(uint64_t i = 0; i < d->significant_blocks; i++)
     {
-		for(int j = 0; j < 8; j++) 
+		for(int j = 0; j < 64; j++) 
 		{
 			__COUNT_OP(&global_opcount,2);
-	    	if(d->octets[i] & (1 << j)) 
+	    	if(d->blocks[i] & (1 << j)) 
 	    	{
 				ec_point_add_inplace(result, &p2, params);	
 	   		}

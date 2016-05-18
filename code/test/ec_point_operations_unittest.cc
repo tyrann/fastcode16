@@ -8,28 +8,28 @@ extern "C" {
 void create_parameters_1(EllipticCurveParameter *params)
 {
     Point G;
-    BigInt p = bigint_from_uint32(BI_PARAMS_P_TAG, 29);
-	BigInt a = bigint_from_uint32(BI_PARAMS_A_TAG, 2);
-	BigInt b = bigint_from_uint32(BI_PARAMS_B_TAG, 3);
+    BigInt p = bigint_from_uint64(BI_PARAMS_P_TAG, 29);
+	BigInt a = bigint_from_uint64(BI_PARAMS_A_TAG, 2);
+	BigInt b = bigint_from_uint64(BI_PARAMS_B_TAG, 3);
     
     // This parameters are not relevant for the tests
     create_point_from_hex(&G, BI_PARAMS_GX_TAG, BI_PARAMS_GY_TAG, "0", "0");
-    BigInt n = bigint_from_uint32(BI_PARAMS_N_TAG, 0);
-    BigInt h = bigint_from_uint32(BI_PARAMS_H_TAG, 0);
+    BigInt n = bigint_from_uint64(BI_PARAMS_N_TAG, 0);
+    BigInt h = bigint_from_uint64(BI_PARAMS_H_TAG, 0);
     ec_create_parameters(params, p, a, b, &G, n, h);
 }
 
 void create_parameters_2(EllipticCurveParameter *params)
 {
     Point G;
-    BigInt p = bigint_from_uint32(BI_PARAMS_P_TAG, 7927);
-	BigInt a = bigint_from_uint32(BI_PARAMS_A_TAG, 500);
-	BigInt b = bigint_from_uint32(BI_PARAMS_B_TAG, 0);
+    BigInt p = bigint_from_uint64(BI_PARAMS_P_TAG, 7927);
+	BigInt a = bigint_from_uint64(BI_PARAMS_A_TAG, 500);
+	BigInt b = bigint_from_uint64(BI_PARAMS_B_TAG, 0);
     
     // This parameters are not relevant for the tests
     create_point_from_hex(&G, BI_PARAMS_GX_TAG, BI_PARAMS_GY_TAG, "0", "0");
-    BigInt n = bigint_from_uint32(BI_PARAMS_N_TAG, 0);
-    BigInt h = bigint_from_uint32(BI_PARAMS_H_TAG, 0);
+    BigInt n = bigint_from_uint64(BI_PARAMS_N_TAG, 0);
+    BigInt h = bigint_from_uint64(BI_PARAMS_H_TAG, 0);
     ec_create_parameters(params, p, a, b, &G, n, h);
 }
 
@@ -40,9 +40,9 @@ TEST(ec_point_add_inplace, inf_plus_inf)
     EllipticCurveParameter params;
     create_parameters_1(&params);
     Point a, b, expected;
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 0, 0);
-    create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 0, 0);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0);
+    create_point_from_uint64(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 0, 0);
+    create_point_from_uint64(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 0, 0);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0);
     a.is_at_infinity = 1;
     b.is_at_infinity = 1;
     expected.is_at_infinity = 1;
@@ -60,10 +60,10 @@ TEST(ec_point_add_inplace, a_plus_inf)
     EllipticCurveParameter params;
     create_parameters_1(&params);
     Point a, b, expected;
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 1, 8);
-    create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 0, 0);
+    create_point_from_uint64(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 1, 8);
+    create_point_from_uint64(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 0, 0);
     b.is_at_infinity = 1;
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 1, 8);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 1, 8);
 
     ec_point_add_inplace(&a, &b, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
@@ -78,10 +78,10 @@ TEST(ec_point_add_inplace, inf_plus_b)
     EllipticCurveParameter params;
     create_parameters_1(&params);
     Point a, b, expected;
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 0, 0);
+    create_point_from_uint64(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 0, 0);
     a.is_at_infinity = 1;
-    create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 1, 8);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 1, 8);
+    create_point_from_uint64(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 1, 8);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 1, 8);
 
     ec_point_add_inplace(&a, &b, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
@@ -97,21 +97,21 @@ TEST(ec_point_add_inplace, a_plus_a_curve1)
     create_parameters_2(&params);
     Point a, b, expected;
 
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 188, 93);
-    create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 188, 93);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 2505, 3126);
+    create_point_from_uint64(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 188, 93);
+    create_point_from_uint64(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 188, 93);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 2505, 3126);
     ec_point_add_inplace(&a, &b, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 692, 150);
-	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 692, 150);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 6111, 95);
+    create_point_from_uint64(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 692, 150);
+	create_point_from_uint64(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 692, 150);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 6111, 95);
     ec_point_add_inplace(&a, &b, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 6026, 210);
-	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 6026, 210);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 3075, 6164);
+    create_point_from_uint64(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 6026, 210);
+	create_point_from_uint64(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 6026, 210);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 3075, 6164);
     ec_point_add_inplace(&a, &b, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
@@ -126,16 +126,16 @@ TEST(ec_point_add_inplace, a_plus_b)
     create_parameters_2(&params);
     Point a, b, expected;
 
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 2, 2903);
-	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 2, 5024);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0);
+    create_point_from_uint64(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 2, 2903);
+	create_point_from_uint64(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 2, 5024);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0);
 	expected.is_at_infinity = 1;
     ec_point_add_inplace(&a, &b, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 0, 0);
-	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 0, 0);
-	create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0);
+    create_point_from_uint64(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 0, 0);
+	create_point_from_uint64(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 0, 0);
+	create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0);
 	expected.is_at_infinity = 1;
     ec_point_add_inplace(&a, &b, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
@@ -151,15 +151,15 @@ TEST(ec_point_add_inplace, a_plus_b_rule4)
     create_parameters_2(&params);
     Point a, b, expected;
 
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 6026, 210);
-	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 2, 2903);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 4555, 1855);
+    create_point_from_uint64(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 6026, 210);
+	create_point_from_uint64(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 2, 2903);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 4555, 1855);
     ec_point_add_inplace(&a, &b, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 4, 5017);
-	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 475, 2499);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 6563, 6553);
+    create_point_from_uint64(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 4, 5017);
+	create_point_from_uint64(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 475, 2499);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 6563, 6553);
     ec_point_add_inplace(&a, &b, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
@@ -197,10 +197,10 @@ TEST(ec_point_mul, zero_times_point)
     create_parameters_2(&params);
     Point P, result, expected;
 
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
-    BigInt d = bigint_from_uint32(BI_TESTS_D_TAG, 0);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
+    create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
+    BigInt d = bigint_from_uint64(BI_TESTS_D_TAG, 0);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0);
+    create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
     expected.is_at_infinity = 1;
     ec_point_mul(&result, d, &P, &params);
     ASSERT_TRUE(point_are_equal(&result, &expected));
@@ -218,9 +218,9 @@ TEST(ec_point_mul, one_times_point)
     expected.x = GET_BIGINT_PTR(BI_TESTS_EXPECTEDX_TAG);
     expected.y = GET_BIGINT_PTR(BI_TESTS_EXPECTEDY_TAG);
 
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
-    BigInt d = bigint_from_uint32(BI_TESTS_D_TAG, 1);
+    create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
+    create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
+    BigInt d = bigint_from_uint64(BI_TESTS_D_TAG, 1);
     point_copy(&expected, &P);
     ec_point_mul(&result, d, &P, &params);
     ASSERT_TRUE(point_are_equal(&result, &expected));
@@ -236,10 +236,10 @@ TEST(ec_point_mul, two_times_point)
     create_parameters_2(&params);
     Point P, result, expected;
 
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
-    BigInt d = bigint_from_uint32(BI_TESTS_D_TAG, 2);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 2505, 3126);
+    create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
+    create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
+    BigInt d = bigint_from_uint64(BI_TESTS_D_TAG, 2);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 2505, 3126);
     ec_point_mul(&result, d, &P, &params);
     ASSERT_TRUE(point_are_equal(&result, &expected));
 
@@ -255,34 +255,34 @@ TEST(ec_point_mul, multiple_tests)
     Point P, result, expected;
     BigInt d;
 
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
-    d = bigint_from_uint32(BI_TESTS_D_TAG, 3);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 6452, 1971);
+    create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
+    create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
+    d = bigint_from_uint64(BI_TESTS_D_TAG, 3);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 6452, 1971);
     ec_point_mul(&result, d, &P, &params);
     
     ASSERT_TRUE(point_are_equal(&result, &expected));
 
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
-    d = bigint_from_uint32(BI_TESTS_D_TAG, 4);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 3124, 272);
+    create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
+    create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
+    d = bigint_from_uint64(BI_TESTS_D_TAG, 4);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 3124, 272);
     ec_point_mul(&result, d, &P, &params);
     
     ASSERT_TRUE(point_are_equal(&result, &expected));
 
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
-    d = bigint_from_uint32(BI_TESTS_D_TAG, 10);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 3025, 1344);
+    create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
+    create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
+    d = bigint_from_uint64(BI_TESTS_D_TAG, 10);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 3025, 1344);
     ec_point_mul(&result, d, &P, &params);
     
     ASSERT_TRUE(point_are_equal(&result, &expected));
 
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
-    d = bigint_from_uint32(BI_TESTS_D_TAG, 1000);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 2945, 4676);
+    create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
+    create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
+    d = bigint_from_uint64(BI_TESTS_D_TAG, 1000);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 2945, 4676);
     ec_point_mul(&result, d, &P, &params);
     
     ASSERT_TRUE(point_are_equal(&result, &expected));
@@ -299,12 +299,12 @@ TEST(ec_point_mul, ultimate_test)
     
     Point P, result, expected;
     BigInt d = GET_BIGINT_PTR(BI_TESTS_D_TAG);
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 0, 0);
+    create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 0, 0);
     
     point_copy(&P, &params.generator);
     bigint_copy(d, params.n);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0);
+    create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
     expected.is_at_infinity = 1;
     ec_point_mul(&result, d, &P, &params);
 
@@ -322,12 +322,12 @@ TEST(ec_point_mul, ultimate_test_2)
    
     Point P, result, expected;   
     BigInt d = GET_BIGINT_PTR(BI_TESTS_D_TAG);
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
+    create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
    
     point_copy(&P, &params.generator);
     bigint_copy(d, params.n);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0);
+    create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
     expected.is_at_infinity = 1;
     ec_point_mul(&result, d, &P, &params);
     

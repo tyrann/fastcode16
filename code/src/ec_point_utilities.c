@@ -18,13 +18,6 @@ void create_point_from_hex(Point* p, uint32_t tag_x, uint32_t tag_y, const char 
         bigint_from_hex_string(tag_y, y));
 }
 
-void create_point_from_uint32(Point* p, uint32_t tag_x, uint32_t tag_y, uint32_t x, uint32_t y)
-{
-    create_point(p,
-        bigint_from_uint32(tag_x, x),
-        bigint_from_uint32(tag_y, y));
-}
-
 void create_point_from_uint64(Point* p, uint32_t tag_x, uint32_t tag_y, uint64_t x, uint64_t y)
 {
     create_point(p,
