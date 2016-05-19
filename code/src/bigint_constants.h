@@ -107,10 +107,12 @@
 #define BI_TESTS_PUBKEYVY_TAG 78
 #define BI_TESTS_SHAREDU_TAG 79
 #define BI_TESTS_SHAREDV_TAG 80
+#define BI_TESTS_X_CONV_TAG 81
+#define BI_TESTS_Y_CONV_TAG 82
 
 // Update the number of tags
 // after defining a new one:
-#define BI_TAGS_COUNT 81
+#define BI_TAGS_COUNT 83
 // ==========================
 
 #endif

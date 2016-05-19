@@ -66,8 +66,8 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	BigInt x_mont = GET_BIGINT_PTR(BI_MONTGOMERYMUL_XMONT_TAG);
 	BigInt y_mont = GET_BIGINT_PTR(BI_MONTGOMERYMUL_YMONT_TAG);
 
-	__montgomery_convert(x_mont, x, p);
-	__montgomery_convert(y_mont, y, p);
+	bigint_copy(x_mont, x);
+	bigint_copy(y_mont, y);
 
 	/* This is -p^-1 mod b*/
 	int pbar = -1;
