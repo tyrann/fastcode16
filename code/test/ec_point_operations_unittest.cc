@@ -307,7 +307,7 @@ TEST(ec_point_mul, ultimate_test)
     create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
     expected.is_at_infinity = 1;
     ec_point_mul(&result, d, &P, &params);
-
+    
     ASSERT_TRUE(point_are_equal(&result, &expected));
 
     bigint_destroy_buffer();

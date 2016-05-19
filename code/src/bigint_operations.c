@@ -138,7 +138,7 @@ void bigint_left_shift_inplace(BigInt a)
 		__COUNT_OP(&global_opcount, 1);
         a->blocks[a->significant_blocks] = carry;
 		a->significant_blocks++;
-		memset(a->blocks + a->significant_blocks, 0, ROUND_UP_MUL4(a->significant_blocks) - a->significant_blocks);
+		memset(a->blocks + a->significant_blocks, 0, (ROUND_UP_MUL4(a->significant_blocks) - a->significant_blocks) * 8);
     }
 }
 
@@ -184,7 +184,7 @@ void bigint_add_inplace(BigInt a, const BigInt b)
 	// Extends a if b is larger
 	if(a->significant_blocks < b->significant_blocks)
 	{
-		memset(a->blocks + a->significant_blocks, 0, ROUND_UP_MUL4(b->significant_blocks) - a->significant_blocks);
+		memset(a->blocks + a->significant_blocks, 0, (ROUND_UP_MUL4(b->significant_blocks) - a->significant_blocks) * 8);
 		__COUNT_OP(&global_opcount, 2);
 		a->significant_blocks = b->significant_blocks;
 

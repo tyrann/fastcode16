@@ -26,8 +26,10 @@ int bigint_are_equal(const BigInt a, const BigInt b)
     // If the number of octets is different, then the
     // numbers are different
     if (a->significant_blocks != b->significant_blocks)
+	{
         return 0;
-    
+	}
+	
     // Check that all significant octets match
     for (uint64_t i = 0; i < a->significant_blocks; i++)
     {
