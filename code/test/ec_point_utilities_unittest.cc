@@ -80,7 +80,7 @@ TEST(create_point_uint64, create_point_uint64)
 	bigint_destroy_buffer();
 }
 
-TEST(point_is_on_curve, point_inf)
+TEST(point_is_on_curve, DISABLED_point_inf)
 {
 	bigint_create_buffer();
 
@@ -96,7 +96,7 @@ TEST(point_is_on_curve, point_inf)
 	bigint_destroy_buffer();
 }
 
-TEST(point_is_on_curve, point_on_curve)
+TEST(point_is_on_curve, DISABLED_point_on_curve)
 {
 	bigint_create_buffer();
 

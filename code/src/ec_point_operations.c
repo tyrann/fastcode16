@@ -41,7 +41,6 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		BigInt lambda_squared = GET_BIGINT_PTR(BI_POINTADD_LAMBDASQUARED_TAG);
 		BigInt x_twice = GET_BIGINT_PTR(BI_POINTADD_XTWICE_TAG);
 		BigInt y_1 = GET_BIGINT_PTR(BI_POINTADD_Y1_TAG);
-		BigInt y_3 = GET_BIGINT_PTR(BI_POINTADD_Y3_TAG);
 		BigInt x_1_minus_x_3 = GET_BIGINT_PTR(BI_POINTADD_X1MINUSX3_TAG);
 
 		// numerator
@@ -93,13 +92,13 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
     else if(!bigint_are_equal(a->x, b->x))
     {
 		// Get BigInt objects
+		BigInt tmp = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
 		BigInt numerator = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
 		BigInt denominator = GET_BIGINT_PTR(BI_POINTADD_DENOMINATOR_TAG);
 		BigInt lambda = GET_BIGINT_PTR(BI_POINTADD_LAMBDA_TAG);
 		BigInt lambda_squared = GET_BIGINT_PTR(BI_POINTADD_LAMBDASQUARED_TAG);
 		BigInt x_1_add_inverse = GET_BIGINT_PTR(BI_POINTADD_X1ADDINVERSE_TAG);
 		BigInt y_1_add_inverse = GET_BIGINT_PTR(BI_POINTADD_Y1ADDINVERSE_TAG);
-		BigInt y_3 = GET_BIGINT_PTR(BI_POINTADD_Y3_TAG);
 		BigInt x_1_minus_x_3 = GET_BIGINT_PTR(BI_POINTADD_X1MINUSX3_TAG);
 	
 		// Compute inverses
@@ -121,11 +120,12 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 	
 		//Calculate lambda
 		bigint_divide(lambda, numerator, denominator, params->p);
+		__montgomery_convert(tmp, lambda, params->p);
 
 		//Calculate lambda^2
 		bigint_copy(x_1_minus_x_3, a->x);
-		montgomery_mul(lambda_squared, lambda, lambda, params->p);
-		__montgomery_revert(a->x, lambda_squared, params->p);
+		montgomery_mul(lambda_squared, tmp, tmp, params->p);
+		bigint_copy(a->x, lambda_squared);
 	
 		bigint_add_inplace(a->x, x_1_add_inverse);
 		bigint_add_inplace(a->x, params->p);
@@ -136,8 +136,7 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		bigint_add_inplace(x_1_minus_x_3, params->p);
 		bigint_sub_inplace(x_1_minus_x_3, a->x);
 
-		montgomery_mul(y_3, lambda, x_1_minus_x_3, params->p);
-		__montgomery_revert(a->y, y_3, params->p);
+		montgomery_mul(a->y, tmp, x_1_minus_x_3, params->p);
 		
 		bigint_add_inplace(a->y, y_1_add_inverse);
 		bigint_modulo_inplace(a->y, params->p);
@@ -150,7 +149,7 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
     }
 }
 
-void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticCurveParameter *params)
+void ec_point_mul(Point *result, const BigInt d, const Point *P, EllipticCurveParameter *params)
 {
 	Point p2;
 
@@ -160,6 +159,8 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
 	result->is_at_infinity = 1;
 	
     point_copy(&p2, P);
+	point_convert_to_montgomery_space(&p2, params->p);
+	ec_parameter_convert_to_montgomery_space(params);
 
     for(uint64_t i = 0; i < d->significant_octets; i++)
     {
@@ -176,4 +177,6 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
 
 		__COUNT_OP(&global_index_count,1);
     }
+
+	point_revert_from_montgomery_space(result, params->p);
 }

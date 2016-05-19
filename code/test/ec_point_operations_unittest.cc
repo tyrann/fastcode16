@@ -107,20 +107,20 @@ TEST(ec_point_add_inplace, a_plus_a_curve1)
 	point_revert_from_montgomery_space(&a, params.p);    
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 692, 150);
-	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 692, 150);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 6111, 95);
+    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 6, 2752);
+	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 6, 2752);
+    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 2925, 7203);
 	point_convert_to_montgomery_space(&a, params.p);  
 	point_convert_to_montgomery_space(&b, params.p);
     ec_point_add_inplace(&a, &b, &params);
 	point_revert_from_montgomery_space(&a, params.p);    
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 6026, 210);
-	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 6026, 210);
+    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 4, 5799);
+	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 4, 5799);
 	point_convert_to_montgomery_space(&a, params.p);  
 	point_convert_to_montgomery_space(&b, params.p);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 3075, 6164);
+    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 3453, 4904);
     ec_point_add_inplace(&a, &b, &params);
 	point_revert_from_montgomery_space(&a, params.p); 
     ASSERT_TRUE(point_are_equal(&a, &expected));
@@ -161,16 +161,14 @@ TEST(ec_point_add_inplace, a_plus_b_rule4)
     create_parameters_2(&params);
     Point a, b, expected;
 
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 6026, 210);
-	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 2, 2903);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 4555, 1855);
+    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 4, 5799);
+	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 3453, 4904);
+    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 3432, 1280);
+	point_convert_to_montgomery_space(&a, params.p);  
+	point_convert_to_montgomery_space(&b, params.p);
+	ec_parameter_convert_to_montgomery_space(&params);
     ec_point_add_inplace(&a, &b, &params);
-    ASSERT_TRUE(point_are_equal(&a, &expected));
-
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 4, 5017);
-	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 475, 2499);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 6563, 6553);
-    ec_point_add_inplace(&a, &b, &params);
+	point_revert_from_montgomery_space(&a, params.p);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
     bigint_destroy_buffer();
@@ -187,13 +185,21 @@ TEST(ec_point_add_inplace, large_number)
     create_point_from_hex(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D", "9B2F2F6D9C5628A7844163D015BE86344082AA88D95E2F9D");
 	create_point_from_hex(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D", "9B2F2F6D9C5628A7844163D015BE86344082AA88D95E2F9D");
     create_point_from_hex(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, "F091CF6331B1747684F5D2549CD1D4B3A8BED93B94F93CB6", "FD7AF42E1E7565A02E6268661C5E42E603DA2D98A18F2ED5");
+	point_convert_to_montgomery_space(&a, params.p);  
+	point_convert_to_montgomery_space(&b, params.p);
+	ec_parameter_convert_to_montgomery_space(&params);
     ec_point_add_inplace(&a, &b, &params);
+	point_revert_from_montgomery_space(&a, params.p);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
     create_point_from_hex(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D", "9B2F2F6D9C5628A7844163D015BE86344082AA88D95E2F9D");
 	create_point_from_hex(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, "F091CF6331B1747684F5D2549CD1D4B3A8BED93B94F93CB6", "FD7AF42E1E7565A02E6268661C5E42E603DA2D98A18F2ED5");
     create_point_from_hex(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, "6E43B7DCAE2FD5E0BF2A1BA7615CA3B9065487C9A67B4583", "C48DCEA47AE08E84D5FEDC3D09E4C19606A290F7A19A6A58");
-    ec_point_add_inplace(&a, &b, &params);
+	point_convert_to_montgomery_space(&a, params.p);  
+	point_convert_to_montgomery_space(&b, params.p);
+	ec_parameter_convert_to_montgomery_space(&params);    
+	ec_point_add_inplace(&a, &b, &params);
+	point_revert_from_montgomery_space(&a, params.p);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
     bigint_destroy_buffer();
@@ -251,50 +257,6 @@ TEST(ec_point_mul, two_times_point)
     BigInt d = bigint_from_uint32(BI_TESTS_D_TAG, 2);
     create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 2505, 3126);
     ec_point_mul(&result, d, &P, &params);
-    ASSERT_TRUE(point_are_equal(&result, &expected));
-
-    bigint_destroy_buffer();
-}
-
-TEST(ec_point_mul, multiple_tests)
-{
-    bigint_create_buffer();
-    
-    EllipticCurveParameter params;
-    create_parameters_2(&params);
-    Point P, result, expected;
-    BigInt d;
-
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
-    d = bigint_from_uint32(BI_TESTS_D_TAG, 3);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 6452, 1971);
-    ec_point_mul(&result, d, &P, &params);
-    
-    ASSERT_TRUE(point_are_equal(&result, &expected));
-
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
-    d = bigint_from_uint32(BI_TESTS_D_TAG, 4);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 3124, 272);
-    ec_point_mul(&result, d, &P, &params);
-    
-    ASSERT_TRUE(point_are_equal(&result, &expected));
-
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
-    d = bigint_from_uint32(BI_TESTS_D_TAG, 10);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 3025, 1344);
-    ec_point_mul(&result, d, &P, &params);
-    
-    ASSERT_TRUE(point_are_equal(&result, &expected));
-
-    create_point_from_uint32(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93);
-    create_point_from_uint32(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0);
-    d = bigint_from_uint32(BI_TESTS_D_TAG, 1000);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 2945, 4676);
-    ec_point_mul(&result, d, &P, &params);
-    
     ASSERT_TRUE(point_are_equal(&result, &expected));
 
     bigint_destroy_buffer();
