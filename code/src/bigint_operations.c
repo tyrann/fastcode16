@@ -8,7 +8,10 @@
 #include "bigint_structure.h"
 #include "bigint_conversion.h"
 #include "bigint_utilities.h"
-#include <stdlib.h>
+#include <stdint.h>
+
+#include <x86intrin.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -23,7 +26,7 @@ void __montgomery_convert(BigInt res, const BigInt x, const BigInt p)
 	bigint_copy(res, x);
 	/*n is the R parameter in the Montgomery convertion*/
 
-	uint64_t n = p->significant_octets * 8;
+	uint64_t n = p->significant_blocks * 8 * 8;
 	__COUNT_OP(&global_opcount, 1);
 	uint64_t i;
     
@@ -42,7 +45,7 @@ void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p)
 {
 	bigint_copy(rev, x);
 
-	uint64_t n = p->significant_octets * 8;
+	uint64_t n = p->significant_blocks * 8 * 8;
 	__COUNT_OP(&global_opcount, 1);
 	uint64_t i;
 
@@ -76,16 +79,16 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	bigint_copy(res, bigint_zero);
 
 	/*We take the smallest power of 2 that is bigger than p*/
-	int n = p->significant_octets * 8;
+	int n = p->significant_blocks * 8 * 8;
 	__COUNT_OP(&global_opcount, 1);
 	int i;
 
-	uint8_t y0 = y_mont->octets[0] & 0x1;
+	uint8_t y0 = (uint8_t)y_mont->blocks[0] & 0x1;
 	for (i = 0; i < n; ++i) 
 	{
 		// ui <- (z0 +xi*y0)*pbar mod b
-		uint8_t z0 = res->octets[0] & 0x1;
-		uint8_t xi = (x_mont->octets[0]) & 0x1;
+		uint8_t z0 = (uint8_t)res->blocks[0] & 0x1;
+		uint8_t xi = (uint8_t)x_mont->blocks[0] & 0x1;
 		bigint_right_shift_inplace(x_mont);		
 		uint64_t ui = ((z0 + xi*y0)*pbar) % B;
 		__COUNT_OP(&global_opcount, 4);
@@ -117,14 +120,14 @@ void bigint_left_shift_inplace(BigInt a)
     BIGINT_ASSERT_VALID(a);
     
     // Left shift octets by one, propagating the carry across octets.
-    uchar carry = 0;
-    for (uint64_t i = 0; i < a->significant_octets; i++)
+    uint64_t carry = 0;
+    for (uint64_t i = 0; i < a->significant_blocks; i++)
     {
-        uchar cur_carry = carry;
-        carry = a->octets[i] >> 7;
+        uint64_t cur_carry = carry;
+        carry = a->blocks[i] >> 63;
 		__COUNT_OP(&global_opcount, 1);
     
-        a->octets[i] = cur_carry + (a->octets[i] << 1);
+        a->blocks[i] = cur_carry + (a->blocks[i] << 1);
 		__COUNT_OP(&global_opcount, 1);
 		__COUNT_INDEX(&global_index_count, 1);
     }
@@ -133,8 +136,9 @@ void bigint_left_shift_inplace(BigInt a)
     if (carry > 0)
     {
 		__COUNT_OP(&global_opcount, 1);
-        a->octets[a->significant_octets] = carry;
-		a->significant_octets++;
+        a->blocks[a->significant_blocks] = carry;
+		a->significant_blocks++;
+		memset(a->blocks + a->significant_blocks, 0, (ROUND_UP_MUL4(a->significant_blocks) - a->significant_blocks) * 8);
     }
 }
 
@@ -143,23 +147,23 @@ void bigint_right_shift_inplace(BigInt a)
     BIGINT_ASSERT_VALID(a);
     
     // Right shift octets by one, propagating the carry across octets.
-    uchar carry = 0;
-    for (uint64_t i = a->significant_octets; i > 0; i--)
+    uint64_t carry = 0;
+    for (uint64_t i = a->significant_blocks; i > 0; i--)
     {
-        uchar cur_carry = carry;
-        carry = a->octets[i-1] << 7;
+        uint64_t cur_carry = carry;
+        carry = a->blocks[i-1] << 63;
 		__COUNT_OP(&global_opcount, 2);
 
-        a->octets[i-1] = cur_carry + (a->octets[i-1] >> 1);
+        a->blocks[i-1] = cur_carry + (a->blocks[i-1] >> 1);
 		__COUNT_OP(&global_opcount, 3);
 		__COUNT_INDEX(&global_index_count, 1);
     }
     
     // Check if the number of significant octets decreased
-    if (a->octets[a->significant_octets-1] == 0 && a->significant_octets > 1)
+    if (a->blocks[a->significant_blocks-1] == 0 && a->significant_blocks > 1)
 	{
 		__COUNT_OP(&global_opcount, 2);
-        a->significant_octets--;
+        a->significant_blocks--;
 		__COUNT_OP(&global_opcount, 1);
 	}
 }
@@ -176,52 +180,40 @@ void bigint_add_inplace(BigInt a, const BigInt b)
 {
 	BIGINT_ASSERT_VALID(a);
     BIGINT_ASSERT_VALID(b);
-
-	uint32_t carry = 0;
-	uint32_t a_bytes = a->significant_octets;
 	
 	// Extends a if b is larger
-	if(a->significant_octets < b->significant_octets)
+	if(a->significant_blocks < b->significant_blocks)
 	{
-		memset(a->octets + a->significant_octets, 0, b->significant_octets - a->significant_octets);
+		memset(a->blocks + a->significant_blocks, 0, (ROUND_UP_MUL4(b->significant_blocks) - a->significant_blocks) * 8);
 		__COUNT_OP(&global_opcount, 2);
-		a->significant_octets = b->significant_octets;
+		a->significant_blocks = b->significant_blocks;
 
 	}
 
-	a_bytes = a->significant_octets;
-	uint64_t i = 0;
 	// Execute adding and propagate carry
-	for (; i < a_bytes; i++)
-    {	
-		uint32_t atemp;
-		uint32_t btemp;
-		if(i <= b->significant_octets-1)
+	uint64_t i = 0;
+	unsigned char carry = 0;
+	for (; i < a->significant_blocks; i++)
+    {
+		__COUNT_INDEX(&global_index_count, 1);
+		if(i < b->significant_blocks)
 		{
-			__COUNT_OP(&global_opcount, 1);
-			atemp = (uint32_t)a->octets[i];
-			btemp = (uint32_t)b->octets[i];
-			carry = (carry + atemp + btemp);
+			carry = _addcarry_u64(carry, a->blocks[i], b->blocks[i], (unsigned long long*)&(a->blocks)[i]);
 			__COUNT_OP(&global_opcount, 2);
 		}
 		else
 		{
-			atemp = (uint32_t)a->octets[i];
-			carry = (carry + atemp);
+			if (carry == 0) break;
+			carry = _addcarry_u64(carry, a->blocks[i], 0, (unsigned long long*)&(a->blocks)[i]);
 			__COUNT_OP(&global_opcount, 1);
 		}
-
-		a->octets[i] = carry & 0xFF;	
-		carry = carry >> 8;
-		__COUNT_OP(&global_opcount, 1);
-		__COUNT_INDEX(&global_index_count, 1);
     }
-	// If needed, allocate 1 more byte for the carry
+	// If needed, allocate 1 more block for the carry
 	if(carry > 0)
 	{
-		a->significant_octets += 1;
+		a->significant_blocks += 1;
 		__COUNT_OP(&global_opcount, 1);
-		a->octets[i] = carry;
+		a->blocks[i] = (uint64_t)carry;
 	}	
 }
 
@@ -233,62 +225,28 @@ void bigint_sub_inplace(BigInt a, const BigInt b)
     // Negative representation is not implemented
     assert(!bigint_is_greater(b, a));
 
-	uint64_t count = a->significant_octets;
 	uint64_t i = 0;
-	uint8_t borrow = 0;
-	uint8_t tmp_borrow = 0;
-	char stop = 0;
-		
-	for (; i < count && !stop; i++)
+	unsigned char borrow = 0;
+	for (; i < a->significant_blocks; i++)
 	{
-		__COUNT_OP(&global_opcount, 2);
-	    uint32_t atemp = (uint32_t)a->octets[i];
-	    uint32_t btemp;
-	    if(i < b->significant_octets)
-	    {
-			btemp = (uint32_t)b->octets[i];
-	    }
-	    else
-	    {
-			stop = 1;
-			btemp = 0;
-	    }
-
-	    if(borrow) 
-	    {
-		stop = 0;
-		btemp++;
-		__COUNT_OP(&global_opcount, 1);
-	    }
-
-	    if(btemp > atemp)
-	    {
-			tmp_borrow = 1;
-			atemp = atemp + 0xFF + 1;
-			__COUNT_OP(&global_opcount, 2);
-	    }
-	    else
-	    {
-			tmp_borrow = 0;
-	    }
-
-	    atemp = atemp - btemp;
-		__COUNT_OP(&global_opcount, 1);
-	    a->octets[i] = atemp;
-	    borrow = tmp_borrow;
 		__COUNT_INDEX(&global_index_count, 1);
+	    if(i < b->significant_blocks)
+	    {
+			borrow = _subborrow_u64(borrow, b->blocks[i], a->blocks[i], (unsigned long long*)&(a->blocks)[i]);
+			__COUNT_OP(&global_opcount, 1);
+	    }
+	    else
+	    {
+			if (borrow == 0) break;
+			borrow = _subborrow_u64(borrow, 0, a->blocks[i], (unsigned long long*)&(a->blocks)[i]);
+			__COUNT_OP(&global_opcount, 1);
+	    }
 	}
 
-	stop = 0;
-	for(int j = count - 1; j >= 0 && !stop; j--)
+	for(; a->significant_blocks > 1; a->significant_blocks--)
 	{
+		if (a->blocks[a->significant_blocks-1] != 0) break;
 		__COUNT_OP(&global_opcount, 3);
-	    if(a->octets[j] != 0) 
-	    {
-			a->significant_octets = j + 1;
-			__COUNT_OP(&global_opcount, 1);
-			stop = 1;
-	    }
 	}
 }
 
@@ -312,7 +270,7 @@ void bigint_divide(BigInt dest, const BigInt b, const BigInt a, const BigInt p)
 		// 2)
 		BigInt x1 = GET_BIGINT_PTR(BI_DIVIDE_X1_TAG);
 		bigint_copy(x1, b);
-		BigInt x2 = bigint_from_uint32(BI_DIVIDE_X2_TAG, 0);
+		BigInt x2 = bigint_from_uint64(BI_DIVIDE_X2_TAG, 0);
 	
 		// 3)
 		while (!bigint_are_equal(u, bigint_one) && !bigint_are_equal(v, bigint_one))

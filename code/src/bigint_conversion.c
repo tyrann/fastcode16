@@ -6,28 +6,14 @@
 #include "bigint.h"
 #include "logging/logging.h"
 
-BigInt bigint_from_uint32(uint32_t tag, uint32_t num)
-{
-    return bigint_from_uint64(tag, (uint64_t)num);
-}
-
 BigInt bigint_from_uint64(uint32_t tag, uint64_t num)
 {
     BigInt dest = GET_BIGINT_PTR(tag);
     
-    // Find number of octets needed
-    uint64_t num_octets;
-    for (num_octets = 8; num_octets > 1; num_octets--)
-    {
-        uint64_t mask = 0xFFULL << (8 * (num_octets - 1));
-        uint64_t octet = num & mask;
-        if (octet != 0) break;
-    }
-    
     // Copy the number to the allocate doctets
-    dest->significant_octets = num_octets;
-    for (uint64_t i = 0; i < num_octets; i++)
-        dest->octets[i] = (uchar)((num >> i * 8) & 0xFFULL);
+    dest->significant_blocks = 1;
+    dest->blocks[0] = num;
+    memset(dest->blocks + 1, 0, 3 * 8);
     
     return dest;
 }
@@ -54,12 +40,17 @@ BigInt bigint_from_hex_string(uint32_t tag, const char* num)
     if (num_octets == 0) num_octets = 1;
     
     // Create result object
-    dest->significant_octets = num_octets;
+    dest->significant_blocks = (num_octets + 7) / 8;
+    
+    // Clear unused blocks
+    dest->blocks[dest->significant_blocks-1] = 1;
+    memset(dest->blocks + dest->significant_blocks, 0,
+        (ROUND_UP_MUL4(dest->significant_blocks) - dest->significant_blocks) * 8);
     
     // Copy digits
     if (significant_digits == 0)
     {
-        dest->octets[0] = 0;
+        ((uchar*)dest->blocks)[0] = 0;
     }
     else
     {
@@ -72,7 +63,7 @@ BigInt bigint_from_hex_string(uint32_t tag, const char* num)
         if (significant_digits % 2 == 1)
         {
             octet_string[1] = num[j];
-            dest->octets[octet_id] = (uchar)strtol(octet_string, 0, 16);
+            ((uchar*)dest->blocks)[octet_id] = (uchar)strtol(octet_string, 0, 16);
             octet_id--;
             j++;
         }
@@ -80,7 +71,7 @@ BigInt bigint_from_hex_string(uint32_t tag, const char* num)
         {
             octet_string[0] = num[j];
             octet_string[1] = num[j+1];
-            dest->octets[octet_id] = (uchar)strtol(octet_string, 0, 16);
+            ((uchar*)dest->blocks)[octet_id] = (uchar)strtol(octet_string, 0, 16);
             octet_id--;
         }
     }
@@ -94,9 +85,7 @@ char* bigint_to_hex_string(const BigInt num)
     
     // Determine the number of characters necessary to store the number
     // and allocate a buffer of the same size
-    uint64_t num_chars = num->significant_octets * 2;
-    if (num->octets[num->significant_octets-1] <= 0x0F)
-        num_chars--;
+    uint64_t num_chars = num->significant_blocks * 2 * 8;
     char* result = (char*)malloc(num_chars+1);
     result[num_chars] = '\0';
         
@@ -105,23 +94,15 @@ char* bigint_to_hex_string(const BigInt num)
     // the string termination character to the final string.
     uint64_t i = 0;
     char temp[] = "00";
-    for (; i + 1 < num->significant_octets; i++)
+    for (; i + 1 < num->significant_blocks * 8; i++)
     {
-        sprintf((char*)temp, "%02hhX", num->octets[i]);
+        sprintf((char*)temp, "%02hhX", ((uchar*)num->blocks)[i]);
         strncpy(&result[num_chars-i*2-2], (char*)temp, 2);
     }
     
     // Special case for the last octet (may fit in only one char)
-    if (num->octets[i] <= 0x0F)
-    {
-        sprintf((char*)temp, "%01hhX", num->octets[i]);
-        strncpy(&result[0], (char*)temp, 1);
-    }
-    else
-    {
-        sprintf((char*)temp, "%02hhX", num->octets[i]);
-        strncpy(&result[0], (char*)temp, 2);
-    }
+    sprintf((char*)temp, "%02hhX", ((uchar*)num->blocks)[i]);
+    strncpy(&result[0], (char*)temp, 2);
     
     return result;
 }

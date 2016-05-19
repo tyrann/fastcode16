@@ -50,16 +50,16 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		bigint_add_inplace(numerator, numerator_rev);
 		bigint_add_inplace(numerator, params->a);
 		bigint_modulo_inplace(numerator, params->p);
-	
+			
 		// denominator
 		bigint_copy(denominator, a->y);
 		bigint_copy(y_1, a->y);
 		bigint_left_shift_inplace(denominator);
 		bigint_modulo_inplace(denominator, params->p);
-
+		
 		// calculate lambda
 		bigint_divide(lambda, numerator, denominator, params->p);
-
+		
 		//calculate x
 		bigint_copy(x_1_minus_x_3, a->x);
 		bigint_copy(x_twice, a->x);
@@ -79,11 +79,11 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		// x_1 - x_3
 		bigint_add_inplace(x_1_minus_x_3, params->p);
 		bigint_sub_inplace(x_1_minus_x_3, a->x);
-
+				
 		// calculate lambda(x_1 - x_3)
 		montgomery_mul(y_3, lambda, x_1_minus_x_3, params->p);
 		__montgomery_revert(a->y, y_3, params->p);
-
+		
 		bigint_add_inplace(a->y, params->p);
 		bigint_sub_inplace(a->y, y_1);
 		bigint_modulo_inplace(a->y, params->p);
@@ -160,23 +160,24 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
 {
 	Point p2;
 
-	create_point_from_uint32(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG, 0, 0);
+	create_point_from_uint64(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG, 0, 0);
 	bigint_copy(result->x, bigint_zero);
 	bigint_copy(result->y, bigint_zero);
 	result->is_at_infinity = 1;
 	
     point_copy(&p2, P);
 
-    for(uint64_t i = 0; i < d->significant_octets; i++)
+	for(uint64_t i = 0; i < d->significant_blocks; i++)
     {
-		for(int j = 0; j < 8; j++) 
+		for(uint64_t j = 0; j < 64; j++) 
 		{
 			__COUNT_OP(&global_opcount,2);
-	    	if(d->octets[i] & (1 << j)) 
+	    	if(d->blocks[i] & (((uint64_t)1) << j)) 
 	    	{
 				ec_point_add_inplace(result, &p2, params);	
 	   		}
-	    	ec_point_add_inplace(&p2, &p2, params);
+			
+			ec_point_add_inplace(&p2, &p2, params);
 			__COUNT_OP(&global_index_count,1);
 		}
 
