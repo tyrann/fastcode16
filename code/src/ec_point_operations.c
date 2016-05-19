@@ -73,7 +73,7 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		// x_1 - x_3
 		bigint_add_inplace(x_1_minus_x_3, params->p);
 		bigint_sub_inplace(x_1_minus_x_3, a->x);
-
+				
 		// calculate lambda(x_1 - x_3)
 		montgomery_mul(a->y, tmp, x_1_minus_x_3, params->p);
 
@@ -153,7 +153,7 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, EllipticCurvePa
 {
 	Point p2;
 
-	create_point_from_uint32(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG, 0, 0);
+	create_point_from_uint64(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG, 0, 0);
 	bigint_copy(result->x, bigint_zero);
 	bigint_copy(result->y, bigint_zero);
 	result->is_at_infinity = 1;
@@ -162,16 +162,17 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, EllipticCurvePa
 	point_convert_to_montgomery_space(&p2, params->p);
 	ec_parameter_convert_to_montgomery_space(params);
 
-    for(uint64_t i = 0; i < d->significant_octets; i++)
+	for(uint64_t i = 0; i < d->significant_blocks; i++)
     {
-		for(int j = 0; j < 8; j++) 
+		for(uint64_t j = 0; j < 64; j++) 
 		{
 			__COUNT_OP(&global_opcount,2);
-	    	if(d->octets[i] & (1 << j)) 
+	    	if(d->blocks[i] & (((uint64_t)1) << j)) 
 	    	{
 				ec_point_add_inplace(result, &p2, params);	
 	   		}
-	    	ec_point_add_inplace(&p2, &p2, params);
+			
+			ec_point_add_inplace(&p2, &p2, params);
 			__COUNT_OP(&global_index_count,1);
 		}
 

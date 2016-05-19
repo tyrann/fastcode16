@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include "bigint_constants.h"
 
+typedef uint64_t block;
 typedef unsigned char uchar;
 
 // Structure for big integers. Supports unsigned integres
@@ -13,15 +14,15 @@ typedef unsigned char uchar;
 typedef struct 
 {
     // The number of octets (bytes) actually used storing the number
-    uint64_t significant_octets;
+    uint64_t significant_blocks;
     
     // Padding bytes. This guarantees the required alignment on the octets array
     #if BIGINT_HEADER_PADDING != 0
-    uchar __padding[BIGINT_HEADER_PADDING];
+    unsigned char __padding[BIGINT_HEADER_PADDING];
     #endif
     
     // Pointer to the buffer containing the octets of the number
-    uchar octets[BIGINT_OCTETS_COUNT];
+    block blocks[BIGINT_BLOCKS_COUNT];
     
 } __BigInt;
 

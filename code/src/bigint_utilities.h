@@ -24,7 +24,10 @@ void bigint_copy(BigInt dest, const BigInt a);
 #define BIGINT_ASSERT_VALID(num) \
 { \
     assert(num != 0); \
-    assert(num->significant_octets > 0); \
+    assert(num->significant_blocks > 0); \
 }
+
+// Round an integer up to the next multiple of 4
+#define ROUND_UP_MUL4(num) ((num + 3) & ~3)
 
 #endif

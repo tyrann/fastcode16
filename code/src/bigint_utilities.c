@@ -14,8 +14,8 @@ void bigint_clear(BigInt a)
 {    
     BIGINT_ASSERT_VALID(a);
     
-    memset(a->octets, 0, a->significant_octets);
-    a->significant_octets = 1;
+    memset(a->blocks, 0, ROUND_UP_MUL4(a->significant_blocks) * 8);
+    a->significant_blocks = 1;
 }
 
 int bigint_are_equal(const BigInt a, const BigInt b)
@@ -25,13 +25,15 @@ int bigint_are_equal(const BigInt a, const BigInt b)
     
     // If the number of octets is different, then the
     // numbers are different
-    if (a->significant_octets != b->significant_octets)
+    if (a->significant_blocks != b->significant_blocks)
+	{
         return 0;
-    
+	}
+	
     // Check that all significant octets match
-    for (uint64_t i = 0; i < a->significant_octets; i++)
+    for (uint64_t i = 0; i < a->significant_blocks; i++)
     {
-        if (a->octets[i] != b->octets[i])
+        if (a->blocks[i] != b->blocks[i])
 		{
             return 0;
         }
@@ -46,8 +48,8 @@ void bigint_copy(BigInt dest, const BigInt a)
     BIGINT_ASSERT_VALID(a);
     assert(dest != 0);
     
-    dest->significant_octets = a->significant_octets;
-    memcpy(dest->octets, a->octets, dest->significant_octets);
+    dest->significant_blocks = a->significant_blocks;
+    memcpy(dest->blocks, a->blocks, ROUND_UP_MUL4(dest->significant_blocks) * 8);
 }
 
 int bigint_is_greater(const BigInt a, const BigInt b)
@@ -55,8 +57,8 @@ int bigint_is_greater(const BigInt a, const BigInt b)
 	BIGINT_ASSERT_VALID(a);
 	BIGINT_ASSERT_VALID(b);
 	
-	uint64_t a_high = a->significant_octets;
-	uint64_t b_high = b->significant_octets;
+	uint64_t a_high = a->significant_blocks;
+	uint64_t b_high = b->significant_blocks;
 
 	if(a_high > b_high)
 	{
@@ -73,12 +75,12 @@ int bigint_is_greater(const BigInt a, const BigInt b)
 
 		for (i = high_byte; i > 0; --i)
 		{
-			if(a->octets[i-1] > b->octets[i-1])
+			if(a->blocks[i-1] > b->blocks[i-1])
 			{
 				__COUNT_OP(&global_opcount,2);
 				return 1;
 			}
-			else if(b->octets[i-1] > a->octets[i-1])
+			else if(b->blocks[i-1] > a->blocks[i-1])
 			{
 				__COUNT_OP(&global_opcount,2);
 				return 0;
@@ -93,7 +95,7 @@ int bigint_is_greater(const BigInt a, const BigInt b)
 int bigint_is_even(const BigInt a)
 {
     BIGINT_ASSERT_VALID(a);
-    if((a->octets[0] & 1) == 1)
+    if((a->blocks[0] & 1) == 1)
     {
 		__COUNT_OP(&global_index_count,1);
 	    return 0;

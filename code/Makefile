@@ -23,7 +23,7 @@ GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 
 CC = gcc
 
-CPPFLAGS += -I ./src -isystem $(GTEST_DIR)/include
+CPPFLAGS += -I ./src -isystem $(GTEST_DIR)/include -std=gnu++98
 
 CXXFLAGS += -g -Wall -Wextra -pthread
 

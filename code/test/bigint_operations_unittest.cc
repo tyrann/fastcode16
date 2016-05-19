@@ -1,6 +1,7 @@
 
 extern "C" {
     #include "bigint.h"
+	#include "logging/logging.h"
 }
 #include "gtest/gtest.h"
 
@@ -24,7 +25,7 @@ TEST(bigint_add_inplace, test_add_zero)
     bigint_create_buffer();
     
 	BigInt a = bigint_from_uint64(BI_TESTS_A_TAG, 0);
-	BigInt b = bigint_from_uint32(BI_TESTS_B_TAG, 4);
+	BigInt b = bigint_from_uint64(BI_TESTS_B_TAG, 4);
 	
 	bigint_add_inplace(a,b);
 	ASSERT_TRUE(bigint_are_equal(a, b));
@@ -36,13 +37,13 @@ TEST(bigint_add_inplace, test_add_size)
 {
     bigint_create_buffer();
     
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FF");
-	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "10000");
-	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "100FF");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FF00000000000000");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "1000000000000000000");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "100FF00000000000000");
 	
 	bigint_add_inplace(a, b);
 	ASSERT_TRUE(bigint_are_equal(a, c));
-	ASSERT_EQ(a->significant_octets, 3);
+	ASSERT_EQ(a->significant_blocks, 2);
     
     bigint_destroy_buffer();
 }
@@ -51,13 +52,13 @@ TEST(bigint_add_inplace, test_add_inversed)
 {
     bigint_create_buffer();
     
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FFFFFFFE");
-	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "0102");
-	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "100000100");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FFFFFFFE00000000");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "010200000000");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "10000010000000000");
 	
 	bigint_add_inplace(a, b);
 	ASSERT_TRUE(bigint_are_equal(a, c));
-	ASSERT_EQ(a->significant_octets, 5);
+	ASSERT_EQ(a->significant_blocks, 2);
 
     bigint_destroy_buffer();
 }
@@ -67,13 +68,13 @@ TEST(bigint_add_inplace, test_add_mem)
     bigint_create_buffer();
     
 	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "1");
-	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "FFFF");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "FFFFFFFFFFFFFFFF");
 	
-	ASSERT_EQ(a->significant_octets, 1);
-	ASSERT_EQ(b->significant_octets, 2);
+	ASSERT_EQ(a->significant_blocks, 1);
+	ASSERT_EQ(b->significant_blocks, 1);
 
 	bigint_add_inplace(a, b);
-	ASSERT_EQ(a->significant_octets, 3);
+	ASSERT_EQ(a->significant_blocks, 2);
 	
     bigint_destroy_buffer();
 }
@@ -81,16 +82,16 @@ TEST(bigint_add_inplace, test_add_mem2)
 {
     bigint_create_buffer();
     
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "1FFAFF");
-	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "1");
-	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "1FFB00");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "1FFAFF0000000000");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "10000000000");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "1FFB000000000000");
 
-	ASSERT_EQ(a->significant_octets, 3);
-	ASSERT_EQ(b->significant_octets, 1);
+	ASSERT_EQ(a->significant_blocks, 1);
+	ASSERT_EQ(b->significant_blocks, 1);
 	
 	bigint_add_inplace(a, b);
 	ASSERT_TRUE(bigint_are_equal(a, c));
-	ASSERT_EQ(a->significant_octets, 3);
+	ASSERT_EQ(a->significant_blocks, 1);
 	
     bigint_destroy_buffer();
 }
@@ -98,16 +99,16 @@ TEST(bigint_add_inplace, test_add_mem3)
 {
     bigint_create_buffer();
     
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "1");
-	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "1FFAFF");
-	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "1FFB00");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10000000000");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "1FFAFF0000000000");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "1FFB000000000000");
 
-	ASSERT_EQ(a->significant_octets, 1);
-	ASSERT_EQ(b->significant_octets, 3);
+	ASSERT_EQ(a->significant_blocks, 1);
+	ASSERT_EQ(b->significant_blocks, 1);
 	
 	bigint_add_inplace(a, b);
 	ASSERT_TRUE(bigint_are_equal(a, c));
-	ASSERT_EQ(a->significant_octets, 3);
+	ASSERT_EQ(a->significant_blocks, 1);
 	
     bigint_destroy_buffer();
 }
@@ -119,12 +120,12 @@ TEST(bigint_add_inplace, test_add_mem4)
 	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "1");
 	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FB00");
 
-	ASSERT_EQ(a->significant_octets, 2);
-	ASSERT_EQ(b->significant_octets, 1);
+	ASSERT_EQ(a->significant_blocks, 1);
+	ASSERT_EQ(b->significant_blocks, 1);
 	
 	bigint_add_inplace(a, b);
 	ASSERT_TRUE(bigint_are_equal(a, c));
-	ASSERT_EQ(a->significant_octets, 2);
+	ASSERT_EQ(a->significant_blocks, 1);
 	
     bigint_destroy_buffer();
 }
@@ -132,16 +133,16 @@ TEST(bigint_add_inplace, test_add_mem5)
 {
     bigint_create_buffer();
 
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FE");
-	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "1");
-	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FF");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FE00000000000000");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "100000000000000");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FF00000000000000");
 
-	ASSERT_EQ(a->significant_octets, 1);
-	ASSERT_EQ(b->significant_octets, 1);
+	ASSERT_EQ(a->significant_blocks, 1);
+	ASSERT_EQ(b->significant_blocks, 1);
 	
 	bigint_add_inplace(a, b);
 	ASSERT_TRUE(bigint_are_equal(a, c));
-	ASSERT_EQ(a->significant_octets, 1);
+	ASSERT_EQ(a->significant_blocks, 1);
 	
     bigint_destroy_buffer();
 }
@@ -149,17 +150,17 @@ TEST(bigint_add_inplace, test_add_mem6)
 {
     bigint_create_buffer();
 
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "1");
-	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "FF");
-	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "100");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "100000000000000");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "FF00000000000000");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "10000000000000000");
 
-	ASSERT_EQ(a->significant_octets, 1);
-	ASSERT_EQ(b->significant_octets, 1);
+	ASSERT_EQ(a->significant_blocks, 1);
+	ASSERT_EQ(b->significant_blocks, 1);
 	
 	bigint_add_inplace(a, b);
 
 	ASSERT_TRUE(bigint_are_equal(a, c));
-	ASSERT_EQ(a->significant_octets, 2);
+	ASSERT_EQ(a->significant_blocks, 2);
 	
     bigint_destroy_buffer();
 }
@@ -179,16 +180,17 @@ TEST(bigint_add_inplace, large_number)
     bigint_destroy_buffer();
 }
 
+// Test BigInt sub
 TEST(bigint_sub_inplace, sub_test_1)
 {
     bigint_create_buffer();
     
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "100");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10000000000000000");
 	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "1");
-	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FF");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FFFFFFFFFFFFFFFF");
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
-    EXPECT_EQ(are_equal, 1);    
+    EXPECT_EQ(are_equal, 1);
 	
 	bigint_destroy_buffer();
 }
@@ -207,7 +209,6 @@ TEST(bigint_sub_inplace, sub_test_2)
     bigint_destroy_buffer();
 }
 
-// Test BigInt sub
 TEST(bigint_sub_inplace, sub_test_3)
 {
     bigint_create_buffer();
@@ -217,7 +218,7 @@ TEST(bigint_sub_inplace, sub_test_3)
 	BigInt c = bigint_from_uint64(BI_TESTS_C_TAG, 0);
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
-    ASSERT_EQ(a->significant_octets, 1);
+    ASSERT_EQ(a->significant_blocks, 1);
     EXPECT_EQ(are_equal, 1);    
     
     bigint_destroy_buffer();
@@ -233,7 +234,7 @@ TEST(bigint_sub_inplace, sub_test_4)
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
     EXPECT_EQ(are_equal, 1);
-    ASSERT_EQ(a->significant_octets, 1);
+    ASSERT_EQ(a->significant_blocks, 1);
     
     bigint_destroy_buffer();
 }
@@ -248,7 +249,7 @@ TEST(bigint_sub_inplace, sub_test_5)
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
     EXPECT_EQ(are_equal, 1);
-    ASSERT_EQ(a->significant_octets, 1);
+    ASSERT_EQ(a->significant_blocks, 1);
     
     bigint_destroy_buffer();
 }
@@ -262,7 +263,7 @@ TEST(bigint_sub_inplace, sub_test_6)
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
     EXPECT_EQ(are_equal, 1);
-    ASSERT_EQ(a->significant_octets, 6);
+    ASSERT_EQ(a->significant_blocks, 1);
     
     bigint_destroy_buffer();
 }
@@ -270,13 +271,13 @@ TEST(bigint_sub_inplace, sub_test_7)
 {	
     bigint_create_buffer();
     
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "200");
-	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "100");
-	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "100");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "2000000000000000000");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "1000000000000000000");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "1000000000000000000");
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
     EXPECT_EQ(are_equal, 1);
-    ASSERT_EQ(a->significant_octets, 2);	
+    ASSERT_EQ(a->significant_blocks, 2);	
     
     bigint_destroy_buffer();
 }
@@ -284,13 +285,14 @@ TEST(bigint_sub_inplace, sub_test_8)
 {	
     bigint_create_buffer();
     
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10000000000000");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10000000000000000");
 	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "FF1");
-	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FFFFFFFFFF00F");
-    bigint_sub_inplace(a, b);
-    int are_equal = bigint_are_equal(a, c);
-    EXPECT_EQ(are_equal, 1);
-    ASSERT_EQ(a->significant_octets, 7);		
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FFFFFFFFFFFFF00F");
+    ASSERT_EQ(a->significant_blocks, 2);
+	bigint_sub_inplace(a, b);	
+	int are_equal = bigint_are_equal(a, c);
+	EXPECT_EQ(are_equal, 1);
+    ASSERT_EQ(a->significant_blocks, 1);		
     
     bigint_destroy_buffer();
 }
@@ -298,13 +300,13 @@ TEST(bigint_sub_inplace, sub_test_9)
 {	
     bigint_create_buffer();
     			
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10000000000000");
-	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "FFFFFFFFFFFFF");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10000000000000000");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "FFFFFFFFFFFFFFFF");
 	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "1");
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
     EXPECT_EQ(are_equal, 1);
-    ASSERT_EQ(a->significant_octets, 1);	
+    ASSERT_EQ(a->significant_blocks, 1);	
     
     bigint_destroy_buffer();
 }
@@ -318,7 +320,7 @@ TEST(bigint_sub_inplace, sub_test_10)
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
     EXPECT_EQ(are_equal, 1);   
-    ASSERT_EQ(a->significant_octets, 7);
+    ASSERT_EQ(a->significant_blocks, 1);
     
     bigint_destroy_buffer();
 }
@@ -333,7 +335,7 @@ TEST(bigint_sub_inplace, sub_test_11)
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
     EXPECT_EQ(are_equal, 1);
-    ASSERT_EQ(a->significant_octets, 1);
+    ASSERT_EQ(a->significant_blocks, 1);
     
     bigint_destroy_buffer();
 }
@@ -342,13 +344,13 @@ TEST(bigint_sub_inplace, sub_test_12)
 {	
     bigint_create_buffer();		
     	
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FF");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FFFFFFFFFFFFFFFF");
 	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "1");
-	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FE");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FFFFFFFFFFFFFFFE");
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
     EXPECT_EQ(are_equal, 1); 
-    ASSERT_EQ(a->significant_octets, 1);		
+    ASSERT_EQ(a->significant_blocks, 1);		
     
     bigint_destroy_buffer();
 }
@@ -357,13 +359,13 @@ TEST(bigint_sub_inplace, sub_test_13)
 {	
     bigint_create_buffer();		
     
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FB00");
-	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "1");
-	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FAFF");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FB0000000000000000");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "100000000000000");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "FAFF00000000000000");
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
     EXPECT_EQ(are_equal, 1);    
-    ASSERT_EQ(a->significant_octets, 2);	
+    ASSERT_EQ(a->significant_blocks, 2);	
     
     bigint_destroy_buffer();
 }
@@ -377,12 +379,12 @@ TEST(bigint_sub_inplace, test_sub)
     bigint_sub_inplace(a, b);
     int are_equal = bigint_are_equal(a, c);
     EXPECT_EQ(are_equal, 1);
-    ASSERT_EQ(a->significant_octets, 7);		
+    ASSERT_EQ(a->significant_blocks, 1);		
     
     bigint_destroy_buffer();
 }
 
-TEST(bigint_sub_inplace, test_sub_large)
+TEST(bigint_sub_inplace, test_sub_large1)
 {
     bigint_create_buffer();
     
@@ -392,7 +394,37 @@ TEST(bigint_sub_inplace, test_sub_large)
 	
 	bigint_sub_inplace(a, b);
 	ASSERT_TRUE(bigint_are_equal(a, c));
-    ASSERT_EQ(a->significant_octets, 8);	
+    ASSERT_EQ(a->significant_blocks, 1);	
+	
+    bigint_destroy_buffer();
+}
+
+TEST(bigint_sub_inplace, test_sub_large2)
+{
+    bigint_create_buffer();
+    
+	BigInt a = bigint_from_hex_string(BI_TESTS_B_TAG, "ffffdec387488efce9de90a977ecfe981262fd3651");
+	BigInt b = bigint_from_hex_string(BI_TESTS_A_TAG,    "234787dca89873478efc3487dc2398a0000398d");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "fffdaa4b097e0575b565a0e62f6f3c5e8862fcfcc4");
+	
+	bigint_sub_inplace(a, b);
+	ASSERT_TRUE(bigint_are_equal(a, c));
+    ASSERT_EQ(a->significant_blocks, 3);	
+	
+    bigint_destroy_buffer();
+}
+
+TEST(bigint_sub_inplace, test_sub_large3)
+{
+    bigint_create_buffer();
+    
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "23878e732f3ecfcfdf392facf912321998fceabbbc0");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "23878e732f3ecfcfdf392f23487f7777cc87009840f");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "89b092baa1cc75ea237b1");
+	
+	bigint_sub_inplace(a, b);
+	ASSERT_TRUE(bigint_are_equal(a, c));
+    ASSERT_EQ(a->significant_blocks, 2);	
 	
     bigint_destroy_buffer();
 }
@@ -402,12 +434,12 @@ TEST(bigint_sub_inplace, bad_memory_acces)
     bigint_create_buffer();
     
     int are_equal;
-	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "100000");
-	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "FFFFF");
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "1000000000000000000000");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "FFFFFFFFFFFFFFFFFFFFF");
 	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "1");
     bigint_sub_inplace(a, b);
     are_equal = bigint_are_equal(a, c);
-    ASSERT_EQ(a->significant_octets, 1);	
+    ASSERT_EQ(a->significant_blocks, 1);	
     EXPECT_EQ(are_equal, 1);    
     
     bigint_destroy_buffer();
@@ -424,7 +456,7 @@ TEST(bigint_sub_inplace, very_large_number)
     bigint_sub_inplace(a, b);
     are_equal = bigint_are_equal(a, c);
     EXPECT_EQ(are_equal, 1);    
-    ASSERT_EQ(a->significant_octets, 1);	
+    ASSERT_EQ(a->significant_blocks, 1);	
     
     bigint_destroy_buffer();
 }
@@ -438,25 +470,25 @@ TEST(bigint_left_shift_inplace, test_same_size)
 	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "0");
     bigint_left_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 1);
+    ASSERT_EQ(a->significant_blocks, 1);
     
 	a = bigint_from_hex_string(BI_TESTS_A_TAG, "8");
 	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "10");
     bigint_left_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 1);
+    ASSERT_EQ(a->significant_blocks, 1);
 
 	a = bigint_from_hex_string(BI_TESTS_A_TAG, "7F");
 	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "FE");
     bigint_left_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 1);
+    ASSERT_EQ(a->significant_blocks, 1);
     
 	a = bigint_from_hex_string(BI_TESTS_A_TAG, "466962f6e91eaaf80e4803ffffffe003");
 	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "8cd2c5edd23d55f01c9007ffffffc006");
     bigint_left_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 16);
+    ASSERT_EQ(a->significant_blocks, 2);
     
     bigint_destroy_buffer();
 }
@@ -469,19 +501,19 @@ TEST(bigint_left_shift_inplace, test_different_size)
 	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "100");
     bigint_left_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 2);
+    ASSERT_EQ(a->significant_blocks, 1);
 
-	a = bigint_from_hex_string(BI_TESTS_A_TAG, "FF");
-	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "1FE");
+	a = bigint_from_hex_string(BI_TESTS_A_TAG, "FFFFFFFFFFFFFFFF");
+	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "1FFFFFFFFFFFFFFFE");
     bigint_left_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 2);
+    ASSERT_EQ(a->significant_blocks, 2);
 
 	a = bigint_from_hex_string(BI_TESTS_A_TAG, "8cd2c5edd23d55f01c9007ffffffc006");
 	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "119a58bdba47aabe039200fffffff800c");
     bigint_left_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 17);
+    ASSERT_EQ(a->significant_blocks, 3);
     
     bigint_destroy_buffer();
 }
@@ -495,25 +527,25 @@ TEST(bigint_right_shift_inplace, test_same_size)
 	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "0");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 1);
+    ASSERT_EQ(a->significant_blocks, 1);
 
 	a = bigint_from_hex_string(BI_TESTS_A_TAG, "10");
 	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "8");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 1);
+    ASSERT_EQ(a->significant_blocks, 1);
 
-	a = bigint_from_hex_string(BI_TESTS_A_TAG, "FF");
-	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "7F");
+	a = bigint_from_hex_string(BI_TESTS_A_TAG, "FFFFFFFFFFFFFFFF");
+	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "7FFFFFFFFFFFFFFF");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 1);
+    ASSERT_EQ(a->significant_blocks, 1);
 
 	a = bigint_from_hex_string(BI_TESTS_A_TAG, "8cd2c5edd23d55f01c9007ffffffc007");
 	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "466962f6e91eaaf80e4803ffffffe003");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 16);
+    ASSERT_EQ(a->significant_blocks, 2);
     
     bigint_destroy_buffer();
 }
@@ -526,19 +558,19 @@ TEST(bigint_right_shift_inplace, test_different_size)
 	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "80");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 1);
+    ASSERT_EQ(a->significant_blocks, 1);
 
-	a = bigint_from_hex_string(BI_TESTS_A_TAG, "1FF");
-	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "FF");
+	a = bigint_from_hex_string(BI_TESTS_A_TAG, "1FFFFFFFFFFFFFFFF");
+	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "FFFFFFFFFFFFFFFF");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 1);
+    ASSERT_EQ(a->significant_blocks, 1);
 
 	a = bigint_from_hex_string(BI_TESTS_A_TAG, "119a58bdba47aabe039200fffffff800c");
 	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "8cd2c5edd23d55f01c9007ffffffc006");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
-    ASSERT_EQ(a->significant_octets, 16);
+    ASSERT_EQ(a->significant_blocks, 2);
     
     bigint_destroy_buffer();
 }
