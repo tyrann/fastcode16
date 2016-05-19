@@ -71,6 +71,18 @@ void ec_create_parameters(EllipticCurveParameter *ec, BigInt p, BigInt a, BigInt
 	ec->generator.x = generator->x;
 	ec->generator.y = generator->y;
 	ec->generator.is_at_infinity = generator->is_at_infinity;
+	ec->two = bigint_from_uint32(BI_EC_PARAMS_TWO_TAG, 2);
+	ec->three = bigint_from_uint32(BI_EC_PARAMS_THREE_TAG, 3);
 }
 
-
+void ec_parameter_convert_to_montgomery_space(EllipticCurveParameter *parameter)
+{
+	BigInt a = GET_BIGINT_PTR(BI_EC_PARAMETER_CONVERT_TO_MONTGOMERY_SPACE_A_TAG);
+	BigInt b = GET_BIGINT_PTR(BI_EC_PARAMETER_CONVERT_TO_MONTGOMERY_SPACE_B_TAG);
+	bigint_copy(a, parameter->a);
+	bigint_copy(b, parameter->b);
+	__montgomery_convert(parameter->a, a, parameter->p);
+	__montgomery_convert(parameter->b, b, parameter->p);
+	__montgomery_convert(parameter->two, bigint_two, parameter->p);
+	__montgomery_convert(parameter->three, bigint_three, parameter->p);
+}

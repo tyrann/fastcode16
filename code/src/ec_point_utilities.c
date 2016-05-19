@@ -32,6 +32,26 @@ void create_point_from_uint64(Point* p, uint32_t tag_x, uint32_t tag_y, uint64_t
         bigint_from_uint64(tag_y, y));
 }
 
+void point_convert_to_montgomery_space(Point* Q, const BigInt p)
+{
+	BigInt x = GET_BIGINT_PTR(BI_POINT_CONVERT_TO_MONTGOMERY_SPACE_X_TAG);
+	BigInt y = GET_BIGINT_PTR(BI_POINT_CONVERT_TO_MONTGOMERY_SPACE_Y_TAG);
+	bigint_copy(x, Q->x);
+	bigint_copy(y, Q->y);
+	__montgomery_convert(Q->x, x, p);
+	__montgomery_convert(Q->y, y, p);
+}
+
+void point_revert_from_montgomery_space(Point* Q, const BigInt p)
+{
+	BigInt x = GET_BIGINT_PTR(BI_POINT_REVERT_FROM_MONTGOMERY_SPACE_X_TAG);
+	BigInt y = GET_BIGINT_PTR(BI_POINT_REVERT_FROM_MONTGOMERY_SPACE_Y_TAG);
+	bigint_copy(x, Q->x);
+	bigint_copy(y, Q->y);
+	__montgomery_revert(Q->x, x, p);
+	__montgomery_revert(Q->y, y, p);
+}
+
 char point_is_on_curve(const Point* p, const EllipticCurveParameter *params)
 {    
     char result;

@@ -24,7 +24,7 @@ void create_parameters_2(EllipticCurveParameter *params)
     Point G;
     BigInt p = bigint_from_uint32(BI_PARAMS_P_TAG, 7927);
 	BigInt a = bigint_from_uint32(BI_PARAMS_A_TAG, 500);
-	BigInt b = bigint_from_uint32(BI_PARAMS_B_TAG, 0);
+	BigInt b = bigint_from_uint32(BI_PARAMS_B_TAG, 3);
     
     // This parameters are not relevant for the tests
     create_point_from_hex(&G, BI_PARAMS_GX_TAG, BI_PARAMS_GY_TAG, "0", "0");
@@ -97,22 +97,32 @@ TEST(ec_point_add_inplace, a_plus_a_curve1)
     create_parameters_2(&params);
     Point a, b, expected;
 
-    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 188, 93);
-    create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 188, 93);
-    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 2505, 3126);
-    ec_point_add_inplace(&a, &b, &params);
+    create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 3, 4319);
+    create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 3, 4319);
+    create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 6403, 191);
+	point_convert_to_montgomery_space(&a, params.p);  
+	point_convert_to_montgomery_space(&b, params.p);
+	ec_parameter_convert_to_montgomery_space(&params);
+	ec_point_add_inplace(&a, &b, &params);
+	point_revert_from_montgomery_space(&a, params.p);    
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
     create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 692, 150);
 	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 692, 150);
     create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 6111, 95);
+	point_convert_to_montgomery_space(&a, params.p);  
+	point_convert_to_montgomery_space(&b, params.p);
     ec_point_add_inplace(&a, &b, &params);
+	point_revert_from_montgomery_space(&a, params.p);    
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
     create_point_from_uint32(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, 6026, 210);
 	create_point_from_uint32(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, 6026, 210);
+	point_convert_to_montgomery_space(&a, params.p);  
+	point_convert_to_montgomery_space(&b, params.p);
     create_point_from_uint32(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 3075, 6164);
     ec_point_add_inplace(&a, &b, &params);
+	point_revert_from_montgomery_space(&a, params.p); 
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
     bigint_destroy_buffer();
