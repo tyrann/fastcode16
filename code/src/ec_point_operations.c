@@ -167,17 +167,22 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
 	
     point_copy(&p2, P);
 
+	
     for(uint64_t i = 0; i < d->significant_blocks; i++)
     {
-		for(int j = 0; j < 64; j++) 
+		for(uint64_t j = 0; j < 64; j++) 
 		{
 			__COUNT_OP(&global_opcount,2);
-	    	if(d->blocks[i] & (1 << j)) 
+	    	if(d->blocks[i] & (((uint64_t)1) << j)) 
 	    	{
 				ec_point_add_inplace(result, &p2, params);	
 	   		}
 	    	ec_point_add_inplace(&p2, &p2, params);
 			__COUNT_OP(&global_index_count,1);
+			
+			// printf("%llu %llu %s, %s\n", i, j, bigint_to_hex_string(result->x), bigint_to_hex_string(result->y));
+    		// printf("AAAA %s, %s\n", bigint_to_hex_string(p2.x), bigint_to_hex_string(p2.y));
+    		// printf("%s\n", bigint_to_hex_string(d));
 		}
 
 		__COUNT_OP(&global_index_count,1);
