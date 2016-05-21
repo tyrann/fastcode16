@@ -35,4 +35,6 @@ void ec_create_parameters(EllipticCurveParameter *ec, BigInt p, BigInt a, BigInt
 
 void ec_parameter_convert_to_montgomery_space(EllipticCurveParameter *parameter);
 
+void ec_parameter_revert_from_montgomery_space(EllipticCurveParameter *parameter);
+
 #endif

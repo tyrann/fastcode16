@@ -149,19 +149,16 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
     }
 }
 
-void ec_point_mul(Point *result, const BigInt d, const Point *P, EllipticCurveParameter *params)
+void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticCurveParameter *params)
 {
 	Point p2;
 
-	create_point_from_uint64(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG, 0, 0);
+	create_point_from_uint64(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG, 0, 0, params->p);
 	bigint_copy(result->x, bigint_zero);
 	bigint_copy(result->y, bigint_zero);
 	result->is_at_infinity = 1;
 	
     point_copy(&p2, P);
-	point_convert_to_montgomery_space(&p2, params->p);
-	ec_parameter_convert_to_montgomery_space(params);
-
 	for(uint64_t i = 0; i < d->significant_blocks; i++)
     {
 		for(uint64_t j = 0; j < 64; j++) 
@@ -179,5 +176,4 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, EllipticCurvePa
 		__COUNT_OP(&global_index_count,1);
     }
 
-	point_revert_from_montgomery_space(result, params->p);
 }
