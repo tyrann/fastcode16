@@ -629,7 +629,11 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_1)
 	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
 	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "6d09acdef99ad700431e77edcd980a3a54594d6e79a6657a68c7b");
 	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "19f7dd97453df6cb19aa8120882a211ee82d59a584e5b833e16968640");
-	montgomery_mul(c, x, y, p); 
+	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
+	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_convert(x_conv, x, p);
+	__montgomery_convert(y_conv, y, p);
+	montgomery_mul(c, x_conv, y_conv, p); 
     __montgomery_revert(b, c, p);
     ASSERT_TRUE(bigint_are_equal(b, expected));
     
@@ -646,7 +650,11 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_2)
 	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
 	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "2");
 	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "4");
-	montgomery_mul(c, x, y, p); 
+	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
+	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_convert(x_conv, x, p);
+	__montgomery_convert(y_conv, y, p);
+	montgomery_mul(c, x_conv, y_conv, p); 
     __montgomery_revert(b, c, p);
     ASSERT_TRUE(bigint_are_equal(b, expected));
     
@@ -662,7 +670,12 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_3)
 	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
 	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "4");
 	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "4");
-	montgomery_mul(c, x, y, p); 
+	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
+	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_convert(x_conv, x, p);
+	__montgomery_convert(y_conv, y, p);
+	montgomery_mul(c, x_conv, y_conv, p); 
+    __montgomery_revert(b, c, p);
     __montgomery_revert(b, c, p);
     ASSERT_TRUE(bigint_are_equal(b, expected));
 

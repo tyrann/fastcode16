@@ -88,8 +88,12 @@ void compute_ECDH(char* dURand, char* dVRand, int keyLength)
     double r;  
     r = cycles / num_runs;
     printf("RDTSC instruction:\n %lf cycles measured => %lf seconds, assuming frequency is %lf MHz. (change in source file if different)\n", r, r/(FREQUENCY), (FREQUENCY)/1e6); 
-    char *infoU = bigint_to_hex_string(sharedInfoU);
-    char *infoV = bigint_to_hex_string(sharedInfoV);
+    BigInt sharedInfoU_conv = GET_BIGINT_PTR(BI_DUMMY1_TAG);
+    BigInt sharedInfoV_conv = GET_BIGINT_PTR(BI_DUMMY2_TAG);
+    __montgomery_revert(sharedInfoU_conv, sharedInfoU, params.p);
+    __montgomery_revert(sharedInfoV_conv, sharedInfoV, params.p);
+    char *infoU = bigint_to_hex_string(sharedInfoU_conv);
+    char *infoV = bigint_to_hex_string(sharedInfoV_conv);
     printf("info u %s\ninfo v %s\n\n", infoU, infoV);
     free(infoU);
     free(infoV);
@@ -109,6 +113,8 @@ void compute_ECDH_open_ssl(char* dURand, char* dVRand, int keyLength)
     int num_runs = NUM_RUNS;
 
     EllipticCurveParameter params = get_parameter_by_key_length(keyLength);
+    ec_parameter_revert_from_montgomery_space(&params);
+    point_revert_from_montgomery_space(&(params.generator), params.p);
 
     char *p_hex = bigint_to_hex_string(params.p);
     char *a_hex = bigint_to_hex_string(params.a);

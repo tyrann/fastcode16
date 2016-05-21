@@ -13,6 +13,8 @@ typedef struct
 	Point generator;
 	BigInt n;
 	BigInt h;
+	BigInt two;
+	BigInt three;
 } EllipticCurveParameter;
 
 typedef enum {SECP192K1, SECP224R1, SECP256K1, SECP384R1, SECP521R1} CurveParameter;
@@ -30,5 +32,9 @@ Version 2.0
 void ec_generate_parameter(EllipticCurveParameter *parameter, const CurveParameter name);
 
 void ec_create_parameters(EllipticCurveParameter *ec, BigInt p, BigInt a, BigInt b, Point const *generator, BigInt n, BigInt h);
+
+void ec_parameter_convert_to_montgomery_space(EllipticCurveParameter *parameter);
+
+void ec_parameter_revert_from_montgomery_space(EllipticCurveParameter *parameter);
 
 #endif

@@ -1,6 +1,8 @@
 #include "ec_point.h"
 #include "bigint.h"
 #include "opcount/opcount.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 extern uint64_t global_opcount;
 extern uint64_t global_index_count;
@@ -30,46 +32,38 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
     else if(bigint_are_equal(a->x, b->x) && bigint_are_equal(a->y, b->y)
 		&& !bigint_are_equal(a->y, bigint_zero))
     {
+
 		// Get BigInt objects
+		BigInt tmp = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
 		BigInt numerator = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
-		BigInt numerator_rev = GET_BIGINT_PTR(BI_POINTADD_NUMERATORREV_TAG);
 		BigInt denominator = GET_BIGINT_PTR(BI_POINTADD_DENOMINATOR_TAG);
 		BigInt lambda = GET_BIGINT_PTR(BI_POINTADD_LAMBDA_TAG);
 		BigInt lambda_squared = GET_BIGINT_PTR(BI_POINTADD_LAMBDASQUARED_TAG);
 		BigInt x_twice = GET_BIGINT_PTR(BI_POINTADD_XTWICE_TAG);
 		BigInt y_1 = GET_BIGINT_PTR(BI_POINTADD_Y1_TAG);
-		BigInt y_3 = GET_BIGINT_PTR(BI_POINTADD_Y3_TAG);
 		BigInt x_1_minus_x_3 = GET_BIGINT_PTR(BI_POINTADD_X1MINUSX3_TAG);
 
 		// numerator
-		montgomery_mul(numerator, a->x, a->x, params->p);
-		__montgomery_revert(numerator_rev, numerator, params->p);
+		montgomery_mul(tmp, a->x, a->x, params->p);
+		bigint_copy(y_1, a->y);
+		montgomery_mul(numerator, tmp, params->three, params->p);	
 
-		bigint_copy(numerator, numerator_rev);
-		bigint_left_shift_inplace(numerator);
-		bigint_add_inplace(numerator, numerator_rev);
 		bigint_add_inplace(numerator, params->a);
 		bigint_modulo_inplace(numerator, params->p);
-			
+
 		// denominator
-		bigint_copy(denominator, a->y);
-		bigint_copy(y_1, a->y);
-		bigint_left_shift_inplace(denominator);
-		bigint_modulo_inplace(denominator, params->p);
-		
+		montgomery_mul(denominator, a->y, params->two, params->p);
+	
 		// calculate lambda
 		bigint_divide(lambda, numerator, denominator, params->p);
+		__montgomery_convert(tmp, lambda, params->p);
 		
 		//calculate x
 		bigint_copy(x_1_minus_x_3, a->x);
-		bigint_copy(x_twice, a->x);
-		
-		montgomery_mul(lambda_squared, lambda, lambda, params->p);
-		__montgomery_revert(a->x, lambda_squared, params->p);
+		montgomery_mul(lambda_squared, tmp, tmp, params->p);
+		montgomery_mul(x_twice, a->x, params->two, params->p);
+		bigint_copy(a->x, lambda_squared);		
 
-		bigint_left_shift_inplace(x_twice);
-		bigint_modulo_inplace(x_twice, params->p);
-		
 		bigint_add_inplace(a->x, params->p);
 		bigint_sub_inplace(a->x, x_twice);
 		bigint_modulo_inplace(a->x, params->p);
@@ -81,9 +75,8 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		bigint_sub_inplace(x_1_minus_x_3, a->x);
 				
 		// calculate lambda(x_1 - x_3)
-		montgomery_mul(y_3, lambda, x_1_minus_x_3, params->p);
-		__montgomery_revert(a->y, y_3, params->p);
-		
+		montgomery_mul(a->y, tmp, x_1_minus_x_3, params->p);
+
 		bigint_add_inplace(a->y, params->p);
 		bigint_sub_inplace(a->y, y_1);
 		bigint_modulo_inplace(a->y, params->p);
@@ -97,15 +90,15 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
     }
     // Rule 4
     else if(!bigint_are_equal(a->x, b->x))
-    {	
+    {
 		// Get BigInt objects
+		BigInt tmp = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
 		BigInt numerator = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
 		BigInt denominator = GET_BIGINT_PTR(BI_POINTADD_DENOMINATOR_TAG);
 		BigInt lambda = GET_BIGINT_PTR(BI_POINTADD_LAMBDA_TAG);
 		BigInt lambda_squared = GET_BIGINT_PTR(BI_POINTADD_LAMBDASQUARED_TAG);
 		BigInt x_1_add_inverse = GET_BIGINT_PTR(BI_POINTADD_X1ADDINVERSE_TAG);
 		BigInt y_1_add_inverse = GET_BIGINT_PTR(BI_POINTADD_Y1ADDINVERSE_TAG);
-		BigInt y_3 = GET_BIGINT_PTR(BI_POINTADD_Y3_TAG);
 		BigInt x_1_minus_x_3 = GET_BIGINT_PTR(BI_POINTADD_X1MINUSX3_TAG);
 	
 		// Compute inverses
@@ -127,11 +120,12 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 	
 		//Calculate lambda
 		bigint_divide(lambda, numerator, denominator, params->p);
+		__montgomery_convert(tmp, lambda, params->p);
 
 		//Calculate lambda^2
 		bigint_copy(x_1_minus_x_3, a->x);
-		montgomery_mul(lambda_squared, lambda, lambda, params->p);
-		__montgomery_revert(a->x, lambda_squared, params->p);
+		montgomery_mul(lambda_squared, tmp, tmp, params->p);
+		bigint_copy(a->x, lambda_squared);
 	
 		bigint_add_inplace(a->x, x_1_add_inverse);
 		bigint_add_inplace(a->x, params->p);
@@ -142,8 +136,7 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		bigint_add_inplace(x_1_minus_x_3, params->p);
 		bigint_sub_inplace(x_1_minus_x_3, a->x);
 
-		montgomery_mul(y_3, lambda, x_1_minus_x_3, params->p);
-		__montgomery_revert(a->y, y_3, params->p);
+		montgomery_mul(a->y, tmp, x_1_minus_x_3, params->p);
 		
 		bigint_add_inplace(a->y, y_1_add_inverse);
 		bigint_modulo_inplace(a->y, params->p);
@@ -160,13 +153,12 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
 {
 	Point p2;
 
-	create_point_from_uint64(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG, 0, 0);
+	create_point_from_uint64(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG, 0, 0, params->p);
 	bigint_copy(result->x, bigint_zero);
 	bigint_copy(result->y, bigint_zero);
 	result->is_at_infinity = 1;
 	
     point_copy(&p2, P);
-
 	for(uint64_t i = 0; i < d->significant_blocks; i++)
     {
 		for(uint64_t j = 0; j < 64; j++) 
@@ -183,4 +175,5 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
 
 		__COUNT_OP(&global_index_count,1);
     }
+
 }
