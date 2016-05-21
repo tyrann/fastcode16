@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include <x86intrin.h>
+#include <inttypes.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -114,6 +115,43 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	}
 }
 
+void multiply_inplace(BigInt a, uint64_t b)
+{
+	unsigned __int128 tmp;
+	uint64_t carry = 0;
+	uint64_t carry_current = 0;
+	uint64_t result;
+	char carry2 = 0;
+	if(b == 0)
+	{
+		bigint_copy(a, bigint_zero);
+	}
+	else
+	{
+		tmp = ((unsigned  __int128)a->blocks[0]) * ((unsigned  __int128)b);
+		result = (uint64_t)tmp;
+		uint64_t sig_blocks = a->significant_blocks;
+		carry = tmp >> 64;
+		for(unsigned int i = 0; i < sig_blocks + 1; i++)
+		{
+			carry2 = _addcarry_u64(carry2, carry_current, result, (unsigned long long*)&(a->blocks)[i]);
+			if(a->blocks[i] > 0 )
+			{
+				a->significant_blocks = i+1;
+			}
+			if(i+1 < sig_blocks) {
+				tmp = ((unsigned  __int128)a->blocks[i+1]) * ((unsigned  __int128)b);
+			}
+			else
+			{
+				tmp = 0;
+			}
+			result = (uint64_t)tmp;
+			carry_current = carry;
+			carry = tmp >> 64;
+		}
+	}
+}
 
 void bigint_left_shift_inplace(BigInt a)
 {

@@ -16,6 +16,8 @@ void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p);
  */
 void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p);
 
+void multiply_inplace(BigInt a, uint64_t b);
+
 void bigint_left_shift_inplace(BigInt a);
 
 void bigint_right_shift_inplace(BigInt a);
