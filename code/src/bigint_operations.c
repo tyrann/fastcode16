@@ -125,6 +125,7 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 		a_0 = res->blocks[0];
 		x_i = x->blocks[i];
 		tmp = (a_0 + ((unsigned __int128)x_i * (unsigned __int128)y_0)) * p_prime;
+		__COUNT_OP(&global_opcount,3);
 		u = tmp;
 		bigint_copy(tmp1, y);
 		bigint_multiply_inplace(tmp1, x_i);
@@ -157,18 +158,25 @@ void bigint_multiply_inplace(BigInt a, uint64_t b)
 	else
 	{
 		tmp = ((unsigned  __int128)a->blocks[0]) * ((unsigned  __int128)b);
+		__COUNT_OP(&global_opcount,1);
 		result = (uint64_t)tmp;
 		uint64_t sig_blocks = a->significant_blocks;
 		carry = tmp >> 64;
+		__COUNT_OP(&global_opcount,1);
 		for(unsigned int i = 0; i < sig_blocks + 1; i++)
 		{
+			__COUNT_INDEX(&global_index_count, 1);
 			carry2 = _addcarry_u64(carry2, carry_current, result, (unsigned long long*)&(a->blocks)[i]);
+			__COUNT_OP(&global_opcount,1);
 			if(a->blocks[i] > 0 )
 			{
 				a->significant_blocks = i+1;
+				__COUNT_OP(&global_opcount,1);
 			}
 			if(i+1 < sig_blocks) {
 				tmp = ((unsigned  __int128)a->blocks[i+1]) * ((unsigned  __int128)b);
+				__COUNT_OP(&global_opcount,1);
+				__COUNT_INDEX(&global_index_count, 2);
 			}
 			else
 			{
@@ -177,6 +185,9 @@ void bigint_multiply_inplace(BigInt a, uint64_t b)
 			result = (uint64_t)tmp;
 			carry_current = carry;
 			carry = tmp >> 64;
+			__COUNT_OP(&global_opcount,1);
+
+			__COUNT_INDEX(&global_index_count, 1);
 		}
 	}
 }
@@ -241,15 +252,16 @@ void bigint_right_shift_inplace_64(BigInt a)
     for (uint64_t i = 0; i < a->significant_blocks; i++)
     {
         a->blocks[i] = a->blocks[i+1];
-		__COUNT_INDEX(&global_index_count, 1);
+		__COUNT_INDEX(&global_index_count, 2);
     }
 	a->blocks[a->significant_blocks-1] = 0U;
+	__COUNT_INDEX(&global_opcount, 1);
 
 	if(a->significant_blocks > 1)
 	{
 		a->significant_blocks--;
+		__COUNT_INDEX(&global_opcount, 1);
 	}
-	__COUNT_INDEX(&global_opcount, 2);
 }
 
 
