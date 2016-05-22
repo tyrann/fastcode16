@@ -87,34 +87,72 @@ TEST(point_is_on_curve, point_inf)
 	bigint_destroy_buffer();
 }
 
-TEST(point_is_on_curve, point_on_curve)
+TEST(point_is_on_curve, point_on_curve_SECP192K1)
 {
 	bigint_create_buffer();
 
     EllipticCurveParameter params;
-    create_parameters(&params);
-
-    Point q;
-    create_point_from_uint64(&q, BI_TESTS_QX_TAG, BI_TESTS_QY_TAG, 16, 10, params.p);
-    ASSERT_TRUE(point_is_on_curve(&q, &params));
-    create_point_from_uint64(&q, BI_TESTS_QX_TAG, BI_TESTS_QY_TAG, 17, 7, params.p);
-    ASSERT_TRUE(point_is_on_curve(&q, &params));
-    create_point_from_uint64(&q, BI_TESTS_QX_TAG, BI_TESTS_QY_TAG, 27, 22, params.p);
-    ASSERT_TRUE(point_is_on_curve(&q, &params));
-    create_point_from_uint64(&q, BI_TESTS_QX_TAG, BI_TESTS_QY_TAG, 1, 8, params.p);
-    ASSERT_TRUE(point_is_on_curve(&q, &params));
-    create_point_from_uint64(&q, BI_TESTS_QX_TAG, BI_TESTS_QY_TAG, 3, 23, params.p);
-    ASSERT_TRUE(point_is_on_curve(&q, &params));
+    ec_generate_parameter(&params, SECP192K1);
+    ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
     
 	bigint_destroy_buffer();
 }
+
+TEST(point_is_on_curve, point_on_curve_SECP224R1)
+{
+	bigint_create_buffer();
+
+    EllipticCurveParameter params;
+    ec_generate_parameter(&params, SECP224R1);
+
+    ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
+
+	bigint_destroy_buffer();
+}
+
+TEST(point_is_on_curve, point_on_curve_SECP256K1)
+{
+	bigint_create_buffer();
+
+    EllipticCurveParameter params;
+    ec_generate_parameter(&params, SECP256K1);
+
+    ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
+
+	bigint_destroy_buffer();
+}
+
+TEST(point_is_on_curve, point_on_curve_SECP384R1)
+{
+	bigint_create_buffer();
+
+    EllipticCurveParameter params;
+    ec_generate_parameter(&params, SECP384R1);
+
+    ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
+
+	bigint_destroy_buffer();
+}
+
+TEST(point_is_on_curve, point_on_curve_SECP521R1)
+{
+	bigint_create_buffer();
+
+    EllipticCurveParameter params;
+    ec_generate_parameter(&params, SECP521R1);
+
+    ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
+
+	bigint_destroy_buffer();
+}
+
 
 TEST(point_is_on_curve, point_not_on_curve)
 {
 	bigint_create_buffer();
 
-    EllipticCurveParameter params;
-    create_parameters(&params);
+	EllipticCurveParameter params;
+	ec_generate_parameter(&params, SECP521R1);
 
     Point q;
     create_point_from_uint64(&q, BI_TESTS_QX_TAG, BI_TESTS_QY_TAG, 0, 0, params.p);
