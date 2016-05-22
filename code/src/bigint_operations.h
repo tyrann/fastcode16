@@ -22,6 +22,8 @@ void bigint_left_shift_inplace(BigInt a);
 
 void bigint_right_shift_inplace(BigInt a);
 
+void bigint_right_shift_inplace_64(BigInt a);
+
 void bigint_add_inplace(BigInt a, const BigInt b);
 
 void bigint_sub_inplace(BigInt a, const BigInt b);
@@ -30,5 +32,7 @@ void bigint_modulo_inplace(BigInt a, const BigInt mod);
 
 // Compute b/a over Fp, storing the result in dest.
 void bigint_divide(BigInt dest, const BigInt b, const BigInt a, const BigInt p);
+
+extern uint64_t p_prime;
 
 #endif

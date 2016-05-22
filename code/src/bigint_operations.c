@@ -21,9 +21,45 @@
 
 uint64_t global_opcount = 0;
 uint64_t global_index_count = 0;
+uint64_t p_prime = 0;
+
+void __montgomery_init(const BigInt p)
+{
+	BigInt prime = bigint_from_hex_string(BI_DUMMY1_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFEE37");
+	if(bigint_are_equal(prime, p))
+	{
+		p_prime = 17472529885292845177UL;
+		return;
+	}
+	prime = bigint_from_hex_string(BI_DUMMY1_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000001");
+	if(bigint_are_equal(prime, p))
+	{
+		p_prime = 18446744073709551615UL;
+		return;
+	}
+	prime = bigint_from_hex_string(BI_DUMMY1_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F");
+	if(bigint_are_equal(prime, p))
+	{
+		p_prime = 15580212934572586289UL;
+		return;
+	}
+	prime = bigint_from_hex_string(BI_DUMMY1_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFF0000000000000000FFFFFFFF");
+	if(bigint_are_equal(prime, p))
+	{
+		p_prime = 4294967297UL;
+		return;
+	}
+	prime = bigint_from_hex_string(BI_DUMMY1_TAG, "01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+	if(bigint_are_equal(prime, p))
+	{
+		p_prime = 1UL;
+		return;
+	}
+}
 
 void __montgomery_convert(BigInt res, const BigInt x, const BigInt p)
 {
+	__montgomery_init(p);
 	bigint_copy(res, x);
 	/*n is the R parameter in the Montgomery convertion*/
 
@@ -73,39 +109,28 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	bigint_copy(x_mont, x);
 	bigint_copy(y_mont, y);
 
-	/* This is -p^-1 mod b*/
-	int pbar = -1;
-
 	/*Set res to 0*/
 	bigint_copy(res, bigint_zero);
 
-	/*We take the smallest power of 2 that is bigger than p*/
-	int n = p->significant_blocks * 8 * 8;
-	__COUNT_OP(&global_opcount, 1);
-	int i;
-
-	uint8_t y0 = (uint8_t)y_mont->blocks[0] & 0x1;
-	for (i = 0; i < n; ++i) 
+	uint64_t u, a_0, y_0, x_i;
+	unsigned __int128 tmp;
+	y_0 = y->blocks[0];
+	BigInt dummy1 = GET_BIGINT_PTR(BI_DUMMY1_TAG);
+	BigInt dummy2 = GET_BIGINT_PTR(BI_DUMMY2_TAG);
+	for (unsigned int i = 0; i < p->significant_blocks; ++i)
 	{
-		// ui <- (z0 +xi*y0)*pbar mod b
-		uint8_t z0 = (uint8_t)res->blocks[0] & 0x1;
-		uint8_t xi = (uint8_t)x_mont->blocks[0] & 0x1;
-		bigint_right_shift_inplace(x_mont);		
-		uint64_t ui = ((z0 + xi*y0)*pbar) % B;
-		__COUNT_OP(&global_opcount, 4);
-		
-		//Z <- (Z + xiy + ui*p)/b
-		
-		if(xi)
-		{
-			bigint_add_inplace(res, y_mont);
-		}
-		if(ui)
-		{
-			bigint_add_inplace(res, p);
-		}
+		a_0 = res->blocks[0];
+		x_i = x->blocks[i];
+		tmp = (a_0 + ((unsigned __int128)x_i * (unsigned __int128)y_0)) * p_prime;
+		u = tmp;
+		bigint_copy(dummy1, y);
+		multiply_inplace(dummy1, x_i);
+		bigint_copy(dummy2, p);
+		multiply_inplace(dummy2, u);
+		bigint_add_inplace(res, dummy1);
+		bigint_add_inplace(res, dummy2);
+		bigint_right_shift_inplace_64(res);
 
-		bigint_right_shift_inplace(res);
 		__COUNT_INDEX(&global_index_count, 1);
 	}
 	
@@ -205,6 +230,25 @@ void bigint_right_shift_inplace(BigInt a)
 		__COUNT_OP(&global_opcount, 1);
 	}
 }
+
+void bigint_right_shift_inplace_64(BigInt a)
+{
+    BIGINT_ASSERT_VALID(a);
+
+    for (uint64_t i = 0; i < a->significant_blocks; i++)
+    {
+        a->blocks[i] = a->blocks[i+1];
+		__COUNT_INDEX(&global_index_count, 1);
+    }
+	a->blocks[a->significant_blocks-1] = 0U;
+
+	if(a->significant_blocks > 1)
+	{
+		a->significant_blocks--;
+	}
+	__COUNT_INDEX(&global_opcount, 2);
+}
+
 
 void bigint_modulo_inplace(BigInt a, const BigInt mod)
 {

@@ -620,68 +620,176 @@ TEST(bigint_montgomery_revert, test_big_numbers_2)
     bigint_destroy_buffer();
 }
 
-TEST(bigint_montgomery_mul, bigint_montgomery_mul_1)
+TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP192K1_0)
 {
     bigint_create_buffer();
-    
+
 	BigInt b = GET_BIGINT_PTR(BI_TESTS_B_TAG);
 	BigInt c = GET_BIGINT_PTR(BI_TESTS_C_TAG);
-	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "e35f881473508854759637d8a77f8d1f94a5d0d2b54637193f6f8c070b15326f");
-	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
-	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "6d09acdef99ad700431e77edcd980a3a54594d6e79a6657a68c7b");
-	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "19f7dd97453df6cb19aa8120882a211ee82d59a584e5b833e16968640");
+	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFEE37");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "0");
+	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "0");
+	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "118427b3b4a05bc8a8a4de8459867fffffffffff");
 	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
 	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
 	__montgomery_convert(x_conv, x, p);
 	__montgomery_convert(y_conv, y, p);
-	montgomery_mul(c, x_conv, y_conv, p); 
+	montgomery_mul(c, x_conv, y_conv, p);
     __montgomery_revert(b, c, p);
     ASSERT_TRUE(bigint_are_equal(b, expected));
-    
+
 	bigint_destroy_buffer();
 }
 
-TEST(bigint_montgomery_mul, bigint_montgomery_mul_2)
+TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP192K1_1)
 {
     bigint_create_buffer();
-    
+
 	BigInt b = GET_BIGINT_PTR(BI_TESTS_B_TAG);
 	BigInt c = GET_BIGINT_PTR(BI_TESTS_C_TAG);
-	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "8");
-	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
-	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "2");
-	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "4");
+	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFEE37");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "118427b3b4a05bc8a8a4de8459867fffffffffff");
+	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "1");
+	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "118427b3b4a05bc8a8a4de8459867fffffffffff");
 	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
 	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
 	__montgomery_convert(x_conv, x, p);
 	__montgomery_convert(y_conv, y, p);
-	montgomery_mul(c, x_conv, y_conv, p); 
+	montgomery_mul(c, x_conv, y_conv, p);
     __montgomery_revert(b, c, p);
     ASSERT_TRUE(bigint_are_equal(b, expected));
-    
+
 	bigint_destroy_buffer();
 }
 
-TEST(bigint_montgomery_mul, bigint_montgomery_mul_3)
+TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP192K1)
 {
     bigint_create_buffer();
-    
+
 	BigInt b = GET_BIGINT_PTR(BI_TESTS_B_TAG);
 	BigInt c = GET_BIGINT_PTR(BI_TESTS_C_TAG);
-	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "10");
-	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "ffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
-	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "4");
-	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "4");
+	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFEE37");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "fc43c1fd4b39ad4a13be38a5e95f6237fd79726838ad5a2a");
+	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "c1d420185df71b4d6473d45a552a4de2c476d2653ec8c699");
+	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "118427b3b4a05bc8a8a4de8459867fffffffffff");
 	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
 	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
 	__montgomery_convert(x_conv, x, p);
 	__montgomery_convert(y_conv, y, p);
-	montgomery_mul(c, x_conv, y_conv, p); 
-    __montgomery_revert(b, c, p);
+	montgomery_mul(c, x_conv, y_conv, p);
     __montgomery_revert(b, c, p);
     ASSERT_TRUE(bigint_are_equal(b, expected));
 
-    bigint_destroy_buffer();
+	bigint_destroy_buffer();
+}
+
+TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP224R1)
+{
+    bigint_create_buffer();
+
+	BigInt b = GET_BIGINT_PTR(BI_TESTS_B_TAG);
+	BigInt c = GET_BIGINT_PTR(BI_TESTS_C_TAG);
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "810f29bd7ac72fb7f6de8d43d2b00327f9d77c50ad490fd9ef9d9208");
+	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000001");
+	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "c1d420185df71b4d6473d45a552a4de2c476d2653ec8c699");
+	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "118427b3b4a05bc8a8a4de8459867fffffffffff");
+	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
+	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_convert(x_conv, x, p);
+	__montgomery_convert(y_conv, y, p);
+	montgomery_mul(c, x_conv, y_conv, p);
+    __montgomery_revert(b, c, p);
+
+    ASSERT_TRUE(bigint_are_equal(b, expected));
+
+	bigint_destroy_buffer();
+}
+
+TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP256K1)
+{
+    bigint_create_buffer();
+
+	BigInt b = GET_BIGINT_PTR(BI_TESTS_B_TAG);
+	BigInt c = GET_BIGINT_PTR(BI_TESTS_C_TAG);
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "cacdeaeb50e91372ecda1308802be761726d3a3410fd888205126ea8a4aaf126");
+	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F");
+	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "fa2c4119aa6706576f4e45b29dbd1a41fb90d7a9d4b797b5251868f7ff1f304c");
+	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "1d39528e9b55885f473cf2e28ef905737e940892f00a6842263c39f23f17206");
+	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
+	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_convert(x_conv, x, p);
+	__montgomery_convert(y_conv, y, p);
+	montgomery_mul(c, x_conv, y_conv, p);
+    __montgomery_revert(b, c, p);
+
+    ASSERT_TRUE(bigint_are_equal(b, expected));
+
+	bigint_destroy_buffer();
+}
+
+TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP384R1)
+{
+    bigint_create_buffer();
+
+	BigInt b = GET_BIGINT_PTR(BI_TESTS_B_TAG);
+	BigInt c = GET_BIGINT_PTR(BI_TESTS_C_TAG);
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "27324cd17ba42220938b6b05507048c101d9e52fa7264e7ca33f8d0d2de59e4099ff53c1e560c64f0a2f7733ef3b153b");
+	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFF0000000000000000FFFFFFFF");
+	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "5bd7a6692433aa9391f2480bf5aeb6f335a7d64f435e4a308825082f63d029641ccae28f449f7eea926320c4b07fde71");
+	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "6780202797a27886abe780242d8e919613947b782b08b749218f33fea919267cbdb6983a91dc011c5ae14849e1bbc2c9");
+	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
+	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_convert(x_conv, x, p);
+	__montgomery_convert(y_conv, y, p);
+	montgomery_mul(c, x_conv, y_conv, p);
+    __montgomery_revert(b, c, p);
+    ASSERT_TRUE(bigint_are_equal(b, expected));
+
+    expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "f743802591af86f812e6e3a051a2be73cadebd46f007ef58e612c956dd0bd7f1873169ae609c0b3a362ce22b9c840ce7");
+	x = bigint_from_hex_string(BI_TESTS_X_TAG, "a7c12ab7308fd7a8064cf68ac5e0ea2698f4e9c25002a51da206431cf45947fad7bb2339cadeae68bcb9a0b9898159a2");
+	y = bigint_from_hex_string(BI_TESTS_Y_TAG, "3");
+	x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
+	y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_convert(x_conv, x, p);
+	__montgomery_convert(y_conv, y, p);
+	montgomery_mul(c, x_conv, y_conv, p);
+	__montgomery_revert(b, c, p);
+    ASSERT_TRUE(bigint_are_equal(b, expected));
+
+    expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "c0b77f45a89c62153e28eb851d267873c345deb129ccb63b66305e422c796a5e5ae3fb9d3b5362992cbe0852620783be");
+	x = bigint_from_hex_string(BI_TESTS_X_TAG, "605bbfa2d44e310a9f1475c28e933c39e1a2ef5894e65b1db3182f21163cb52f2d71fdce9da9b14c965f04293103c1df");
+	y = bigint_from_hex_string(BI_TESTS_Y_TAG, "2");
+	x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
+	y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_convert(x_conv, x, p);
+	__montgomery_convert(y_conv, y, p);
+	montgomery_mul(c, x_conv, y_conv, p);
+	__montgomery_revert(b, c, p);
+	ASSERT_TRUE(bigint_are_equal(b, expected));
+
+	bigint_destroy_buffer();
+}
+
+TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP521R1)
+{
+    bigint_create_buffer();
+
+	BigInt b = GET_BIGINT_PTR(BI_TESTS_B_TAG);
+	BigInt c = GET_BIGINT_PTR(BI_TESTS_C_TAG);
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "1e943c184b0c3984b3b6e5237e81784e69a01e10a8a8b9a9499703033cf290b9ec473086865fce3c42f099c2f6e7d1abb87ed8dd1a283ce144e4a2d6cfcf557aeeb");
+	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "19618f0a082355abbcbba19e7d471340bffa6e60da7b7ed6cbcff54a8f7ad044ebb479479f20046c8c73fd45f627d509129cbbdfe0edf38c2f8ea2933499c770454");
+	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "10d5478c921ddfc4117a9fd80c7222fe43ed73dc3d10ff568b14ce3181ce3e6db0d0ed487a170309bc836906d6894389d38b8ac75cbe7222de29e50488ffd82916e");
+	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
+	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_convert(x_conv, x, p);
+	__montgomery_convert(y_conv, y, p);
+	montgomery_mul(c, x_conv, y_conv, p);
+    __montgomery_revert(b, c, p);
+
+    ASSERT_TRUE(bigint_are_equal(b, expected));
+
+	bigint_destroy_buffer();
 }
 
 TEST(bigint_multiplication, bigint_multiplication_zero)
@@ -750,7 +858,43 @@ TEST(bigint_multiplication, bigint_multiplication_carry)
     bigint_destroy_buffer();
 }
 
+TEST(bigint_right_shift_inplace_64, bigint_right_shift_inplace_64_0)
+{
+    bigint_create_buffer();
 
+    BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "0");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "0");
+	bigint_right_shift_inplace_64(a);
+    ASSERT_TRUE(bigint_are_equal(a, expected));
+
+    bigint_destroy_buffer();
+}
+
+TEST(bigint_right_shift_inplace_64, bigint_right_shift_inplace_64_1)
+{
+    bigint_create_buffer();
+
+    BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10000000000000000");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "1");
+	bigint_right_shift_inplace_64(a);
+    ASSERT_TRUE(bigint_are_equal(a, expected));
+
+    bigint_destroy_buffer();
+}
+
+TEST(bigint_right_shift_inplace_64, bigint_right_shift_inplace_64_2)
+{
+    bigint_create_buffer();
+
+    BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "100000000000000000000000000000000");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "10000000000000000");
+	bigint_right_shift_inplace_64(a);
+	char * a_str = bigint_to_hex_string(a);
+	free(a_str);
+    ASSERT_TRUE(bigint_are_equal(a, expected));
+
+    bigint_destroy_buffer();
+}
 
 TEST(bigint_modulo_inplace, test_modulo_0)
 {

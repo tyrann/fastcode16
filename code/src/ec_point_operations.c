@@ -32,9 +32,8 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
     else if(bigint_are_equal(a->x, b->x) && bigint_are_equal(a->y, b->y)
 		&& !bigint_are_equal(a->y, bigint_zero))
     {
-
 		// Get BigInt objects
-		BigInt tmp = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
+		BigInt tmp = GET_BIGINT_PTR(BI_POINTADD_TMP_TAG);
 		BigInt numerator = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
 		BigInt denominator = GET_BIGINT_PTR(BI_POINTADD_DENOMINATOR_TAG);
 		BigInt lambda = GET_BIGINT_PTR(BI_POINTADD_LAMBDA_TAG);
@@ -45,15 +44,16 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 
 		// numerator
 		montgomery_mul(tmp, a->x, a->x, params->p);
+
 		bigint_copy(y_1, a->y);
-		montgomery_mul(numerator, tmp, params->three, params->p);	
+		montgomery_mul(numerator, tmp, params->three, params->p);
 
 		bigint_add_inplace(numerator, params->a);
 		bigint_modulo_inplace(numerator, params->p);
 
 		// denominator
 		montgomery_mul(denominator, a->y, params->two, params->p);
-	
+
 		// calculate lambda
 		bigint_divide(lambda, numerator, denominator, params->p);
 		__montgomery_convert(tmp, lambda, params->p);
@@ -92,7 +92,7 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
     else if(!bigint_are_equal(a->x, b->x))
     {
 		// Get BigInt objects
-		BigInt tmp = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
+		BigInt tmp = GET_BIGINT_PTR(BI_POINTADD_TMP_TAG);
 		BigInt numerator = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
 		BigInt denominator = GET_BIGINT_PTR(BI_POINTADD_DENOMINATOR_TAG);
 		BigInt lambda = GET_BIGINT_PTR(BI_POINTADD_LAMBDA_TAG);
