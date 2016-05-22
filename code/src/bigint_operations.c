@@ -127,9 +127,9 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 		tmp = (a_0 + ((unsigned __int128)x_i * (unsigned __int128)y_0)) * p_prime;
 		u = tmp;
 		bigint_copy(tmp1, y);
-		multiply_inplace(tmp1, x_i);
+		bigint_multiply_inplace(tmp1, x_i);
 		bigint_copy(tmp2, p);
-		multiply_inplace(tmp2, u);
+		bigint_multiply_inplace(tmp2, u);
 		bigint_add_inplace(res, tmp1);
 		bigint_add_inplace(res, tmp2);
 		bigint_right_shift_inplace_64(res);
@@ -143,7 +143,7 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	}
 }
 
-void multiply_inplace(BigInt a, uint64_t b)
+void bigint_multiply_inplace(BigInt a, uint64_t b)
 {
 	unsigned __int128 tmp;
 	uint64_t carry = 0;

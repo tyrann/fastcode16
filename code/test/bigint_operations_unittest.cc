@@ -800,7 +800,7 @@ TEST(bigint_multiplication, bigint_multiplication_zero)
 	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FFAA7777777777777");
 	BigInt expected = bigint_from_uint64(BI_TESTS_EXPECTED_TAG, 0);
 
-	multiply_inplace(a, b);
+	bigint_multiply_inplace(a, b);
     ASSERT_TRUE(bigint_are_equal(a, expected));
 
     bigint_destroy_buffer();
@@ -813,20 +813,20 @@ TEST(bigint_multiplication, bigint_multiplication)
 	uint64_t b = (uint64_t)1 << (63);
 	BigInt a = bigint_from_uint64(BI_TESTS_A_TAG, b);
 	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "40000000000000000000000000000000");
-	multiply_inplace(a, b);
+	bigint_multiply_inplace(a, b);
     ASSERT_TRUE(bigint_are_equal(a, expected));
 
 
     b = 23486345345;
 	a = bigint_from_uint64(BI_TESTS_A_TAG, 892349889234);
 	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "470233319ce1c7183d2");
-	multiply_inplace(a, b);
+	bigint_multiply_inplace(a, b);
 	ASSERT_TRUE(bigint_are_equal(a, expected));
 
 	b = 23486345345;
 	a = bigint_from_hex_string(BI_TESTS_A_TAG, "21195e6b6401aa7f9d224b7468817646d2288ba3641f62048ac9827ff9");
 	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "b4ff44f3c512471a9cacd1cb42aad26cc33f727651ed10d4d6b49cbace3b7e2c79");
-	multiply_inplace(a, b);
+	bigint_multiply_inplace(a, b);
 	ASSERT_TRUE(bigint_are_equal(a, expected));
 
     bigint_destroy_buffer();
@@ -839,7 +839,7 @@ TEST(bigint_multiplication, bigint_multiplication_large)
 	uint64_t b = 123123123;
     BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "37900b3819a5d49e0a355fb44e75b48372b7ac48e88af780ba692c47681fd3246a87e6456b9eb9d9effa1eb798ee7e5adfb40bf41b3a45930cb949e8330eef8edfee7b7df9b020bd3fedac73c552b6acc9d494ef52c3b570097747fd7969cdb4677e5ad6daec42bb5ffcfaadee09e63e1a36a2016ab6715286928660d3b8a63d0990249defb076dc82a7ac3e550aa662888b2eb3e");
 	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "197c221ff32a8e1eda64b44f4b3fa065139b76ef216eed88480925987ae4c033baee2bbd4189608de297eebfa772f137cbdac846817b069a1aef51514366906a4f044b81f361caf499fac15d766fc3e8b8e8301009a80904205851211c63b3ebcda9b3f17bd6e35a8f34db8f3107d897c4a32bd6b231dd3ef17ccbf7bc797f91b698bdd38499d6e52137e9979495dd694ebae787ce41525a");
-	multiply_inplace(a, b);
+	bigint_multiply_inplace(a, b);
     ASSERT_TRUE(bigint_are_equal(a, expected));
 
     bigint_destroy_buffer();
@@ -852,7 +852,7 @@ TEST(bigint_multiplication, bigint_multiplication_carry)
 	uint64_t b = 0xffffffffffffffff;
     BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10000000000000002");
 	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "10000000000000000fffffffffffffffe");
-	multiply_inplace(a, b);
+	bigint_multiply_inplace(a, b);
     ASSERT_TRUE(bigint_are_equal(a, expected));
 
     bigint_destroy_buffer();
