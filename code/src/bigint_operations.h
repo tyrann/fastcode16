@@ -13,6 +13,9 @@ void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p);
  *		3 large integer x and y and p
  * Output:
  *		Stores the result of x*y mod p in res
+ *
+ * see 14.36 Algorithm Montgomery multiplication
+ * Handbook of Applied Cryptography, by A. Menezes, P. van Oorschot, and S. Vanstone, CRC Press, 1996
  */
 void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p);
 

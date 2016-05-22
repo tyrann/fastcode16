@@ -118,20 +118,20 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	uint64_t u, a_0, y_0, x_i;
 	unsigned __int128 tmp;
 	y_0 = y->blocks[0];
-	BigInt dummy1 = GET_BIGINT_PTR(BI_DUMMY1_TAG);
-	BigInt dummy2 = GET_BIGINT_PTR(BI_DUMMY2_TAG);
+	BigInt tmp1 = GET_BIGINT_PTR(BI_MONTGOMERY_MUL_TMP1_TAG);
+	BigInt tmp2 = GET_BIGINT_PTR(BI_MONTGOMERY_MUL_TMP2_TAG);
 	for (unsigned int i = 0; i < p->significant_blocks; ++i)
 	{
 		a_0 = res->blocks[0];
 		x_i = x->blocks[i];
 		tmp = (a_0 + ((unsigned __int128)x_i * (unsigned __int128)y_0)) * p_prime;
 		u = tmp;
-		bigint_copy(dummy1, y);
-		multiply_inplace(dummy1, x_i);
-		bigint_copy(dummy2, p);
-		multiply_inplace(dummy2, u);
-		bigint_add_inplace(res, dummy1);
-		bigint_add_inplace(res, dummy2);
+		bigint_copy(tmp1, y);
+		multiply_inplace(tmp1, x_i);
+		bigint_copy(tmp2, p);
+		multiply_inplace(tmp2, u);
+		bigint_add_inplace(res, tmp1);
+		bigint_add_inplace(res, tmp2);
 		bigint_right_shift_inplace_64(res);
 
 		__COUNT_INDEX(&global_index_count, 1);
