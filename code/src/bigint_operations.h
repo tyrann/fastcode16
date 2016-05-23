@@ -4,6 +4,11 @@
 
 #include "bigint.h"
 
+/*
+ * sets p_prime to -p^-1 (mod 2^64)
+ */
+void __montgomery_init(const BigInt p);
+
 void __montgomery_convert(BigInt res, const BigInt x, const BigInt p);
 
 void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p);

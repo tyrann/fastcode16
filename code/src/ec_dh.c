@@ -17,7 +17,7 @@ void ecdh_generate_public_key(Point *public_key, BigInt d, const EllipticCurvePa
     //Compute Q = dG 
     //void ec_point_mul(Point *result, const BigInt *d, const Point *P, const EllipticCurveParameter *p);
     //printf("After ecdh_generate_key dh priv_key = %s \n", bigint_to_hex_string(&(dh->priv_key)));
-    
+	__montgomery_init(parameters->p);
     ec_point_mul(public_key, d, &(parameters->generator), parameters);
 }
 
@@ -29,6 +29,7 @@ int ecdh_compute_shared_secret(BigInt shared_info, BigInt private_key, const Poi
 	shared_point.y = GET_BIGINT_PTR(BI_ECDH_SHAREDSECRETY_TAG);
 	
 	// Compute the elliptic curve point P = (xP , yP ) = priv_keyU*pub_keyV
+	__montgomery_init(parameters->p);
 	ec_point_mul(&shared_point, private_key, public_key, parameters);
 	
 	// Check that P != O. If P = O, output “invalid” and stop

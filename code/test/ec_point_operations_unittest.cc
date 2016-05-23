@@ -18,6 +18,7 @@ TEST(ec_point_add_inplace, inf_plus_inf)
     b.is_at_infinity = 1;
     expected.is_at_infinity = 1;
 
+    __montgomery_init(params.p);
     ec_point_add_inplace(&a, &b, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
@@ -37,6 +38,7 @@ TEST(ec_point_add_inplace, a_plus_inf)
     b.is_at_infinity = 1;
     create_point_from_hex(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, "3cd61e370d02ca0687c0b5f7ebf6d0373f4dd0ccccb7cc2d", "2c4befd9b02f301eb4014504f0533aa7eb19e9ea56441f78", params.p);
 
+    __montgomery_init(params.p);
     ec_point_add_inplace(&a, &b, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
@@ -56,6 +58,7 @@ TEST(ec_point_add_inplace, inf_plus_b)
     create_point_from_hex(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, "3cd61e370d02ca0687c0b5f7ebf6d0373f4dd0ccccb7cc2d", "2c4befd9b02f301eb4014504f0533aa7eb19e9ea56441f78", params.p);
     create_point_from_hex(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, "3cd61e370d02ca0687c0b5f7ebf6d0373f4dd0ccccb7cc2d", "2c4befd9b02f301eb4014504f0533aa7eb19e9ea56441f78", params.p);
 
+    __montgomery_init(params.p);
     ec_point_add_inplace(&a, &b, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
@@ -74,9 +77,10 @@ TEST(ec_point_add_inplace, a_plus_a_SECP384R1)
     create_point_from_hex(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, "58bd2b6271fc20698586408a2e4046756c10bd79f16891284754c4f7ff753c09f8660d44dc6d80545a0df9ac7de99965", "605bbfa2d44e310a9f1475c28e933c39e1a2ef5894e65b1db3182f21163cb52f2d71fdce9da9b14c965f04293103c1df", params.p);
     create_point_from_hex(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, "58bd2b6271fc20698586408a2e4046756c10bd79f16891284754c4f7ff753c09f8660d44dc6d80545a0df9ac7de99965", "605bbfa2d44e310a9f1475c28e933c39e1a2ef5894e65b1db3182f21163cb52f2d71fdce9da9b14c965f04293103c1df", params.p);
     create_point_from_hex(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, "2799d1abc4cc6bb3de567e349365177e450be9d8456b7d7726fe0aa86f9dc070399e06703b470f2d30035084a4927bd7", "967182745025f4abd645c19a201bb6f4f15aad3a67aeb27c33b636ee7fd7b38853556fe2b9d49b3921ad1899995526cd", params.p);
-	ec_point_add_inplace(&a, &b, &params);
-    ASSERT_TRUE(point_are_equal(&a, &expected));
 
+    __montgomery_init(params.p);
+    ec_point_add_inplace(&a, &b, &params);
+    ASSERT_TRUE(point_are_equal(&a, &expected));
 
     bigint_destroy_buffer();
 }
@@ -89,6 +93,7 @@ TEST(ec_point_add_inplace, a_plus_b__SECP384R1_rule4)
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP384R1);
     Point a, b, expected;
+    __montgomery_init(params.p);
 
     create_point_from_hex(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, "1c5f07f1f82becd192f2ebc06790f6e30850d668a258b09e35cf31128dcaaabca5a56922caeca08aa598439598174296", "18be0cc698bee9a21db0a4494ad3faaf17752b8be15971a2788eae558a1fafdf8d313b46a8dee779e2aed8584074c1de", params.p);
 	create_point_from_hex(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, "3dc2f080428a8e9e3878262882c1e8035393a4e80db6591471a28e2c0c92629ca8b614b6d8b915a95fd893e56bad50fc", "c1ec2ccaf1e3acccdc4ab8e1a5611030999af5f90c15786b3d32a19f5162a7add51113d7d3b18adfabaf782cde3e43e5", params.p);
@@ -116,6 +121,7 @@ TEST(ec_point_add_inplace, a_plus_b_inf)
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP384R1);
     Point a, b, expected;
+    __montgomery_init(params.p);
 
     create_point_from_hex(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, "411eca0c5855c566a1debf8c4bbe58c53c96ec0574872e1d70b3042fbbbb6983f9ee5193e09d26dfc153f60c8e626d64", "c9fb2d94f3068d95cd62905508eebdfe6825dbc06f0a11ae2c0a6df73ae5c7b47c6514346beb8a71c8b2e570d67e12e7", params.p);
 	create_point_from_hex(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, "411eca0c5855c566a1debf8c4bbe58c53c96ec0574872e1d70b3042fbbbb6983f9ee5193e09d26dfc153f60c8e626d64", "3604d26b0cf9726a329d6faaf711420197da243f90f5ee51d3f59208c51a384a839aebca9414758e374d1a902981ed18", params.p);
@@ -135,6 +141,7 @@ TEST(ec_point_add_inplace, large_number)
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP192K1);
     Point a, b, expected;
+    __montgomery_init(params.p);
 
     create_point_from_hex(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D", "9B2F2F6D9C5628A7844163D015BE86344082AA88D95E2F9D", params.p);
 	create_point_from_hex(&b, BI_TESTS_BX_TAG, BI_TESTS_BY_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D", "9B2F2F6D9C5628A7844163D015BE86344082AA88D95E2F9D", params.p);
@@ -159,6 +166,7 @@ TEST(ec_point_mul, zero_times_point)
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP384R1);
     Point P, result, expected;
+    __montgomery_init(params.p);
 
     create_point_from_hex(&P, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, "411eca0c5855c566a1debf8c4bbe58c53c96ec0574872e1d70b3042fbbbb6983f9ee5193e09d26dfc153f60c8e626d64", "c9fb2d94f3068d95cd62905508eebdfe6825dbc06f0a11ae2c0a6df73ae5c7b47c6514346beb8a71c8b2e570d67e12e7", params.p);
     BigInt d = bigint_from_uint64(BI_TESTS_D_TAG, 0);
@@ -179,6 +187,7 @@ TEST(ec_point_mul, one_times_point)
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP384R1);
     Point P, result, expected;
+    __montgomery_init(params.p);
     expected.x = GET_BIGINT_PTR(BI_TESTS_EXPECTEDX_TAG);
     expected.y = GET_BIGINT_PTR(BI_TESTS_EXPECTEDY_TAG);
 
@@ -200,6 +209,7 @@ TEST(ec_point_mul, two_times_point)
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP384R1);
     Point P, result, expected;
+    __montgomery_init(params.p);
 
     create_point_from_hex(&P, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, "411eca0c5855c566a1debf8c4bbe58c53c96ec0574872e1d70b3042fbbbb6983f9ee5193e09d26dfc153f60c8e626d64", "c9fb2d94f3068d95cd62905508eebdfe6825dbc06f0a11ae2c0a6df73ae5c7b47c6514346beb8a71c8b2e570d67e12e7", params.p);
     create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0, params.p);
@@ -218,6 +228,7 @@ TEST(ec_point_mul, ultimate_test)
     
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP192K1);
+    __montgomery_init(params.p);
     
     Point P, result, expected;
     BigInt d = GET_BIGINT_PTR(BI_TESTS_D_TAG);
@@ -241,6 +252,7 @@ TEST(ec_point_mul, ultimate_test_2)
     
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP521R1);
+    __montgomery_init(params.p);
    
     Point P, result, expected;   
     BigInt d = GET_BIGINT_PTR(BI_TESTS_D_TAG);
