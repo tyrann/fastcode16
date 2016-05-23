@@ -77,6 +77,7 @@ TEST(point_is_on_curve, point_inf)
 
     EllipticCurveParameter params;
     create_parameters(&params);
+    __montgomery_init(params.p);
 
     Point p;
     create_point_from_uint64(&p, BI_TESTS_PINFX_TAG, BI_TESTS_PINFY_TAG, 2, 3, params.p);
@@ -93,6 +94,8 @@ TEST(point_is_on_curve, point_on_curve_SECP192K1)
 
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP192K1);
+    __montgomery_init(params.p);
+
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
     
 	bigint_destroy_buffer();
@@ -104,6 +107,7 @@ TEST(point_is_on_curve, point_on_curve_SECP224R1)
 
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP224R1);
+    __montgomery_init(params.p);
 
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
 
@@ -116,6 +120,7 @@ TEST(point_is_on_curve, point_on_curve_SECP256K1)
 
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP256K1);
+    __montgomery_init(params.p);
 
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
 
@@ -128,6 +133,7 @@ TEST(point_is_on_curve, point_on_curve_SECP384R1)
 
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP384R1);
+    __montgomery_init(params.p);
 
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
 
@@ -140,6 +146,7 @@ TEST(point_is_on_curve, point_on_curve_SECP521R1)
 
     EllipticCurveParameter params;
     ec_generate_parameter(&params, SECP521R1);
+    __montgomery_init(params.p);
 
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
 
@@ -153,6 +160,7 @@ TEST(point_is_on_curve, point_not_on_curve)
 
 	EllipticCurveParameter params;
 	ec_generate_parameter(&params, SECP521R1);
+	__montgomery_init(params.p);
 
     Point q;
     create_point_from_uint64(&q, BI_TESTS_QX_TAG, BI_TESTS_QY_TAG, 0, 0, params.p);
