@@ -82,7 +82,7 @@ void test_Add()
     int num_runs = NUM_RUNS;
 
 	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "8cd2c5edd23d55f01c9007ffffffc006");
-	BigInt b = bigint_from_hex_string(BI_TESTS_A_TAG, "9007ffffffc0068cd2c5edd23d55f01c");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "9007ffffffc0068cd2c5edd23d55f01c");
 
     start = start_tsc();
 	for(int i = 0; i < num_runs; i++)
@@ -201,8 +201,6 @@ void test_Mult_open_ssl()
     BN_free(result);
 }
 
-
-
 /*
  * Test division
 */
@@ -253,7 +251,7 @@ void test_Div_open_ssl()
     start = start_tsc();
     for(int i = 0; i < num_runs; i++)
     {
-		BN_div(result, rem, a, b, ctx);
+		BN_div(result, rem, b, a, ctx);
 	}
     cycles = stop_tsc(start);
 
@@ -299,9 +297,7 @@ void openssl_Benchmark(){
 	printf("ECC Division\n");
 	test_Div();
 	printf("OpenSSl Division\n");
-	test_Div_open_ssl();	
-	
-	
+	test_Div_open_ssl();		
 
     bigint_destroy_buffer();
 }
