@@ -632,6 +632,7 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP192K1_0)
 	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "118427b3b4a05bc8a8a4de8459867fffffffffff");
 	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
 	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+    __montgomery_init(p);
 	__montgomery_convert(x_conv, x, p);
 	__montgomery_convert(y_conv, y, p);
 	montgomery_mul(c, x_conv, y_conv, p);
@@ -653,6 +654,7 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP192K1_1)
 	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "118427b3b4a05bc8a8a4de8459867fffffffffff");
 	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
 	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_init(p);
 	__montgomery_convert(x_conv, x, p);
 	__montgomery_convert(y_conv, y, p);
 	montgomery_mul(c, x_conv, y_conv, p);
@@ -674,6 +676,7 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP192K1)
 	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "118427b3b4a05bc8a8a4de8459867fffffffffff");
 	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
 	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_init(p);
 	__montgomery_convert(x_conv, x, p);
 	__montgomery_convert(y_conv, y, p);
 	montgomery_mul(c, x_conv, y_conv, p);
@@ -695,6 +698,7 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP224R1)
 	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "118427b3b4a05bc8a8a4de8459867fffffffffff");
 	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
 	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_init(p);
 	__montgomery_convert(x_conv, x, p);
 	__montgomery_convert(y_conv, y, p);
 	montgomery_mul(c, x_conv, y_conv, p);
@@ -717,6 +721,7 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP256K1)
 	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "1d39528e9b55885f473cf2e28ef905737e940892f00a6842263c39f23f17206");
 	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
 	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_init(p);
 	__montgomery_convert(x_conv, x, p);
 	__montgomery_convert(y_conv, y, p);
 	montgomery_mul(c, x_conv, y_conv, p);
@@ -739,6 +744,7 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP384R1)
 	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "6780202797a27886abe780242d8e919613947b782b08b749218f33fea919267cbdb6983a91dc011c5ae14849e1bbc2c9");
 	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
 	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_init(p);
 	__montgomery_convert(x_conv, x, p);
 	__montgomery_convert(y_conv, y, p);
 	montgomery_mul(c, x_conv, y_conv, p);
@@ -782,6 +788,7 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP521R1)
 	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "10d5478c921ddfc4117a9fd80c7222fe43ed73dc3d10ff568b14ce3181ce3e6db0d0ed487a170309bc836906d6894389d38b8ac75cbe7222de29e50488ffd82916e");
 	BigInt x_conv = GET_BIGINT_PTR(BI_TESTS_X_CONV_TAG);
 	BigInt y_conv = GET_BIGINT_PTR(BI_TESTS_Y_CONV_TAG);
+	__montgomery_init(p);
 	__montgomery_convert(x_conv, x, p);
 	__montgomery_convert(y_conv, y, p);
 	montgomery_mul(c, x_conv, y_conv, p);
