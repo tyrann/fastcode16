@@ -82,7 +82,9 @@ void compute_ECDH(char* dURand, char* dVRand, int keyLength)
 	ecdh_compute_shared_secret(sharedInfoV, dV, &pub_keyU, &params);
     }
     cycles = stop_tsc(start);
-
+	printf("global_opcount = %" PRIu64 "\n", global_opcount);
+    printf("global_index_count = %" PRIu64 "\n", global_index_count);
+	
     global_opcount = global_opcount/num_runs;
     global_index_count = global_index_count/num_runs;
     double r;  
@@ -97,8 +99,6 @@ void compute_ECDH(char* dURand, char* dVRand, int keyLength)
     printf("info u %s\ninfo v %s\n\n", infoU, infoV);
     free(infoU);
     free(infoV);
-    //printf("global_opcount = %" PRIu64 "\n", global_opcount);
-    //printf("global_index_count = %" PRIu64 "\n\n", global_index_count);
 
     ec_create_ECDH(&uECDH, &params, &pub_keyU, dU, sharedInfoU);
     ec_create_ECDH(&vECDH, &params, &pub_keyV, dV, sharedInfoV);
@@ -167,8 +167,7 @@ void compute_ECDH_open_ssl(char* dURand, char* dVRand, int keyLength)
 	EC_POINT_mul(group_non_optimized, resultU, NULL, public_keyV, dU, ctx);
 	EC_POINT_mul(group_non_optimized, resultV, NULL, public_keyU, dV, ctx);
     }
-    cycles = stop_tsc(start);
-
+    cycles = stop_tsc(start);	
     EC_POINT_get_affine_coordinates_GF2m(group_non_optimized, resultU, sharedInfoU_x, sharedInfoU_y, NULL);
     EC_POINT_get_affine_coordinates_GF2m(group_non_optimized, resultV, sharedInfoV_x, sharedInfoV_y, NULL);
 
@@ -179,7 +178,6 @@ void compute_ECDH_open_ssl(char* dURand, char* dVRand, int keyLength)
     char *infoU = BN_bn2hex(sharedInfoU_x);
     char *infoV = BN_bn2hex(sharedInfoV_x);
     printf("info u %s\ninfo v %s\n\n", infoU, infoV);
-
     free(infoU);
     free(infoV);
     free(p_hex);
@@ -215,39 +213,49 @@ int main(){
     
     global_opcount = 0;
     global_index_count = 0; 
-
     // secp192
+    printf("==========ECDH optimal secp192==========\n");
     compute_ECDH("FEFFFFFFFFFFFFFFFFFFFFFE62F2FC170F69466A74DEFD8D","FEFFFFFFFFFFFFFFFFFFFFFE26F2FC710F69466A74DEFD8D",192); 
     global_opcount = 0;
     global_index_count = 0;
-    
+	
+    printf("==========ECDH open_ssl secp192==========\n");
     compute_ECDH_open_ssl("FEFFFFFFFFFFFFFFFFFFFFFE62F2FC170F69466A74DEFD8D","FEFFFFFFFFFFFFFFFFFFFFFE26F2FC710F69466A74DEFD8D", 192); 
-    
+    global_opcount = 0;
+    global_index_count = 0;
     // secp224
+    printf("==========ECDH optimal secp224==========\n");
     compute_ECDH("FEFFFFFFFFFFFFFFFFFFFFFFFFFF61A2E0B8F03E13DD29455C5C2A3D","FEFFFFFFFFFFFFFFFFFFFFFFFFFF16A2E0B8F03E13DD29545C5C2A3D",224); 
     global_opcount = 0;
     global_index_count = 0;
-    
+    printf("==========ECDH open_ssl secp224==========\n");    
     compute_ECDH_open_ssl("FEFFFFFFFFFFFFFFFFFFFFFFFFFF61A2E0B8F03E13DD29455C5C2A3D","FEFFFFFFFFFFFFFFFFFFFFFFFFFF16A2E0B8F03E13DD29545C5C2A3D", 224);  
-    
+    global_opcount = 0;
+    global_index_count = 0;   
     // secp256
+    printf("==========ECDH optimal secp256==========\n");
     compute_ECDH("FEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF84A03BBFD25E8CD0364141","FEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0361441", 256); 
     global_opcount = 0;
     global_index_count = 0;  
- 
+    printf("==========ECDH open_ssl secp256==========\n");     
     compute_ECDH_open_ssl("FEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF84A03BBFD25E8CD0364141","FEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0361441", 256); 
-
+    global_opcount = 0;
+    global_index_count = 0;
     // secp384
+    printf("==========ECDH optimal secp384==========\n");
     compute_ECDH("FEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F4372DDF851A0DB248B0A77AECEC196ACCC52973","FEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F3472DDF581A0DB248B0A77AECEC196ACCC52973", 384);
     global_opcount = 0;
     global_index_count = 0;
-  
+    printf("==========ECDH open_ssl secp384==========\n");  
     compute_ECDH_open_ssl("FEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F4372DDF851A0DB248B0A77AECEC196ACCC52973","FEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F3472DDF581A0DB248B0A77AECEC196ACCC52973", 384);
-
+    global_opcount = 0;
+    global_index_count = 0;
     // secp521
+    printf("==========ECDH optimal secp521==========\n");
     compute_ECDH("01EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA15868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409","01EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868738BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409", 521);
     global_opcount = 0;
     global_index_count = 0;
+    printf("==========ECDH open_ssl secp521==========\n");  
     compute_ECDH_open_ssl("01EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA15868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409","01EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868738BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409", 521);
     
     bigint_destroy_buffer();
