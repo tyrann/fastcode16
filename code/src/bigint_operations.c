@@ -23,9 +23,6 @@ uint64_t global_opcount = 0;
 uint64_t global_index_count = 0;
 uint64_t p_prime = 0;
 
-/*
- * sets p_prime to -p^-1 (mod 2^64)
- */
 void __montgomery_init(const BigInt p)
 {
 	BigInt prime = bigint_from_hex_string(BI_MONTGOMERY_INIT_PRIME_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFEE37");
@@ -62,7 +59,6 @@ void __montgomery_init(const BigInt p)
 
 void __montgomery_convert(BigInt res, const BigInt x, const BigInt p)
 {
-	__montgomery_init(p);
 	bigint_copy(res, x);
 	/*n is the R parameter in the Montgomery convertion*/
 
