@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include <x86intrin.h>
+#include <immintrin.h>
 #include <inttypes.h>
 
 #include <stdio.h>
@@ -258,6 +259,14 @@ void bigint_right_shift_inplace_64(BigInt a)
 		a->significant_blocks--;
 		__COUNT_INDEX(&global_opcount, 1);
 	}
+}
+
+void bigint_right_shift_inplace_avx2(BigInt a, uint8_t x)
+{
+	int bits = x;	
+	__m256d t0 = _mm256_load_pd(a->blocks[0]);
+	__m256i t1 =  _mm256_srli_epi64 (t0, bits);
+
 }
 
 
