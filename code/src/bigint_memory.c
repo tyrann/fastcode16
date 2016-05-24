@@ -8,6 +8,7 @@
 #include "bigint_memory.h"
 
 block* __bigint_buffer = 0;
+block* __bigint__precomputation_buffer = 0;
 BigInt bigint_zero;
 BigInt bigint_one;
 BigInt bigint_two;
@@ -38,13 +39,13 @@ void bigint_create_buffer()
         (void**)&__bigint_buffer,
         BIGINT_ALIGNMENT,
         BI_TAGS_COUNT * BIGINT_SIZE);
-    
+
     if (res == 0)
     {
         assert("posix_memalign failed!");
     }
     assert(__bigint_buffer != 0);
-    
+
     memset(__bigint_buffer, 0, BI_TAGS_COUNT * BIGINT_SIZE);
     __create_default_bigints();
 }
@@ -53,4 +54,31 @@ void bigint_destroy_buffer()
 {
     assert(__bigint_buffer != 0);
     free(__bigint_buffer);
+}
+
+void bigint_create_precomputation_buffer(int number_of_points)
+{
+    int res = posix_memalign(
+        (void**)&__bigint__precomputation_buffer,
+        BIGINT_ALIGNMENT,
+        number_of_points * 2 * BIGINT_SIZE);
+
+    if (res == 0)
+    {
+        assert("posix_memalign failed!");
+    }
+    assert(__bigint__precomputation_buffer != 0);
+
+    memset(__bigint__precomputation_buffer, 0, number_of_points * 2 * BIGINT_SIZE);
+}
+
+void bigint_destroy_precomputatino_buffer()
+{
+    assert(__bigint__precomputation_buffer != 0);
+    free(__bigint__precomputation_buffer);
+}
+
+BigInt get_precomputed_bigint(unsigned int i)
+{
+	return (BigInt)(__bigint__precomputation_buffer + (i * (BIGINT_SIZE / 8)));
 }
