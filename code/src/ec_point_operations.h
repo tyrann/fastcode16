@@ -17,4 +17,8 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 /* result = d*P */
 void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticCurveParameter *p);
 
+/* Multiplication of the generator on a curve by a scalar*/
+/* result = d*G */
+void ec_point_mul_generator(Point *result, const BigInt d, const EllipticCurveParameter *params);
+
 #endif 
