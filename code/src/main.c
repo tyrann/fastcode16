@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#define NUM_RUNS 1024
 #define CYCLES_REQUIRED 1e8
 #define FREQUENCY 1.8e9
 #define CALIBRATE
