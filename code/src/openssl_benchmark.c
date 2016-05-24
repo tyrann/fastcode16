@@ -142,7 +142,7 @@ void test_Mult()
     int num_runs = NUM_RUNS;
 
 	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "8cd2c5edd23d55f01c9007ffffffc006");
-	BigInt b = bigint_from_hex_string(BI_TESTS_A_TAG, "9007ffffffc0068cd2c5edd23d55f01c");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "9007ffffffc0068cd2c5edd23d55f01c");
 	BigInt p = bigint_from_hex_string(BI_PARAMS_P_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFEE37"); // P from SECP192K1
 	BigInt res = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
 
