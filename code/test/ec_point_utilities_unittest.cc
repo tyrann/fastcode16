@@ -263,8 +263,6 @@ TEST(precompute_points, precompute_points_SECP384R1)
 	ec_generate_parameter(&params, SECP384R1);
 	__montgomery_init(params.p);
 
-	int number_of_poins = params.p->significant_blocks * 64;
-	bigint_create_precomputation_buffer(number_of_poins);
 	Point P, expected;
 	create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 0, 0, params.p);
 	create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0, params.p);
@@ -279,7 +277,6 @@ TEST(precompute_points, precompute_points_SECP384R1)
 	get_precomputed_point(&P, 4);
 	ASSERT_TRUE(point_are_equal(&P, &expected));
 
-	bigint_destroy_precomputatino_buffer();
 	bigint_destroy_buffer();
 
 }
@@ -292,8 +289,6 @@ TEST(precompute_points, precompute_points_SECP521R1)
 	ec_generate_parameter(&params, SECP521R1);
 	__montgomery_init(params.p);
 
-	int number_of_poins = params.p->significant_blocks * 64;
-	bigint_create_precomputation_buffer(number_of_poins);
 	Point P, expected;
 	create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 0, 0, params.p);
 	create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0, params.p);
@@ -307,7 +302,6 @@ TEST(precompute_points, precompute_points_SECP521R1)
 	get_precomputed_point(&P, 575);
 	ASSERT_TRUE(point_are_equal(&P, &expected));
 
-	bigint_destroy_precomputatino_buffer();
 	bigint_destroy_buffer();
 
 }

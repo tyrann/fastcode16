@@ -47,6 +47,20 @@ void bigint_create_buffer()
     assert(__bigint_buffer != 0);
 
     memset(__bigint_buffer, 0, BI_TAGS_COUNT * BIGINT_SIZE);
+
+	res = posix_memalign(
+		(void**)&__bigint__precomputation_buffer,
+		BIGINT_ALIGNMENT,
+		MAX_NUMBER_OF_POINTS * 2 * BIGINT_SIZE);
+
+	if (res == 0)
+	{
+		assert("posix_memalign failed!");
+	}
+	assert(__bigint__precomputation_buffer != 0);
+
+	memset(__bigint__precomputation_buffer, 0, MAX_NUMBER_OF_POINTS * 2 * BIGINT_SIZE);
+
     __create_default_bigints();
 }
 
@@ -54,26 +68,6 @@ void bigint_destroy_buffer()
 {
     assert(__bigint_buffer != 0);
     free(__bigint_buffer);
-}
-
-void bigint_create_precomputation_buffer(int number_of_points)
-{
-    int res = posix_memalign(
-        (void**)&__bigint__precomputation_buffer,
-        BIGINT_ALIGNMENT,
-        number_of_points * 2 * BIGINT_SIZE);
-
-    if (res == 0)
-    {
-        assert("posix_memalign failed!");
-    }
-    assert(__bigint__precomputation_buffer != 0);
-
-    memset(__bigint__precomputation_buffer, 0, number_of_points * 2 * BIGINT_SIZE);
-}
-
-void bigint_destroy_precomputatino_buffer()
-{
     assert(__bigint__precomputation_buffer != 0);
     free(__bigint__precomputation_buffer);
 }
