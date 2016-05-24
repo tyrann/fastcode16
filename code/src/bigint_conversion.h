@@ -2,9 +2,6 @@
 #ifndef __BIGINT_CONVERSION_H_
 #define __BIGINT_CONVERSION_H_
 
-// Create a BigInt object from a 32bit unsigned integer
-BigInt bigint_from_uint32(uint32_t tag, uint32_t num);
-
 // Create a BigInt object from a 64bit unsigned integer
 BigInt bigint_from_uint64(uint32_t tag, uint64_t num);
 

@@ -10,13 +10,13 @@ TEST(bigint_clear_test, clear_test)
     bigint_create_buffer();
     
     BigInt bigint = GET_BIGINT_PTR(BI_TESTS_A_TAG);
-    bigint->significant_octets = 2;
-    bigint->octets[0] = 0xF4;
-    bigint->octets[1] = 0x23;
+    bigint->significant_blocks = 2;
+    bigint->blocks[0] = 0xF4A;
+    bigint->blocks[1] = 0x23A543;
     bigint_clear(bigint);
     
-    EXPECT_EQ(bigint->significant_octets, 1);
-    EXPECT_EQ(bigint->octets[0], 0);
+    EXPECT_EQ(bigint->significant_blocks, 1);
+    EXPECT_EQ(bigint->blocks[0], 0);
     
     bigint_destroy_buffer();
 }
@@ -56,10 +56,10 @@ TEST(bigint_is_even, check_even)
 {
     bigint_create_buffer();
     
-    BigInt a1 = bigint_from_uint32(BI_TESTS_A_TAG, 2);
+    BigInt a1 = bigint_from_uint64(BI_TESTS_A_TAG, 2);
     ASSERT_TRUE(bigint_is_even(a1));
     
-    a1 = bigint_from_uint32(BI_TESTS_A_TAG, 4);
+    a1 = bigint_from_uint64(BI_TESTS_A_TAG, 4);
     ASSERT_TRUE(bigint_is_even(a1));
 
     a1 = bigint_from_hex_string(BI_TESTS_A_TAG, "7FFFFFFFFFFFFFFE");
@@ -72,10 +72,10 @@ TEST(bigint_is_even, check_odd)
 {
     bigint_create_buffer();
     
-    BigInt a1 = bigint_from_uint32(BI_TESTS_A_TAG, 1);
+    BigInt a1 = bigint_from_uint64(BI_TESTS_A_TAG, 1);
     ASSERT_FALSE(bigint_is_even(a1));
     
-    a1 = bigint_from_uint32(BI_TESTS_A_TAG, 3);
+    a1 = bigint_from_uint64(BI_TESTS_A_TAG, 3);
     ASSERT_FALSE(bigint_is_even(a1));
     
     a1 = bigint_from_hex_string(BI_TESTS_A_TAG, "7FFFFFFFFFFFFFFD");
@@ -104,13 +104,13 @@ TEST(bigint_greater_than, check_greater_than)
 {
     bigint_create_buffer();
     
-    BigInt a1 = bigint_from_uint32(BI_TESTS_A_TAG, 1);
-    BigInt a2 = bigint_from_uint32(BI_TESTS_B_TAG, 3);
+    BigInt a1 = bigint_from_uint64(BI_TESTS_A_TAG, 1);
+    BigInt a2 = bigint_from_uint64(BI_TESTS_B_TAG, 3);
 
     ASSERT_FALSE(bigint_is_greater(a1,a2));
 
-	a1 = bigint_from_uint32(BI_TESTS_A_TAG, 2836);
-	a2 = bigint_from_uint32(BI_TESTS_B_TAG, 2835);
+	a1 = bigint_from_uint64(BI_TESTS_A_TAG, 2836);
+	a2 = bigint_from_uint64(BI_TESTS_B_TAG, 2835);
 
 	ASSERT_TRUE(bigint_is_greater(a1, a2));
 	
@@ -126,8 +126,8 @@ TEST(bigint_greater_than, check_greater_than_0)
 {
     bigint_create_buffer();
     
-	BigInt a1 = bigint_from_uint32(BI_TESTS_A_TAG, 0);
-	BigInt a2 = bigint_from_uint32(BI_TESTS_B_TAG, 0);
+	BigInt a1 = bigint_from_uint64(BI_TESTS_A_TAG, 0);
+	BigInt a2 = bigint_from_uint64(BI_TESTS_B_TAG, 0);
 
 	ASSERT_FALSE(bigint_is_greater(a1, a2));
 	

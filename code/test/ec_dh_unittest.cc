@@ -20,13 +20,13 @@ TEST(ec_dh, ecdh_compute_shared_secret)
 
     ECDH uECDH;
     Point pub_keyU;
-    create_point_from_uint32(&pub_keyU, BI_TESTS_PUBKEYUX_TAG, BI_TESTS_PUBKEYUY_TAG, 0, 0);
+    create_point_from_uint64(&pub_keyU, BI_TESTS_PUBKEYUX_TAG, BI_TESTS_PUBKEYUY_TAG, 0, 0, params.p);
     BigInt sharedInfoU = GET_BIGINT_PTR(BI_TESTS_SHAREDU_TAG);
 
    
     ECDH vECDH;
     Point pub_keyV;
-    create_point_from_uint32(&pub_keyV, BI_TESTS_PUBKEYVX_TAG, BI_TESTS_PUBKEYVY_TAG, 0, 0);
+    create_point_from_uint64(&pub_keyV, BI_TESTS_PUBKEYVX_TAG, BI_TESTS_PUBKEYVY_TAG, 0, 0, params.p);
     BigInt sharedInfoV = GET_BIGINT_PTR(BI_TESTS_SHAREDV_TAG);
 	
     ecdh_generate_public_key(&pub_keyU, dU, &params);

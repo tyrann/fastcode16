@@ -4,32 +4,50 @@
 extern uint64_t global_opcount;
 extern uint64_t global_index_count;
 
-void create_point(Point* p, const BigInt a, const BigInt b)
+void point_convert_to_montgomery_space(Point* Q, const BigInt p);
+
+void create_point(Point* p, const BigInt a, const BigInt b, const BigInt prime)
 {
     p->x = a;
     p->y = b;
     p->is_at_infinity = 0;
+    point_convert_to_montgomery_space(p, prime);
 }
 
-void create_point_from_hex(Point* p, uint32_t tag_x, uint32_t tag_y, const char *x, const char *y)
+void create_point_from_hex(Point* p, uint32_t tag_x, uint32_t tag_y, const char *x, const char *y, const BigInt prime)
 {
     create_point(p,
         bigint_from_hex_string(tag_x, x),
-        bigint_from_hex_string(tag_y, y));
+        bigint_from_hex_string(tag_y, y),
+        prime);
 }
 
-void create_point_from_uint32(Point* p, uint32_t tag_x, uint32_t tag_y, uint32_t x, uint32_t y)
-{
-    create_point(p,
-        bigint_from_uint32(tag_x, x),
-        bigint_from_uint32(tag_y, y));
-}
-
-void create_point_from_uint64(Point* p, uint32_t tag_x, uint32_t tag_y, uint64_t x, uint64_t y)
+void create_point_from_uint64(Point* p, uint32_t tag_x, uint32_t tag_y, uint64_t x, uint64_t y, const BigInt prime)
 {
     create_point(p,
         bigint_from_uint64(tag_x, x),
-        bigint_from_uint64(tag_y, y));
+        bigint_from_uint64(tag_y, y),
+        prime);
+}
+
+void point_convert_to_montgomery_space(Point* Q, const BigInt p)
+{
+	BigInt x = GET_BIGINT_PTR(BI_POINT_CONVERT_TO_MONTGOMERY_SPACE_X_TAG);
+	BigInt y = GET_BIGINT_PTR(BI_POINT_CONVERT_TO_MONTGOMERY_SPACE_Y_TAG);
+	bigint_copy(x, Q->x);
+	bigint_copy(y, Q->y);
+	__montgomery_convert(Q->x, x, p);
+	__montgomery_convert(Q->y, y, p);
+}
+
+void point_revert_from_montgomery_space(Point* Q, const BigInt p)
+{
+	BigInt x = GET_BIGINT_PTR(BI_POINT_REVERT_FROM_MONTGOMERY_SPACE_X_TAG);
+	BigInt y = GET_BIGINT_PTR(BI_POINT_REVERT_FROM_MONTGOMERY_SPACE_Y_TAG);
+	bigint_copy(x, Q->x);
+	bigint_copy(y, Q->y);
+	__montgomery_revert(Q->x, x, p);
+	__montgomery_revert(Q->y, y, p);
 }
 
 char point_is_on_curve(const Point* p, const EllipticCurveParameter *params)
@@ -42,32 +60,22 @@ char point_is_on_curve(const Point* p, const EllipticCurveParameter *params)
     else
     {	
         BigInt x_squared = GET_BIGINT_PTR(BI_POINTISONCURVE_XSQUARED_TAG);
-        BigInt x_squared_rev = GET_BIGINT_PTR(BI_POINTISONCURVE_XSQUAREDREV_TAG);
         BigInt x_result = GET_BIGINT_PTR(BI_POINTISONCURVE_XRESULT_TAG);
-        BigInt x_result_rev = GET_BIGINT_PTR(BI_POINTISONCURVE_XRESULTREV_TAG);
         BigInt y_result = GET_BIGINT_PTR(BI_POINTISONCURVE_YRESULT_TAG);
-        BigInt y_result_rev = GET_BIGINT_PTR(BI_POINTISONCURVE_YRESULTREV_TAG);
         BigInt a_x = GET_BIGINT_PTR(BI_POINTISONCURVE_AX_TAG);
-        BigInt a_x_rev = GET_BIGINT_PTR(BI_POINTISONCURVE_AXREV_TAG);
         
         montgomery_mul(x_squared, p->x, p->x, params->p);
-        __montgomery_revert(x_squared_rev, x_squared, params->p);
-    
-	    montgomery_mul(x_result, x_squared_rev, p->x, params->p);
-	    __montgomery_revert(x_result_rev, x_result, params->p);
-
+	    montgomery_mul(x_result, x_squared, p->x, params->p);
 	    montgomery_mul(a_x, params->a, p->x, params->p);
-	    __montgomery_revert(a_x_rev, a_x, params->p);
 
-	    bigint_add_inplace(x_result_rev, a_x_rev);
-	    bigint_add_inplace(x_result_rev, params->b);
-	    bigint_modulo_inplace(x_result_rev, params->p);
+	    bigint_add_inplace(x_result, a_x);
+	    bigint_add_inplace(x_result, params->b);
+	    bigint_modulo_inplace(x_result, params->p);
 
 	    montgomery_mul(y_result, p->y, p->y, params->p);
-	    __montgomery_revert(y_result_rev, y_result, params->p);
-	    bigint_modulo_inplace(y_result_rev, params->p);
+	    bigint_modulo_inplace(y_result, params->p);
 
-	    result = bigint_are_equal(x_result_rev, y_result_rev);
+	    result = bigint_are_equal(x_result, y_result);
     }
     return result;
 }
