@@ -415,3 +415,67 @@ void bigint_divide(BigInt dest, const BigInt b, const BigInt a, const BigInt p)
 			bigint_copy(dest, x2);
 	}
 }
+
+void bigint_sub_modulo_inplace(BigInt a, const BigInt b, const BigInt mod)
+{
+	BIGINT_ASSERT_VALID(a);
+	BIGINT_ASSERT_VALID(b);
+	
+    if(bigint_is_greater(a, b))
+	{
+		bigint_sub_inplace(a, b);
+	}
+	else
+	{
+		// Merging two ops 
+
+		
+		
+	    // Extends a if b is larger
+		if(a->significant_blocks < mod->significant_blocks)
+		{
+			memset(a->blocks + a->significant_blocks, 0, (ROUND_UP_MUL4(mod->significant_blocks) - a->significant_blocks) * 8);
+			__COUNT_OP(&global_opcount, 2);
+			a->significant_blocks = mod->significant_blocks;
+		}
+
+		// Execute adding and propagate carry
+		uint64_t i = 0;
+		uint64_t min = (mod->significant_blocks > b->significant_blocks) ? mod->significant_blocks : b->significant_blocks;
+
+		unsigned char carry = 0;
+		unsigned char borrow = 0;
+
+		for (; i < a->significant_blocks; i++)
+		{
+			__COUNT_INDEX(&global_index_count, 1);
+			if(i < mod->significant_blocks)
+			{
+				carry = _addcarry_u64(carry, a->blocks[i], mod->blocks[i], (unsigned long long*)&(a->blocks)[i]);
+				borrow = _subborrow_u64(borrow, b->blocks[i], a->blocks[i], (unsigned long long*)&(a->blocks)[i]);
+				__COUNT_OP(&global_opcount, 3);
+			}	
+			else
+			{
+				if (carry == 0 || borrow == 0) break;
+				carry = _addcarry_u64(carry, a->blocks[i], 0, (unsigned long long*)&(a->blocks)[i]);
+				borrow = _subborrow_u64(borrow, 0, a->blocks[i], (unsigned long long*)&(a->blocks)[i]);
+				__COUNT_OP(&global_opcount, 2);
+			}
+			}
+		// If needed, allocate 1 more block for the carry
+		if(carry > 0)
+		{
+			a->significant_blocks += 1;
+			__COUNT_OP(&global_opcount, 1);
+			a->blocks[i] = (uint64_t)carry;
+		}	
+
+		for(; a->significant_blocks > 1; a->significant_blocks--)
+		{
+			if (a->blocks[a->significant_blocks-1] != 0) break;
+			__COUNT_OP(&global_opcount, 3);
+		}
+	}	
+	bigint_modulo_inplace(a, mod);
+}

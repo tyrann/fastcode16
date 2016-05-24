@@ -64,10 +64,14 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		montgomery_mul(x_twice, a->x, params->two, params->p);
 		bigint_copy(a->x, lambda_squared);		
 
+		/*
+		// TODO replace
 		bigint_add_inplace(a->x, params->p);
 		bigint_sub_inplace(a->x, x_twice);
 		bigint_modulo_inplace(a->x, params->p);
-	
+	*/
+	    bigint_sub_modulo_inplace(a->x, x_twice, params->p);
+		
 		// calculate y
 		
 		// x_1 - x_3
@@ -77,10 +81,14 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		// calculate lambda(x_1 - x_3)
 		montgomery_mul(a->y, tmp, x_1_minus_x_3, params->p);
 
+		/*
+		// TODO replace
+
 		bigint_add_inplace(a->y, params->p);
 		bigint_sub_inplace(a->y, y_1);
 		bigint_modulo_inplace(a->y, params->p);
-
+		*/
+		bigint_sub_modulo_inplace(a->y, y_1, params->p);
 		a->is_at_infinity = 0;
     } 
     // Rule 3
@@ -126,11 +134,17 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		bigint_copy(x_1_minus_x_3, a->x);
 		montgomery_mul(lambda_squared, tmp, tmp, params->p);
 		bigint_copy(a->x, lambda_squared);
-	
+
+		
 		bigint_add_inplace(a->x, x_1_add_inverse);
+		
+		/*
+		// TODO replace
 		bigint_add_inplace(a->x, params->p);
 		bigint_sub_inplace(a->x, b->x);
 		bigint_modulo_inplace(a->x, params->p);
+*/
+		bigint_sub_modulo_inplace(a->x, b->x, params->p);
 
 		// Calculate y_3
 		bigint_add_inplace(x_1_minus_x_3, params->p);

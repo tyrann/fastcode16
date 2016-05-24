@@ -36,6 +36,8 @@ void bigint_modulo_inplace(BigInt a, const BigInt mod);
 // Compute b/a over Fp, storing the result in dest.
 void bigint_divide(BigInt dest, const BigInt b, const BigInt a, const BigInt p);
 
+void bigint_sub_modulo_inplace(BigInt a, const BigInt b, const BigInt mod);
+
 extern uint64_t p_prime;
 
 #endif
