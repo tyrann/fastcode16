@@ -26,24 +26,26 @@ EllipticCurveParameter get_parameter_by_key_length(int key_length)
 {
     EllipticCurveParameter params;
     
+    const char precompute = 1;
+
     switch(key_length) {
     case 192 :
-	ec_generate_parameter(&params, SECP192K1);
+	ec_generate_parameter(&params, SECP192K1, precompute);
         break;
     case 224 :
-	ec_generate_parameter(&params, SECP224R1);
+	ec_generate_parameter(&params, SECP224R1, precompute);
         break;
     case 256 :
-	ec_generate_parameter(&params, SECP256K1);
+	ec_generate_parameter(&params, SECP256K1, precompute);
         break;
     case 384 :
-	ec_generate_parameter(&params, SECP384R1);
+	ec_generate_parameter(&params, SECP384R1, precompute);
         break;
     case 521 :
-	ec_generate_parameter(&params, SECP521R1);
+	ec_generate_parameter(&params, SECP521R1, precompute);
         break;
     default :
-	ec_generate_parameter(&params, SECP192K1);
+	ec_generate_parameter(&params, SECP192K1, precompute);
     }
 
     return params;

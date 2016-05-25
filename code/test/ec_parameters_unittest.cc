@@ -49,7 +49,8 @@ TEST(ec_generate_parameter, SECP192K1)
 	BigInt z = bigint_from_hex_string(BI_PARAMS_GZ_TAG, "1");
 	create_point(&g, x, y, z, p);
 
-	ec_create_parameters(&parameter, p, a, b, &g, n, h);
+	char precompute = 0;
+	ec_generate_parameter(&parameter, SECP192K1, precompute);
 
     ASSERT_TRUE(bigint_are_equal(parameter.p, p));
     ASSERT_TRUE(bigint_are_equal(parameter.a, a));
@@ -77,7 +78,8 @@ TEST(ec_generate_parameter, SECP224R1)
 	BigInt z = bigint_from_hex_string(BI_PARAMS_GZ_TAG, "1");
 	create_point(&g, x, y, z, p);
 
-	ec_create_parameters(&parameter, p, a, b, &g, n, h);
+	char precompute = 0;
+	ec_generate_parameter(&parameter, SECP224R1, precompute);
 
     ASSERT_TRUE(bigint_are_equal(parameter.p, p));
     ASSERT_TRUE(bigint_are_equal(parameter.a, a));
@@ -105,7 +107,8 @@ TEST(ec_generate_parameter, SECP256K1)
 	BigInt z = bigint_from_hex_string(BI_PARAMS_GZ_TAG, "1");
 	create_point(&g, x, y, z, p);
 
-	ec_create_parameters(&parameter, p, a, b, &g, n, h);
+	char precompute = 0;
+	ec_generate_parameter(&parameter, SECP256K1, precompute);
 
     ASSERT_TRUE(bigint_are_equal(parameter.p, p));
     ASSERT_TRUE(bigint_are_equal(parameter.a, a));
@@ -134,7 +137,8 @@ TEST(ec_generate_parameter, SECP384R1)
 	BigInt z = bigint_from_hex_string(BI_PARAMS_GZ_TAG, "1");
 	create_point(&g, x, y, z, p);
 
-	ec_create_parameters(&parameter, p, a, b, &g, n, h);
+	char precompute = 0;
+	ec_generate_parameter(&parameter, SECP384R1, precompute);
 
     ASSERT_TRUE(bigint_are_equal(parameter.p, p));
     ASSERT_TRUE(bigint_are_equal(parameter.a, a));
@@ -162,7 +166,8 @@ TEST(ec_generate_parameter, SECP521R1)
 	BigInt z = bigint_from_hex_string(BI_PARAMS_GZ_TAG, "1");
 	create_point(&g, x, y, z, p);
 
-	ec_create_parameters(&parameter, p, a, b, &g, n, h);
+	char precompute = 0;
+	ec_generate_parameter(&parameter, SECP521R1, precompute);
 
     ASSERT_TRUE(bigint_are_equal(parameter.p, p));
     ASSERT_TRUE(bigint_are_equal(parameter.a, a));

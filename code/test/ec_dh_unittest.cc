@@ -13,7 +13,8 @@ TEST(ec_dh, ecdh_compute_shared_secret)
     bigint_create_buffer();
     
     EllipticCurveParameter params;
-    ec_generate_parameter(&params, SECP192K1);
+    char precompute = 1;
+    ec_generate_parameter(&params, SECP192K1, precompute);
     __montgomery_init(params.p);
  
     BigInt dU = bigint_from_hex_string(BI_TESTS_DU_TAG, "FFFFFFFFFFFFFFFFFFFFFFF"); // Random number between 0 and n 

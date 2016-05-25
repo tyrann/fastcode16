@@ -3,7 +3,7 @@
 #include "ec_point_utilities.h"
 #include <stdlib.h>
 
-void ec_generate_parameter(EllipticCurveParameter *parameter, const CurveParameter name)
+void ec_generate_parameter(EllipticCurveParameter *parameter, const CurveParameter name, char precompute)
 {
     BigInt p, a, b, n, h;
     Point G;
@@ -58,8 +58,11 @@ void ec_generate_parameter(EllipticCurveParameter *parameter, const CurveParamet
 	exit(0);
     }
     ec_create_parameters(parameter, p, a, b, &G, n, h);
-    __montgomery_init(p);
-    precompute_points(parameter);
+    if(precompute)
+    {
+		__montgomery_init(p);
+		precompute_points(parameter);
+    }
 }
 
 void ec_create_parameters(EllipticCurveParameter *ec, BigInt p, BigInt a, BigInt b, Point const *generator, BigInt n, BigInt h)

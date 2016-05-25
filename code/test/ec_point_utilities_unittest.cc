@@ -9,7 +9,8 @@ TEST(create_point, create_point)
 	bigint_create_buffer();
 
 	EllipticCurveParameter params;
-	ec_generate_parameter(&params, SECP192K1);
+	char precompute = 0;
+	ec_generate_parameter(&params, SECP192K1, precompute);
     Point p;
     BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D");
     BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "9B2F2F6D9C5628A7844163D015BE86344082AA88D95E2F9D");
@@ -32,7 +33,8 @@ TEST(create_point_from_hex, create_point_form_hex)
 	bigint_create_buffer();
 
 	EllipticCurveParameter params;
-	ec_generate_parameter(&params, SECP192K1);
+	char precompute = 0;
+	ec_generate_parameter(&params, SECP192K1, precompute);
 	__montgomery_init(params.p);
     Point p, q;
 	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D");
@@ -52,7 +54,8 @@ TEST(create_point_uint64, create_point_uint64)
 	bigint_create_buffer();
 
 	EllipticCurveParameter params;
-	ec_generate_parameter(&params, SECP192K1);
+	char precompute = 0;
+	ec_generate_parameter(&params, SECP192K1, precompute);
 	__montgomery_init(params.p);
     Point p, q;
 	BigInt x = bigint_from_uint64(BI_TESTS_X_TAG, 2);
@@ -72,7 +75,8 @@ TEST(point_is_on_curve, point_inf)
 	bigint_create_buffer();
 
     EllipticCurveParameter params;
-    ec_generate_parameter(&params, SECP192K1);
+    char precompute = 0;
+    ec_generate_parameter(&params, SECP192K1, precompute);
     __montgomery_init(params.p);
 
     Point p;
@@ -90,7 +94,8 @@ TEST(point_is_on_curve, point_on_curve_SECP192K1)
 	bigint_create_buffer();
 
     EllipticCurveParameter params;
-    ec_generate_parameter(&params, SECP192K1);
+    char precompute = 0;
+    ec_generate_parameter(&params, SECP192K1, precompute);
     __montgomery_init(params.p);
 
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
@@ -104,7 +109,8 @@ TEST(point_is_on_curve, point_on_curve_SECP224R1)
 	bigint_create_buffer();
 
     EllipticCurveParameter params;
-    ec_generate_parameter(&params, SECP224R1);
+    char precompute = 0;
+    ec_generate_parameter(&params, SECP192K1, precompute);
     __montgomery_init(params.p);
 
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
@@ -117,7 +123,8 @@ TEST(point_is_on_curve, point_on_curve_SECP256K1)
 	bigint_create_buffer();
 
     EllipticCurveParameter params;
-    ec_generate_parameter(&params, SECP256K1);
+    char precompute = 0;
+    ec_generate_parameter(&params, SECP192K1, precompute);
     __montgomery_init(params.p);
 
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
@@ -130,7 +137,8 @@ TEST(point_is_on_curve, point_on_curve_SECP384R1)
 	bigint_create_buffer();
 
     EllipticCurveParameter params;
-    ec_generate_parameter(&params, SECP384R1);
+    char precompute = 0;
+    ec_generate_parameter(&params, SECP192K1, precompute);
     __montgomery_init(params.p);
 
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
@@ -143,7 +151,8 @@ TEST(point_is_on_curve, point_on_curve_SECP521R1)
 	bigint_create_buffer();
 
     EllipticCurveParameter params;
-    ec_generate_parameter(&params, SECP521R1);
+    char precompute = 0;
+    ec_generate_parameter(&params, SECP192K1, precompute);
     __montgomery_init(params.p);
 
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
@@ -157,7 +166,8 @@ TEST(point_is_on_curve, point_not_on_curve)
 	bigint_create_buffer();
 
 	EllipticCurveParameter params;
-	ec_generate_parameter(&params, SECP521R1);
+	char precompute = 0;
+	ec_generate_parameter(&params, SECP192K1, precompute);
 	__montgomery_init(params.p);
 
     Point q;
@@ -181,7 +191,8 @@ TEST(copy_point, copy_point)
 	bigint_create_buffer();
 
 	EllipticCurveParameter params;
-	ec_generate_parameter(&params, SECP192K1);
+	char precompute = 0;
+	ec_generate_parameter(&params, SECP192K1, precompute);
     Point p, q;
     create_point(&p,
         bigint_from_hex_string(BI_TESTS_PX_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D"),
@@ -209,7 +220,8 @@ TEST(point_are_equal, different_x_coordinate)
 	bigint_create_buffer();
  
 	EllipticCurveParameter params;
-	ec_generate_parameter(&params, SECP192K1);
+	char precompute = 0;
+	ec_generate_parameter(&params, SECP192K1, precompute);
 	Point p, q;
 	BigInt x1 = bigint_from_hex_string(BI_TESTS_X1_TAG, "FFCC");
 	BigInt x2 = bigint_from_hex_string(BI_TESTS_X2_TAG, "FFCCDDDDDDD");
@@ -228,7 +240,8 @@ TEST(point_are_equal, different_y_coordinate)
 {
 	bigint_create_buffer();
 	EllipticCurveParameter params;
-	ec_generate_parameter(&params, SECP192K1);
+	char precompute = 0;
+	ec_generate_parameter(&params, SECP192K1, precompute);
     Point p, q;
     BigInt x = bigint_from_hex_string(BI_TESTS_X1_TAG, "FFCC");
 	BigInt y1 = bigint_from_hex_string(BI_TESTS_X2_TAG, "FFCCDDDDDDD");
@@ -246,7 +259,8 @@ TEST(point_are_equal, different_z_coordinate)
 {
 	bigint_create_buffer();
 	EllipticCurveParameter params;
-	ec_generate_parameter(&params, SECP192K1);
+	char precompute = 0;
+	ec_generate_parameter(&params, SECP192K1, precompute);
     Point p, q;
     BigInt x = bigint_from_hex_string(BI_TESTS_X1_TAG, "FFCC");
 	BigInt y = bigint_from_hex_string(BI_TESTS_X2_TAG, "FFCCDDDDDDD");
@@ -266,7 +280,8 @@ TEST(point_are_equal, inf)
 	bigint_create_buffer();
 
 	EllipticCurveParameter params;
-	ec_generate_parameter(&params, SECP192K1);
+	char precompute = 0;
+	ec_generate_parameter(&params, SECP192K1, precompute);
     Point p, q;
 	BigInt x = bigint_from_hex_string(BI_TESTS_X_TAG, "FFCC");
 	BigInt y = bigint_from_hex_string(BI_TESTS_Y_TAG, "FFCCDDDDDDD");
@@ -287,7 +302,8 @@ TEST(precompute_points, precompute_points_SECP384R1)
 	bigint_create_buffer();
 
 	EllipticCurveParameter params;
-	ec_generate_parameter(&params, SECP384R1);
+	char precompute = 0;
+	ec_generate_parameter(&params, SECP384R1, precompute);
 	__montgomery_init(params.p);
 
 	Point P, expected;
@@ -313,7 +329,8 @@ TEST(precompute_points, precompute_points_SECP521R1)
 	bigint_create_buffer();
 
 	EllipticCurveParameter params;
-	ec_generate_parameter(&params, SECP521R1);
+	char precompute = 0;
+	ec_generate_parameter(&params, SECP521R1, precompute);
 	__montgomery_init(params.p);
 
 	Point P, expected;
