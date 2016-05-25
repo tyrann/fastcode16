@@ -19,6 +19,7 @@
 #include <assert.h>
 #define WORDSIZE 64
 #define B 2
+#define PRINT_AVX(result)   double* f = (double*)&result; printf("%lf %lf %lf %lf \n", f[0], f[1], f[2], f[3]);
 
 uint64_t global_opcount = 0;
 uint64_t global_index_count = 0;
@@ -245,30 +246,19 @@ void bigint_right_shift_inplace(BigInt a)
 void bigint_right_shift_inplace_64(BigInt a)
 {
     BIGINT_ASSERT_VALID(a);
-
-    for (uint64_t i = 0; i < a->significant_blocks; i++)
+	
+	/*Version 1*/
+    for (uint64_t i = 0; i <= a->significant_blocks; i+=4)
     {
-        a->blocks[i] = a->blocks[i+1];
-		__COUNT_INDEX(&global_index_count, 2);
-    }
-	a->blocks[a->significant_blocks-1] = 0U;
-	__COUNT_INDEX(&global_opcount, 1);
+		__m256i l0 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i));
+		__m256i l1 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i + 4));
+		PRINT_AVX(l0);
+		__m256i perm128 = _mm256_permute2f128_si256(l0,l1, 0x21);
+		__m256d ret = _mm256_shuffle_pd(_mm256_castsi256_pd(perm128), _mm256_castsi256_pd(l1), 0x5);
 
-	if(a->significant_blocks > 1)
-	{
-		a->significant_blocks--;
-		__COUNT_INDEX(&global_opcount, 1);
+		_mm256_store_pd((double *)a->blocks + i, ret); 
 	}
 }
-
-void bigint_right_shift_inplace_avx2(BigInt a, uint8_t x)
-{
-	int bits = x;	
-	__m256d t0 = _mm256_load_pd(a->blocks[0]);
-	__m256i t1 =  _mm256_srli_epi64 (t0, bits);
-
-}
-
 
 void bigint_modulo_inplace(BigInt a, const BigInt mod)
 {
