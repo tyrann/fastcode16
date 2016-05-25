@@ -102,28 +102,29 @@ void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p)
 
 void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 {
-	BigInt x_mont = GET_BIGINT_PTR(BI_MONTGOMERYMUL_XMONT_TAG);
-	BigInt y_mont = GET_BIGINT_PTR(BI_MONTGOMERYMUL_YMONT_TAG);
+	assert(p_prime != 0);
+	BigInt x_inital = GET_BIGINT_PTR(BI_MONTGOMERYMUL_X_INITAL_TAG);
+	BigInt y_inital = GET_BIGINT_PTR(BI_MONTGOMERYMUL_Y_INITAL_TAG);
 
-	bigint_copy(x_mont, x);
-	bigint_copy(y_mont, y);
+	bigint_copy(x_inital, x);
+	bigint_copy(y_inital, y);
 
-	/*Set res to 0*/
+	//Set res to 0
 	bigint_copy(res, bigint_zero);
 
 	uint64_t u, a_0, y_0, x_i;
 	unsigned __int128 tmp;
-	y_0 = y->blocks[0];
+	y_0 = y_inital->blocks[0];
 	BigInt tmp1 = GET_BIGINT_PTR(BI_MONTGOMERY_MUL_TMP1_TAG);
 	BigInt tmp2 = GET_BIGINT_PTR(BI_MONTGOMERY_MUL_TMP2_TAG);
 	for (unsigned int i = 0; i < p->significant_blocks; ++i)
 	{
 		a_0 = res->blocks[0];
-		x_i = x->blocks[i];
+		x_i = x_inital->blocks[i];
 		tmp = (a_0 + ((unsigned __int128)x_i * (unsigned __int128)y_0)) * p_prime;
 		__COUNT_OP(&global_opcount,3);
 		u = tmp;
-		bigint_copy(tmp1, y);
+		bigint_copy(tmp1, y_inital);
 		bigint_multiply_inplace(tmp1, x_i);
 		bigint_copy(tmp2, p);
 		bigint_multiply_inplace(tmp2, u);
@@ -340,6 +341,28 @@ void bigint_sub_inplace(BigInt a, const BigInt b)
 	{
 		if (a->blocks[a->significant_blocks-1] != 0) break;
 		__COUNT_OP(&global_opcount, 3);
+	}
+}
+
+void bigint_add_inplace_mod(BigInt a, const BigInt b, const BigInt p)
+{
+	bigint_add_inplace(a, b);
+	bigint_modulo_inplace(a, p);
+}
+
+void bigint_sub_inplace_mod(BigInt a, const BigInt b, const BigInt p)
+{
+	if(bigint_is_greater(a,b))
+	{
+		bigint_sub_inplace(a, b);
+	}
+	else
+	{
+		BigInt inverse = GET_BIGINT_PTR(BI_BIGINT_SUB_INPLACE_MOD_INVERSE_TAG);
+		bigint_copy(inverse, p);
+		bigint_sub_inplace(inverse, b);
+		bigint_add_inplace(a, inverse);
+		bigint_modulo_inplace(a, p);
 	}
 }
 

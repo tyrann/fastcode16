@@ -164,6 +164,45 @@ TEST(ec_point_add_inplace, large_number)
 }
 
 
+TEST(ec_point_double_inplace, once_SECP192K1)
+{
+    bigint_create_buffer();
+
+    EllipticCurveParameter params;
+    char precompute = 0;
+    ec_generate_parameter(&params, SECP192K1, precompute);
+    Point a, expected;
+    __montgomery_init(params.p);
+
+    create_point_from_hex(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, BI_TESTS_AZ_TAG, "3cd61e370d02ca0687c0b5f7ebf6d0373f4dd0ccccb7cc2d", "2c4befd9b02f301eb4014504f0533aa7eb19e9ea56441f78", params.p);
+    create_point_from_hex(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, BI_TESTS_EXPECTEDZ_TAG, "598955b973468f82ee734058feef3378740882410fa69ec1", "376625e46eea0c9171b92a2e52410c37b93f15c18e4d8a9", params.p);
+    ec_point_double_inplace(&a, &params);
+    point_convert_to_affine_coordinates(&a, &params);
+    ASSERT_TRUE(point_are_equal(&a, &expected));
+
+    bigint_destroy_buffer();
+}
+
+TEST(ec_point_double_inplace, twice_SECP192K1)
+{
+    bigint_create_buffer();
+
+    EllipticCurveParameter params;
+    char precompute = 0;
+    ec_generate_parameter(&params, SECP192K1, precompute);
+    Point a, expected;
+    __montgomery_init(params.p);
+
+    create_point_from_hex(&a, BI_TESTS_AX_TAG, BI_TESTS_AY_TAG, BI_TESTS_AZ_TAG, "3cd61e370d02ca0687c0b5f7ebf6d0373f4dd0ccccb7cc2d", "2c4befd9b02f301eb4014504f0533aa7eb19e9ea56441f78", params.p);
+    create_point_from_hex(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, BI_TESTS_EXPECTEDZ_TAG, "9c98bfeee470b7095592668d77665b4c0b71ad5d4b7d7fe9", "b7b807acf5c1f753796a1982eca001c8772bc43c9987bf45", params.p);
+    ec_point_double_inplace(&a, &params);
+    ec_point_double_inplace(&a, &params);
+    point_convert_to_affine_coordinates(&a, &params);
+    ASSERT_TRUE(point_are_equal(&a, &expected));
+
+    bigint_destroy_buffer();
+}
+
 TEST(ec_point_mul, zero_times_point)
 {
     bigint_create_buffer();
@@ -256,7 +295,7 @@ TEST(ec_point_mul, ultimate_test)
     bigint_destroy_buffer();
 }
 
-TEST(ec_point_mul, ultimate_test_2)
+TEST(ec_point_mul, ultimate_test_SECP384R1)
 {
     bigint_create_buffer();
     
@@ -281,7 +320,32 @@ TEST(ec_point_mul, ultimate_test_2)
     bigint_destroy_buffer();
 }
 
-TEST(ec_point_mul_generator, ultimate_test_2)
+TEST(ec_point_mul, DISABLED_ultimate_test_SECP521R1)
+{
+    bigint_create_buffer();
+
+    EllipticCurveParameter params;
+    char precompute = 0;
+    ec_generate_parameter(&params, SECP521R1, precompute);
+    __montgomery_init(params.p);
+
+    Point P, result, expected;
+    BigInt d = GET_BIGINT_PTR(BI_TESTS_D_TAG);
+    create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, BI_TESTS_PZ_TAG, 0, 0, params.p);
+
+    point_copy(&P, &params.generator);
+    bigint_copy(d, params.n);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, BI_TESTS_EXPECTEDZ_TAG, 0, 0, params.p);
+    create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, BI_TESTS_RESULTZ_TAG, 0, 0, params.p);
+    expected.is_at_infinity = 1;
+    ec_point_mul(&result, d, &P, &params);
+
+    ASSERT_TRUE(point_are_equal(&result, &expected));
+
+    bigint_destroy_buffer();
+}
+
+TEST(ec_point_mul_generator, ultimate_test_SECP384R1)
 {
     bigint_create_buffer();
 

@@ -17,6 +17,8 @@ void point_revert_from_montgomery_space(Point* Q, const BigInt p);
 
 char point_is_on_curve(const Point* p, const EllipticCurveParameter *params);
 
+void point_convert_to_affine_coordinates(Point* p, const EllipticCurveParameter *params);
+
 void point_copy(Point* dest, Point const *source);
 
 int point_are_equal(const Point *x, const Point *y);

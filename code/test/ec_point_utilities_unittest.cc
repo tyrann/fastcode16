@@ -324,7 +324,7 @@ TEST(precompute_points, precompute_points_SECP384R1)
 
 }
 
-TEST(precompute_points, precompute_points_SECP521R1)
+TEST(precompute_points, DISABLED_precompute_points_SECP521R1)
 {
 	bigint_create_buffer();
 

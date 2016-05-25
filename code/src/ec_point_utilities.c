@@ -102,6 +102,18 @@ char point_is_on_curve(const Point* p, const EllipticCurveParameter *params)
     return result;
 }
 
+void point_convert_to_affine_coordinates(Point* p, const EllipticCurveParameter *params)
+{
+	BigInt tmp = GET_BIGINT_PTR(BI_CONVERT_TO_AFFINE_COORDINATES_TMP_TAG);
+	montgomery_mul(tmp, p->z, p->z, params->p);
+	bigint_divide(p->x, p->x, tmp, params->p);
+	__montgomery_convert(p->x, p->x, params->p);
+	montgomery_mul(tmp, tmp, p->z, params->p);
+	bigint_divide(p->y, p->y, tmp, params->p);
+	__montgomery_convert(p->y, p->y, params->p);
+	__montgomery_convert(p->z, bigint_one, params->p);
+}
+
 void point_copy(Point* dest, const Point *source)
 {
     bigint_copy(dest->x, source->x);

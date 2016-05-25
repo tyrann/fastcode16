@@ -9,6 +9,7 @@ extern uint64_t global_index_count;
 
 void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter *params)
 {	
+	//print_point(a, params->p);
     assert(point_is_on_curve(a, params));
     assert(point_is_on_curve(b, params));
 	
@@ -148,6 +149,69 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		assert("ec_point_add - this code should not be reached");
     }
 }
+
+void ec_point_double_inplace(Point *a, const EllipticCurveParameter *params)
+{
+	BigInt lambda1 = GET_BIGINT_PTR(BI_EC_POINT_DOUBLE_INPLACE_LAMBDA1_TAG);
+	BigInt lambda2 = GET_BIGINT_PTR(BI_EC_POINT_DOUBLE_INPLACE_LAMBDA2_TAG);
+	BigInt lambda3 = GET_BIGINT_PTR(BI_EC_POINT_DOUBLE_INPLACE_LAMBDA3_TAG);
+	BigInt x_1 = GET_BIGINT_PTR(BI_EC_POINT_DOUBLE_INPLACE_X1_TAG);
+	BigInt y_1 = GET_BIGINT_PTR(BI_EC_POINT_DOUBLE_INPLACE_Y1_TAG);
+	BigInt z_1 = GET_BIGINT_PTR(BI_EC_POINT_DOUBLE_INPLACE_Z1_TAG);
+
+	bigint_copy(x_1, a->x);
+	bigint_copy(y_1, a->y);
+	bigint_copy(z_1, a->z);
+	bigint_copy(lambda2, a->x);
+
+	// calculate lambda1
+	montgomery_mul(x_1, x_1, x_1, params->p);
+	bigint_copy(a->x, x_1);
+	bigint_left_shift_inplace(x_1);
+	bigint_modulo_inplace(x_1, params->p);
+	bigint_add_inplace_mod(x_1, a->x, params->p);
+
+	bigint_copy(lambda1, z_1);
+	montgomery_mul(lambda1, lambda1, lambda1, params->p);
+	montgomery_mul(lambda1, lambda1, lambda1, params->p);
+	montgomery_mul(lambda1, lambda1, params->a, params->p);
+	bigint_add_inplace_mod(lambda1, x_1, params->p);
+
+	montgomery_mul(a->z, y_1, z_1, params->p);
+	bigint_left_shift_inplace(a->z);
+	bigint_modulo_inplace(a->z, params->p);
+
+	// calculate lambda 2
+	//4*x-1
+	bigint_left_shift_inplace(lambda2);
+	bigint_modulo_inplace(lambda2, params->p);
+	bigint_left_shift_inplace(lambda2);
+	bigint_modulo_inplace(lambda2, params->p);
+	montgomery_mul(y_1, y_1, y_1, params->p);
+	montgomery_mul(lambda2, lambda2, y_1, params->p);
+
+	// calculate x_3
+	montgomery_mul(a->x, lambda1, lambda1, params->p);
+	bigint_copy(a->y, lambda2);
+	bigint_left_shift_inplace(a->y);
+	bigint_modulo_inplace(a->y, params->p);
+	bigint_sub_inplace_mod(a->x, a->y, params->p);
+
+	// calculate lambda3
+	montgomery_mul(y_1, y_1, y_1, params->p);
+	bigint_copy(lambda3, y_1);
+	bigint_left_shift_inplace(lambda3);
+	bigint_modulo_inplace(lambda3, params->p);
+	bigint_left_shift_inplace(lambda3);
+	bigint_modulo_inplace(lambda3, params->p);
+	bigint_left_shift_inplace(lambda3);
+	bigint_modulo_inplace(lambda3, params->p);
+	bigint_copy(a->y, lambda2);
+	bigint_sub_inplace_mod(a->y, a->x, params->p);
+	montgomery_mul(a->y, a->y, lambda1, params->p);
+	bigint_sub_inplace_mod(a->y, lambda3, params->p);
+}
+
 
 void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticCurveParameter *params)
 {
