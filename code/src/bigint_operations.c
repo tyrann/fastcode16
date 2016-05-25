@@ -19,7 +19,14 @@
 #include <assert.h>
 #define WORDSIZE 64
 #define B 2
-#define PRINT_AVX(result)   double* f = (double*)&result; printf("%lf %lf %lf %lf \n", f[0], f[1], f[2], f[3]);
+#define PRINT_SIMD 0
+#if PRINT_SIMD == 1
+	#define PRINT_AVX_U64(f)	printf("%llu %llu %llu %llu \n", f[0], f[1], f[2], f[3]);
+	#define PRINT_AVX_D(f)   	printf("%lf %lf %lf %lf \n", f[0], f[1], f[2], f[3]);
+#elif PRIN_SIMD == 0
+	#define PRINT_AVX_U64(f)	
+	#define PRINT_AVX_D(f)   	
+#endif
 
 uint64_t global_opcount = 0;
 uint64_t global_index_count = 0;
@@ -252,11 +259,19 @@ void bigint_right_shift_inplace_64(BigInt a)
     {
 		__m256i l0 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i));
 		__m256i l1 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i + 4));
-		PRINT_AVX(l0);
 		__m256i perm128 = _mm256_permute2f128_si256(l0,l1, 0x21);
-		__m256d ret = _mm256_shuffle_pd(_mm256_castsi256_pd(perm128), _mm256_castsi256_pd(l1), 0x5);
-
+		__m256d ret = _mm256_shuffle_pd(_mm256_castsi256_pd(l0), _mm256_castsi256_pd(perm128), 0x15);
+		//PRINT_AVX_U64((long long int *)&ret);
 		_mm256_store_pd((double *)a->blocks + i, ret); 
+	}
+
+	/*Version 2*/
+
+
+
+	if(a->significant_blocks > 1)
+	{
+		a->significant_blocks--;
 	}
 }
 

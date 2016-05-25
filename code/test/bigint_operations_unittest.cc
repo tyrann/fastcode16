@@ -881,8 +881,8 @@ TEST(bigint_right_shift_inplace_64, bigint_right_shift_inplace_64_1)
 {
     bigint_create_buffer();
 
-    BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10000000000000000");
-	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "1");
+    BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "000000000000000070000000000000006000000000000000500000000000000040000000000000003000000000000000200000000000000010000000000000000");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "00000000000000007000000000000000600000000000000050000000000000004000000000000000300000000000000020000000000000001");
 	bigint_right_shift_inplace_64(a);
     ASSERT_TRUE(bigint_are_equal(a, expected));
 
