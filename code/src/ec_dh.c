@@ -9,6 +9,7 @@ void ec_create_ECDH(ECDH *ecdh, EllipticCurveParameter *parameters, Point *pub_k
     ecdh->sharedInfo = sharedInfo;
 	ecdh->pub_key.x = pub_key->x;
 	ecdh->pub_key.y = pub_key->y;
+	ecdh->pub_key.z = pub_key->z;
 	ecdh->pub_key.is_at_infinity = pub_key->is_at_infinity;
 }
 
@@ -27,6 +28,7 @@ int ecdh_compute_shared_secret(BigInt shared_info, BigInt private_key, const Poi
 	Point shared_point;
 	shared_point.x = shared_info;
 	shared_point.y = GET_BIGINT_PTR(BI_ECDH_SHAREDSECRETY_TAG);
+	shared_point.z = GET_BIGINT_PTR(BI_ECDH_SHAREDSECRETZ_TAG);
 	
 	// Compute the elliptic curve point P = (xP , yP ) = priv_keyU*pub_keyV
 	__montgomery_init(parameters->p);

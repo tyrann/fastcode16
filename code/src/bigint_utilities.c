@@ -102,3 +102,10 @@ int bigint_is_even(const BigInt a)
     }
     return 1;
 }
+
+void bigint_print(BigInt val)
+{
+	char *val_str = bigint_to_hex_string(val);
+	printf("%s\n", val_str);
+	free(val_str);
+}

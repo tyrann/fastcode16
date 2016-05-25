@@ -18,7 +18,8 @@ TEST(ec_create_parameters, ec_create_parameters)
 	BigInt h = bigint_from_hex_string(BI_PARAMS_H_TAG, "5555");
 	BigInt x = bigint_from_hex_string(BI_PARAMS_GX_TAG, "6666");
 	BigInt y = bigint_from_hex_string(BI_PARAMS_GY_TAG, "7777");
-    create_point(&g, x, y, p);
+	BigInt z = bigint_from_hex_string(BI_PARAMS_GZ_TAG, "8888");
+    create_point(&g, x, y, z, p);
 
     ec_create_parameters(&parameter, p, a, b, &g, n, h);
 
@@ -45,7 +46,8 @@ TEST(ec_generate_parameter, SECP192K1)
 	BigInt h = bigint_from_hex_string(BI_PARAMS_H_TAG, "01");
 	BigInt x = bigint_from_hex_string(BI_PARAMS_GX_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D");
 	BigInt y = bigint_from_hex_string(BI_PARAMS_GY_TAG, "9B2F2F6D9C5628A7844163D015BE86344082AA88D95E2F9D");
-	create_point(&g, x, y, p);
+	BigInt z = bigint_from_hex_string(BI_PARAMS_GZ_TAG, "1");
+	create_point(&g, x, y, z, p);
 
 	ec_create_parameters(&parameter, p, a, b, &g, n, h);
 
@@ -72,7 +74,8 @@ TEST(ec_generate_parameter, SECP224R1)
 	BigInt h = bigint_from_hex_string(BI_PARAMS_H_TAG, "01");
 	BigInt x = bigint_from_hex_string(BI_PARAMS_GX_TAG, "B70E0CBD6BB4BF7F321390B94A03C1D356C21122343280D6115C1D21");
 	BigInt y = bigint_from_hex_string(BI_PARAMS_GY_TAG, "BD376388B5F723FB4C22DFE6CD4375A05A07476444D5819985007E34");
-	create_point(&g, x, y, p);
+	BigInt z = bigint_from_hex_string(BI_PARAMS_GZ_TAG, "1");
+	create_point(&g, x, y, z, p);
 
 	ec_create_parameters(&parameter, p, a, b, &g, n, h);
 
@@ -99,7 +102,8 @@ TEST(ec_generate_parameter, SECP256K1)
 	BigInt h = bigint_from_hex_string(BI_PARAMS_H_TAG, "01");
 	BigInt x = bigint_from_hex_string(BI_PARAMS_GX_TAG, "79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798");
 	BigInt y = bigint_from_hex_string(BI_PARAMS_GY_TAG, "483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8");
-	create_point(&g, x, y, p);
+	BigInt z = bigint_from_hex_string(BI_PARAMS_GZ_TAG, "1");
+	create_point(&g, x, y, z, p);
 
 	ec_create_parameters(&parameter, p, a, b, &g, n, h);
 
@@ -127,7 +131,8 @@ TEST(ec_generate_parameter, SECP384R1)
 	BigInt h = bigint_from_hex_string(BI_PARAMS_H_TAG, "01");
 	BigInt x = bigint_from_hex_string(BI_PARAMS_GX_TAG, "AA87CA22BE8B05378EB1C71EF320AD746E1D3B628BA79B9859F741E082542A385502F25DBF55296C3A545E3872760AB7");
 	BigInt y = bigint_from_hex_string(BI_PARAMS_GY_TAG, "3617DE4A96262C6F5D9E98BF9292DC29F8F41DBD289A147CE9DA3113B5F0B8C00A60B1CE1D7E819D7A431D7C90EA0E5F");
-	create_point(&g, x, y, p);
+	BigInt z = bigint_from_hex_string(BI_PARAMS_GZ_TAG, "1");
+	create_point(&g, x, y, z, p);
 
 	ec_create_parameters(&parameter, p, a, b, &g, n, h);
 
@@ -154,7 +159,8 @@ TEST(ec_generate_parameter, SECP521R1)
 	BigInt h = bigint_from_hex_string(BI_PARAMS_H_TAG, "01");
 	BigInt x = bigint_from_hex_string(BI_PARAMS_GX_TAG, "00C6858E06B70404E9CD9E3ECB662395B4429C648139053FB521F828AF606B4D3DBAA14B5E77EFE75928FE1DC127A2FFA8DE3348B3C1856A429BF97E7E31C2E5BD66");
 	BigInt y = bigint_from_hex_string(BI_PARAMS_GY_TAG, "011839296A789A3BC0045C8A5FB42C7D1BD998F54449579B446817AFBD17273E662C97EE72995EF42640C550B9013FAD0761353C7086A272C24088BE94769FD16650");
-	create_point(&g, x, y, p);
+	BigInt z = bigint_from_hex_string(BI_PARAMS_GZ_TAG, "1");
+	create_point(&g, x, y, z, p);
 
 	ec_create_parameters(&parameter, p, a, b, &g, n, h);
 

@@ -10,34 +10,38 @@ extern block* __bigint__precomputation_buffer;
 
 void point_convert_to_montgomery_space(Point* Q, const BigInt p);
 
-void create_point(Point* p, const BigInt a, const BigInt b, const BigInt prime)
+void create_point(Point* p, const BigInt a, const BigInt b, const BigInt c, const BigInt prime)
 {
     p->x = a;
     p->y = b;
+    p->z = c;
     p->is_at_infinity = 0;
     point_convert_to_montgomery_space(p, prime);
 }
 
-void create_point_no_conversion(Point* p, const BigInt a, const BigInt b)
+void create_point_no_conversion(Point* p, const BigInt a, const BigInt b, const BigInt c)
 {
     p->x = a;
     p->y = b;
+    p->z = c;
     p->is_at_infinity = 0;
 }
 
-void create_point_from_hex(Point* p, uint32_t tag_x, uint32_t tag_y, const char *x, const char *y, const BigInt prime)
+void create_point_from_hex(Point* p, uint32_t tag_x, uint32_t tag_y, uint32_t tag_z, const char *x, const char *y, const BigInt prime)
 {
     create_point(p,
         bigint_from_hex_string(tag_x, x),
         bigint_from_hex_string(tag_y, y),
+        bigint_from_hex_string(tag_z, "1"),
         prime);
 }
 
-void create_point_from_uint64(Point* p, uint32_t tag_x, uint32_t tag_y, uint64_t x, uint64_t y, const BigInt prime)
+void create_point_from_uint64(Point* p, uint32_t tag_x, uint32_t tag_y, uint32_t tag_z, uint64_t x, uint64_t y, const BigInt prime)
 {
     create_point(p,
         bigint_from_uint64(tag_x, x),
         bigint_from_uint64(tag_y, y),
+        bigint_from_uint64(tag_z, 1),
         prime);
 }
 
@@ -45,20 +49,26 @@ void point_convert_to_montgomery_space(Point* Q, const BigInt p)
 {
 	BigInt x = GET_BIGINT_PTR(BI_POINT_CONVERT_TO_MONTGOMERY_SPACE_X_TAG);
 	BigInt y = GET_BIGINT_PTR(BI_POINT_CONVERT_TO_MONTGOMERY_SPACE_Y_TAG);
+	BigInt z = GET_BIGINT_PTR(BI_POINT_CONVERT_TO_MONTGOMERY_SPACE_Z_TAG);
 	bigint_copy(x, Q->x);
 	bigint_copy(y, Q->y);
+	bigint_copy(z, Q->z);
 	__montgomery_convert(Q->x, x, p);
 	__montgomery_convert(Q->y, y, p);
+	__montgomery_convert(Q->z, z, p);
 }
 
 void point_revert_from_montgomery_space(Point* Q, const BigInt p)
 {
 	BigInt x = GET_BIGINT_PTR(BI_POINT_REVERT_FROM_MONTGOMERY_SPACE_X_TAG);
 	BigInt y = GET_BIGINT_PTR(BI_POINT_REVERT_FROM_MONTGOMERY_SPACE_Y_TAG);
+	BigInt z = GET_BIGINT_PTR(BI_POINT_REVERT_FROM_MONTGOMERY_SPACE_Z_TAG);
 	bigint_copy(x, Q->x);
 	bigint_copy(y, Q->y);
+	bigint_copy(z, Q->z);
 	__montgomery_revert(Q->x, x, p);
 	__montgomery_revert(Q->y, y, p);
+	__montgomery_revert(Q->z, z, p);
 }
 
 char point_is_on_curve(const Point* p, const EllipticCurveParameter *params)
@@ -76,17 +86,18 @@ char point_is_on_curve(const Point* p, const EllipticCurveParameter *params)
         BigInt a_x = GET_BIGINT_PTR(BI_POINTISONCURVE_AX_TAG);
         
         montgomery_mul(x_squared, p->x, p->x, params->p);
-	    montgomery_mul(x_result, x_squared, p->x, params->p);
-	    montgomery_mul(a_x, params->a, p->x, params->p);
+		montgomery_mul(x_result, x_squared, p->x, params->p);
+		montgomery_mul(a_x, params->a, p->x, params->p);
 
-	    bigint_add_inplace(x_result, a_x);
-	    bigint_add_inplace(x_result, params->b);
-	    bigint_modulo_inplace(x_result, params->p);
+		bigint_add_inplace(x_result, a_x);
+		bigint_add_inplace(x_result, params->b);
+		bigint_modulo_inplace(x_result, params->p);
 
-	    montgomery_mul(y_result, p->y, p->y, params->p);
-	    bigint_modulo_inplace(y_result, params->p);
+		montgomery_mul(y_result, p->y, p->y, params->p);
+		bigint_modulo_inplace(y_result, params->p);
 
-	    result = bigint_are_equal(x_result, y_result);
+		result = bigint_are_equal(x_result, y_result);
+
     }
     return result;
 }
@@ -95,6 +106,7 @@ void point_copy(Point* dest, const Point *source)
 {
     bigint_copy(dest->x, source->x);
     bigint_copy(dest->y, source->y);
+    bigint_copy(dest->z, source->z);
     dest->is_at_infinity = source->is_at_infinity;
 }
 
@@ -106,7 +118,7 @@ int point_are_equal(const Point *p, const Point *q)
 		{
             return 1;
 		}
-        else if(!bigint_are_equal(p->x, q->x) || !bigint_are_equal(p->y, q->y))
+        else if(!bigint_are_equal(p->x, q->x) || !bigint_are_equal(p->y, q->y) || !bigint_are_equal(p->z, q->z))
 		{ 
 			__COUNT_OP(&global_opcount,1);
             return 0;
@@ -125,17 +137,18 @@ int point_are_equal(const Point *p, const Point *q)
 void precompute_points(EllipticCurveParameter *parameter)
 {
 	assert(__bigint__precomputation_buffer != 0);
-	BigInt x, y;
+	BigInt x, y, z;
 	Point tmp;
 	Point tmp2;
-	create_point_from_uint64(&tmp, BI_PRECOMPUTE_POINTS_TMP_X_TAG, BI_PRECOMPUTE_POINTS_TMP_Y_TAG, 0, 0, parameter->p);
+	create_point_from_uint64(&tmp, BI_PRECOMPUTE_POINTS_TMP_X_TAG, BI_PRECOMPUTE_POINTS_TMP_Y_TAG, BI_PRECOMPUTE_POINTS_TMP_Z_TAG, 0, 0, parameter->p);
 	point_copy(&tmp, &(parameter->generator));
 	for(unsigned int i = 0; i < parameter->p->significant_blocks * 64; i++)
 	{
 		Point G;
-		x = get_precomputed_bigint(2*i);
-		y = get_precomputed_bigint(2*i+1);
-		create_point_no_conversion(&G, x, y);
+		x = get_precomputed_bigint(3*i);
+		y = get_precomputed_bigint(3*i+1);
+		z = get_precomputed_bigint(3*i+2);
+		create_point_no_conversion(&G, x, y, z);
 		point_copy(&G, &tmp);
 		ec_point_add_inplace(&tmp, &tmp, parameter);
 		get_precomputed_point(&tmp2, 0);
@@ -145,21 +158,24 @@ void precompute_points(EllipticCurveParameter *parameter)
 // Stores 2^i*G in P
 void get_precomputed_point(Point *P, int i)
 {
-	BigInt x = get_precomputed_bigint(2*i);
-	BigInt y = get_precomputed_bigint(2*i + 1);
-	create_point_no_conversion(P, x, y);
+	BigInt x = get_precomputed_bigint(3*i);
+	BigInt y = get_precomputed_bigint(3*i + 1);
+	BigInt z = get_precomputed_bigint(3*i + 2);
+	create_point_no_conversion(P, x, y, z);
 }
 
 void print_point(const Point *P, const BigInt prime)
 {
 	Point Q;
-	create_point_from_uint64(&Q, BI_PRINT_POINT_X_TAG, BI_PRINT_POINT_Y_TAG, 0, 0, prime);
+	create_point_from_uint64(&Q, BI_PRINT_POINT_X_TAG, BI_PRINT_POINT_Y_TAG, BI_PRINT_POINT_Z_TAG, 0, 0, prime);
 	point_copy(&Q, P);
 	point_revert_from_montgomery_space(&Q, prime);
 	char *x_str = bigint_to_hex_string(Q.x);
 	char *y_str = bigint_to_hex_string(Q.y);
-	printf("(%s,%s)\n", x_str, y_str);
+	char *z_str = bigint_to_hex_string(Q.z);
+	printf("(%s,%s,%s)\n", x_str, y_str, z_str);
 	free(x_str);
 	free(y_str);
+	free(z_str);
 }
 

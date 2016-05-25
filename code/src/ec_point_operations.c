@@ -153,7 +153,7 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
 {
 	Point p2;
 
-	create_point_from_uint64(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG, 0, 0, params->p);
+	create_point_from_uint64(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG,  BI_POINTMUL_P2Z_TAG, 0, 0, params->p);
 	bigint_copy(result->x, bigint_zero);
 	bigint_copy(result->y, bigint_zero);
 	result->is_at_infinity = 1;
@@ -183,7 +183,7 @@ void ec_point_mul_generator(Point *result, const BigInt d, const EllipticCurvePa
 	assert(__bigint__precomputation_buffer != 0);
 	Point p2;
 
-	create_point_from_uint64(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG, 0, 0, params->p);
+	create_point_from_uint64(&p2, BI_POINTMUL_P2X_TAG, BI_POINTMUL_P2Y_TAG,  BI_POINTMUL_P2Z_TAG, 0, 0, params->p);
 	bigint_copy(result->x, bigint_zero);
 	bigint_copy(result->y, bigint_zero);
 	result->is_at_infinity = 1;
@@ -196,9 +196,10 @@ void ec_point_mul_generator(Point *result, const BigInt d, const EllipticCurvePa
 			__COUNT_OP(&global_opcount,2);
 	    	if(d->blocks[i] & (((uint64_t)1) << j))
 	    	{
-	    		BigInt x = get_precomputed_bigint(2*(i*64 + j));
-	    		BigInt y = get_precomputed_bigint(2*(i*64 + j) + 1);
-	    		create_point_no_conversion(&p2, x, y);
+	    		BigInt x = get_precomputed_bigint(3*(i*64 + j));
+	    		BigInt y = get_precomputed_bigint(3*(i*64 + j) + 1);
+	    		BigInt z = get_precomputed_bigint(3*(i*64 + j) + 2);
+	    		create_point_no_conversion(&p2, x, y, z);
 				ec_point_add_inplace(result, &p2, params);
 	   		}
 			__COUNT_OP(&global_index_count,1);

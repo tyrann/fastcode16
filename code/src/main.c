@@ -64,12 +64,14 @@ void compute_ECDH(char* dURand, char* dVRand, int keyLength)
     Point pub_keyU;
     pub_keyU.x = GET_BIGINT_PTR(BI_ECDH_PUBKEYUX_TAG);
     pub_keyU.y = GET_BIGINT_PTR(BI_ECDH_PUBKEYUY_TAG);
+    pub_keyU.z = GET_BIGINT_PTR(BI_ECDH_PUBKEYUZ_TAG);
     BigInt sharedInfoU = GET_BIGINT_PTR(BI_ECDH_SHAREDU_TAG);
    
     ECDH vECDH;
     Point pub_keyV;
     pub_keyV.x = GET_BIGINT_PTR(BI_ECDH_PUBKEYVX_TAG);
     pub_keyV.y = GET_BIGINT_PTR(BI_ECDH_PUBKEYVY_TAG);
+    pub_keyV.z = GET_BIGINT_PTR(BI_ECDH_PUBKEYVZ_TAG);
     BigInt sharedInfoV = GET_BIGINT_PTR(BI_ECDH_SHAREDV_TAG);
     
     start = start_tsc();
