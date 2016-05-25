@@ -19,14 +19,18 @@
 #include <assert.h>
 #define WORDSIZE 64
 #define B 2
+
 #define PRINT_SIMD 0
-#if PRINT_SIMD == 1
+#define VECTORIZATION 1
+
+#if PRINT_SIMD > 0
 	#define PRINT_AVX_U64(f)	printf("%llu %llu %llu %llu \n", f[0], f[1], f[2], f[3]);
 	#define PRINT_AVX_D(f)   	printf("%lf %lf %lf %lf \n", f[0], f[1], f[2], f[3]);
-#elif PRIN_SIMD == 0
+#else
 	#define PRINT_AVX_U64(f)	
 	#define PRINT_AVX_D(f)   	
 #endif
+
 
 uint64_t global_opcount = 0;
 uint64_t global_index_count = 0;
@@ -253,7 +257,7 @@ void bigint_right_shift_inplace(BigInt a)
 void bigint_right_shift_inplace_64(BigInt a)
 {
     BIGINT_ASSERT_VALID(a);
-	
+#if __AVX2 > 0	
 	/*Version 1*/
     for (uint64_t i = 0; i <= a->significant_blocks; i+=4)
     {
@@ -273,6 +277,23 @@ void bigint_right_shift_inplace_64(BigInt a)
 	{
 		a->significant_blocks--;
 	}
+#else
+	
+    for (uint64_t i = 0; i < a->significant_blocks; i++)
+    {
+        a->blocks[i] = a->blocks[i+1];
+		__COUNT_INDEX(&global_index_count, 2);
+    }
+	a->blocks[a->significant_blocks-1] = 0U;
+	__COUNT_INDEX(&global_opcount, 1);
+
+	if(a->significant_blocks > 1)
+	{
+		a->significant_blocks--;
+		__COUNT_INDEX(&global_opcount, 1);
+	}
+
+#endif
 }
 
 void bigint_modulo_inplace(BigInt a, const BigInt mod)
