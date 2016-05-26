@@ -207,7 +207,7 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
 				ec_point_add_inplace(result, &p2, params);	
 	   		}
 			
-			ec_point_add_inplace(&p2, &p2, params);
+			ec_point_double_inplace(&p2, params);
 			__COUNT_OP(&global_index_count,1);
 		}
 
