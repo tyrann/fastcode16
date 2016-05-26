@@ -112,7 +112,7 @@ void bigint_print(BigInt val)
 
 void bigint_print_prime(char *label, const BigInt val, const BigInt prime)
 {
-	BigInt tmp = GET_BIGINT_PTR(BI_TEMPORARY_TAG);
+	BigInt tmp = GET_BIGINT_PTR(BI_BIGINT_PRINT_PRIME_TAG);
 	__montgomery_revert(tmp, val, prime);
 	char *val_str = bigint_to_hex_string(tmp);
 	printf("%s: %s\n", label, val_str);
