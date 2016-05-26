@@ -37,12 +37,14 @@ void __montgomery_init(const BigInt p)
 	prime = bigint_from_hex_string(BI_MONTGOMERY_INIT_PRIME_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000001");
 	if(bigint_are_equal(prime, p))
 	{
+		montgomery_inverse_two = bigint_from_hex_string(BI_MONTGOMERY_INIT_INVERSE_TWO_TAG, "7fffffffffffffffffffffff80000000");
 		p_prime = 18446744073709551615UL;
 		return;
 	}
 	prime = bigint_from_hex_string(BI_MONTGOMERY_INIT_PRIME_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F");
 	if(bigint_are_equal(prime, p))
 	{
+		montgomery_inverse_two = bigint_from_hex_string(BI_MONTGOMERY_INIT_INVERSE_TWO_TAG, "8000000000000000000000000000000000000000000000000000000000000000");
 		p_prime = 15580212934572586289UL;
 		return;
 	}
@@ -57,6 +59,7 @@ void __montgomery_init(const BigInt p)
 	prime = bigint_from_hex_string(BI_MONTGOMERY_INIT_PRIME_TAG, "01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
 	if(bigint_are_equal(prime, p))
 	{
+		montgomery_inverse_two = bigint_from_hex_string(BI_MONTGOMERY_INIT_INVERSE_TWO_TAG, "40000000000000");
 		p_prime = 1UL;
 		return;
 	}
