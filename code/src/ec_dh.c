@@ -18,7 +18,7 @@ void ecdh_generate_public_key(Point *public_key, BigInt d, const EllipticCurvePa
     //void ec_point_mul(Point *result, const BigInt *d, const Point *P, const EllipticCurveParameter *p);
     //printf("After ecdh_generate_key dh priv_key = %s \n", bigint_to_hex_string(&(dh->priv_key)));
 	__montgomery_init(parameters->p);
-    ec_point_mul(public_key, d, &(parameters->generator), parameters);
+    ec_point_mul_generator(public_key, d, parameters);
 }
 
 

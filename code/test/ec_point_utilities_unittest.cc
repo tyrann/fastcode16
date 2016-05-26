@@ -254,3 +254,54 @@ TEST(point_are_equal, inf)
 
 	bigint_destroy_buffer();
 }
+
+TEST(precompute_points, precompute_points_SECP384R1)
+{
+	bigint_create_buffer();
+
+	EllipticCurveParameter params;
+	ec_generate_parameter(&params, SECP384R1);
+	__montgomery_init(params.p);
+
+	Point P, expected;
+	create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 0, 0, params.p);
+	create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0, params.p);
+
+	precompute_points(&params);
+	point_copy(&expected, &params.generator);
+	get_precomputed_point(&P, 0);
+	ASSERT_TRUE(point_are_equal(&P, &expected));
+
+
+	create_point_from_hex(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, "d5d89c3b5282369c5fbd88e2b231511a6b80dff0e5152cf6a464fa9428a8583bac8ebc773d157811a462b892401dafcf", "d815229de12906d241816d5e9a9448f1d41d4fc40e2a3bdb9caba57e440a7abad1210cb8f49bf2236822b755ebab3673", params.p);
+	get_precomputed_point(&P, 4);
+	ASSERT_TRUE(point_are_equal(&P, &expected));
+
+	bigint_destroy_buffer();
+
+}
+
+TEST(precompute_points, precompute_points_SECP521R1)
+{
+	bigint_create_buffer();
+
+	EllipticCurveParameter params;
+	ec_generate_parameter(&params, SECP521R1);
+	__montgomery_init(params.p);
+
+	Point P, expected;
+	create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 0, 0, params.p);
+	create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0, params.p);
+
+	precompute_points(&params);
+	point_copy(&expected, &params.generator);
+	get_precomputed_point(&P, 0);
+	ASSERT_TRUE(point_are_equal(&P, &expected));
+
+	create_point_from_hex(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, "183eca433e3fa652f4c77c39eb2c366d51fbb2c32c360a6a3099502d7f334de701988cdc5acdb6259b219ed502c27659be2b7e9a776c2856b1e171b622ab226efd9", "1fc825778a659888534128adff0dd2a6510750a2cb9560761ca969059f45b83446d7b1837b3de0175ede59a63707cd4b81b8cef9743dbb5a59d23aaf387a5bd54ca", params.p);
+	get_precomputed_point(&P, 575);
+	ASSERT_TRUE(point_are_equal(&P, &expected));
+
+	bigint_destroy_buffer();
+
+}

@@ -270,3 +270,26 @@ TEST(ec_point_mul, ultimate_test_2)
     bigint_destroy_buffer();
 }
 
+TEST(ec_point_mul_generator, ultimate_test_2)
+{
+    bigint_create_buffer();
+
+    EllipticCurveParameter params;
+    ec_generate_parameter(&params, SECP521R1);
+    __montgomery_init(params.p);
+
+    Point P, result, expected;
+    BigInt d = GET_BIGINT_PTR(BI_TESTS_D_TAG);
+    create_point_from_uint64(&P, BI_TESTS_PX_TAG, BI_TESTS_PY_TAG, 188, 93, params.p);
+
+    bigint_copy(d, params.n);
+    create_point_from_uint64(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, 0, 0, params.p);
+    create_point_from_uint64(&result, BI_TESTS_RESULTX_TAG, BI_TESTS_RESULTY_TAG, 0, 0, params.p);
+    expected.is_at_infinity = 1;
+    ec_point_mul_generator(&result, d, &params);
+
+    ASSERT_TRUE(point_are_equal(&result, &expected));
+
+    bigint_destroy_buffer();
+}
+
