@@ -22,7 +22,6 @@ void ecdh_generate_public_key(Point *public_key, BigInt d, const EllipticCurvePa
     ec_point_mul_generator(public_key, d, parameters);
 }
 
-
 int ecdh_compute_shared_secret(BigInt shared_info, BigInt private_key, const Point *public_key, const EllipticCurveParameter *parameters)
 {	
 	Point shared_point;
@@ -45,7 +44,6 @@ int ecdh_compute_shared_secret(BigInt shared_info, BigInt private_key, const Poi
 	// printf("After ecdh_generate_key dh sharedPoint = %s \n", bigint_to_hex_string(&(sharedPoint.x)));
 	return (int)!ret;
 }
-
 
 int ecdh_verification(ECDH *dhU, ECDH *dhV)
 {

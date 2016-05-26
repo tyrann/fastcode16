@@ -130,7 +130,7 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	for (unsigned int i = 0; i < p->significant_blocks; ++i)
 	{
 		a_0 = res->blocks[0];
-		if(x->significant_blocks > i) {
+		if(x_inital->significant_blocks > i) {
 			x_i = x_inital->blocks[i];
 		} else {
 			x_i = 0;

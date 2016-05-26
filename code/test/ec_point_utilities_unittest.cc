@@ -98,7 +98,10 @@ TEST(point_is_on_curve, point_on_curve_SECP192K1)
     ec_generate_parameter(&params, SECP192K1, precompute);
     __montgomery_init(params.p);
 
-    ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
+    Point Q;
+    create_point_from_hex_jacobian(&Q, BI_TESTS_QX_TAG, BI_TESTS_QY_TAG, BI_TESTS_QZ_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7D", "7f2559a90aefa7f86d15ee0aade4a39d2297bcb7c12f5cce", "100", params.p);
+
+    ASSERT_TRUE(point_is_on_curve(&Q, &params));
     
 	bigint_destroy_buffer();
 }
@@ -110,10 +113,13 @@ TEST(point_is_on_curve, point_on_curve_SECP224R1)
 
     EllipticCurveParameter params;
     char precompute = 0;
-    ec_generate_parameter(&params, SECP192K1, precompute);
+    ec_generate_parameter(&params, SECP224R1, precompute);
     __montgomery_init(params.p);
 
-    ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
+    Point Q;
+    create_point_from_hex_jacobian(&Q, BI_TESTS_QX_TAG, BI_TESTS_QY_TAG, BI_TESTS_QZ_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7DFF", "395ba1668766bdc0440b4869b050b8a4b1a49bc12f50f868581b9118", "2000", params.p);
+
+    ASSERT_TRUE(point_is_on_curve(&Q, &params));
 
 	bigint_destroy_buffer();
 }
@@ -124,7 +130,7 @@ TEST(point_is_on_curve, point_on_curve_SECP256K1)
 
     EllipticCurveParameter params;
     char precompute = 0;
-    ec_generate_parameter(&params, SECP192K1, precompute);
+    ec_generate_parameter(&params, SECP256K1, precompute);
     __montgomery_init(params.p);
 
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
@@ -138,7 +144,7 @@ TEST(point_is_on_curve, point_on_curve_SECP384R1)
 
     EllipticCurveParameter params;
     char precompute = 0;
-    ec_generate_parameter(&params, SECP192K1, precompute);
+    ec_generate_parameter(&params, SECP384R1, precompute);
     __montgomery_init(params.p);
 
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
@@ -152,7 +158,7 @@ TEST(point_is_on_curve, point_on_curve_SECP521R1)
 
     EllipticCurveParameter params;
     char precompute = 0;
-    ec_generate_parameter(&params, SECP192K1, precompute);
+    ec_generate_parameter(&params, SECP521R1, precompute);
     __montgomery_init(params.p);
 
     ASSERT_TRUE(point_is_on_curve(&params.generator, &params));
@@ -326,7 +332,7 @@ TEST(precompute_points, precompute_points_SECP384R1)
 
 }
 
-TEST(precompute_points, DISABLED_precompute_points_SECP521R1)
+TEST(precompute_points, precompute_points_SECP521R1)
 {
 	bigint_create_buffer();
 
@@ -346,6 +352,7 @@ TEST(precompute_points, DISABLED_precompute_points_SECP521R1)
 
 	create_point_from_hex(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, BI_TESTS_EXPECTEDZ_TAG, "183eca433e3fa652f4c77c39eb2c366d51fbb2c32c360a6a3099502d7f334de701988cdc5acdb6259b219ed502c27659be2b7e9a776c2856b1e171b622ab226efd9", "1fc825778a659888534128adff0dd2a6510750a2cb9560761ca969059f45b83446d7b1837b3de0175ede59a63707cd4b81b8cef9743dbb5a59d23aaf387a5bd54ca", params.p);
 	get_precomputed_point(&P, 575);
+	point_convert_to_affine_coordinates(&P, &params);
 	ASSERT_TRUE(point_are_equal(&P, &expected));
 
 	bigint_destroy_buffer();

@@ -36,6 +36,15 @@ void create_point_from_hex(Point* p, uint32_t tag_x, uint32_t tag_y, uint32_t ta
         prime);
 }
 
+void create_point_from_hex_jacobian(Point* p, uint32_t tag_x, uint32_t tag_y,  uint32_t tag_z, const char *x, const char *y, const char *z, const BigInt prime)
+{
+	create_point(p,
+		bigint_from_hex_string(tag_x, x),
+		bigint_from_hex_string(tag_y, y),
+		bigint_from_hex_string(tag_z, z),
+		prime);
+}
+
 void create_point_from_uint64(Point* p, uint32_t tag_x, uint32_t tag_y, uint32_t tag_z, uint64_t x, uint64_t y, const BigInt prime)
 {
     create_point(p,
@@ -81,21 +90,30 @@ char point_is_on_curve(const Point* p, const EllipticCurveParameter *params)
     else
     {	
         BigInt x_squared = GET_BIGINT_PTR(BI_POINTISONCURVE_XSQUARED_TAG);
+        BigInt z_squared = GET_BIGINT_PTR(BI_POINTISONCURVE_Z_TAG);
         BigInt x_result = GET_BIGINT_PTR(BI_POINTISONCURVE_XRESULT_TAG);
         BigInt y_result = GET_BIGINT_PTR(BI_POINTISONCURVE_YRESULT_TAG);
         BigInt a_x = GET_BIGINT_PTR(BI_POINTISONCURVE_AX_TAG);
+        BigInt b_x = GET_BIGINT_PTR(BI_POINTISONCURVE_BX_TAG);
         
         montgomery_mul(x_squared, p->x, p->x, params->p);
 		montgomery_mul(x_result, x_squared, p->x, params->p);
-		montgomery_mul(a_x, params->a, p->x, params->p);
 
-		bigint_add_inplace(x_result, a_x);
-		bigint_add_inplace(x_result, params->b);
-		bigint_modulo_inplace(x_result, params->p);
+		montgomery_mul(a_x, p->z, p->z, params->p);
+		montgomery_mul(z_squared, p->z, p->z, params->p);
+		montgomery_mul(a_x, a_x, z_squared, params->p);
+		montgomery_mul(a_x, a_x, p->x, params->p);
+		montgomery_mul(a_x, a_x, params->a, params->p);
+
+		bigint_add_inplace_mod(x_result, a_x, params->p);
+
+		montgomery_mul(b_x, z_squared, p->z, params->p);
+		montgomery_mul(b_x, b_x, b_x, params->p);
+		montgomery_mul(b_x, b_x, params->b, params->p);
+
+		bigint_add_inplace_mod(x_result, b_x, params->p);
 
 		montgomery_mul(y_result, p->y, p->y, params->p);
-		bigint_modulo_inplace(y_result, params->p);
-
 		result = bigint_are_equal(x_result, y_result);
 
     }

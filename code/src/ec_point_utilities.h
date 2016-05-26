@@ -11,6 +11,8 @@ void create_point_no_conversion(Point* p, const BigInt a, const BigInt b, const 
 
 void create_point_from_hex(Point* p, uint32_t tag_x, uint32_t tag_y,  uint32_t tag_z, const char *x, const char *y, const BigInt prime);
 
+void create_point_from_hex_jacobian(Point* p, uint32_t tag_x, uint32_t tag_y,  uint32_t tag_z, const char *x, const char *y, const char *z, const BigInt prime);
+
 void create_point_from_uint64(Point* p, uint32_t tag_x, uint32_t tag_y,  uint32_t tag_z, uint64_t x, uint64_t y, const BigInt prime);
 
 void point_revert_from_montgomery_space(Point* Q, const BigInt p);

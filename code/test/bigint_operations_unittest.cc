@@ -748,6 +748,16 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP224R1)
 
     ASSERT_TRUE(bigint_are_equal(b, expected));
 
+    expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "ec057e9ae26b07d0280b7f434f8f5c2b1eae06c7dfeffffff24b00f0");
+    x = bigint_from_hex_string(BI_TESTS_X_TAG, "10000000000000");
+	y = bigint_from_hex_string(BI_TESTS_Y_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7DFF");
+	__montgomery_convert(x_conv, x, p);
+	__montgomery_convert(y_conv, y, p);
+	montgomery_mul(c, x_conv, y_conv, p);
+	__montgomery_revert(b, c, p);
+
+	ASSERT_TRUE(bigint_are_equal(b, expected));
+
 	bigint_destroy_buffer();
 }
 
