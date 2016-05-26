@@ -113,8 +113,6 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	assert(p_prime != 0);
 	BigInt x_inital = GET_BIGINT_PTR(BI_MONTGOMERYMUL_X_INITAL_TAG);
 	BigInt y_inital = GET_BIGINT_PTR(BI_MONTGOMERYMUL_Y_INITAL_TAG);
-	memset(x_inital, 0, BIGINT_SIZE);
-	memset(y_inital, 0, BIGINT_SIZE);
 	bigint_copy(x_inital, x);
 	bigint_copy(y_inital, y);
 
