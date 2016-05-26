@@ -90,7 +90,7 @@ char point_is_on_curve(const Point* p, const EllipticCurveParameter *params)
     else
     {	
         BigInt x_squared = GET_BIGINT_PTR(BI_POINTISONCURVE_XSQUARED_TAG);
-        BigInt z_squared = GET_BIGINT_PTR(BI_POINTISONCURVE_Z_TAG);
+        BigInt z_squared = GET_BIGINT_PTR(BI_POINTISONCURVE_ZSQUARED_TAG);
         BigInt x_result = GET_BIGINT_PTR(BI_POINTISONCURVE_XRESULT_TAG);
         BigInt y_result = GET_BIGINT_PTR(BI_POINTISONCURVE_YRESULT_TAG);
         BigInt a_x = GET_BIGINT_PTR(BI_POINTISONCURVE_AX_TAG);
