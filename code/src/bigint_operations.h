@@ -49,5 +49,6 @@ void bigint_modulo_inplace(BigInt a, const BigInt mod);
 void bigint_divide(BigInt dest, const BigInt b, const BigInt a, const BigInt p);
 
 extern uint64_t p_prime;
+extern BigInt montgomery_inverse_two;
 
 #endif

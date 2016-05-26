@@ -22,12 +22,15 @@
 uint64_t global_opcount = 0;
 uint64_t global_index_count = 0;
 uint64_t p_prime = 0;
+BigInt montgomery_inverse_two;
 
 void __montgomery_init(const BigInt p)
 {
+	montgomery_inverse_two = GET_BIGINT_PTR(BI_MONTGOMERY_INIT_INVERSE_TWO_TAG);
 	BigInt prime = bigint_from_hex_string(BI_MONTGOMERY_INIT_PRIME_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFEE37");
 	if(bigint_are_equal(prime, p))
 	{
+		montgomery_inverse_two = bigint_from_hex_string(BI_MONTGOMERY_INIT_INVERSE_TWO_TAG, "800000000000000000000000000000000000000000000000");
 		p_prime = 17472529885292845177UL;
 		return;
 	}
@@ -44,8 +47,10 @@ void __montgomery_init(const BigInt p)
 		return;
 	}
 	prime = bigint_from_hex_string(BI_MONTGOMERY_INIT_PRIME_TAG, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFF0000000000000000FFFFFFFF");
+	//SECP384R1
 	if(bigint_are_equal(prime, p))
 	{
+		montgomery_inverse_two = bigint_from_hex_string(BI_MONTGOMERY_INIT_INVERSE_TWO_TAG, "800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
 		p_prime = 4294967297UL;
 		return;
 	}
@@ -105,7 +110,8 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	assert(p_prime != 0);
 	BigInt x_inital = GET_BIGINT_PTR(BI_MONTGOMERYMUL_X_INITAL_TAG);
 	BigInt y_inital = GET_BIGINT_PTR(BI_MONTGOMERYMUL_Y_INITAL_TAG);
-
+	memset(x_inital, 0, BIGINT_SIZE);
+	memset(y_inital, 0, BIGINT_SIZE);
 	bigint_copy(x_inital, x);
 	bigint_copy(y_inital, y);
 
@@ -113,6 +119,7 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	bigint_copy(res, bigint_zero);
 
 	uint64_t u, a_0, y_0, x_i;
+
 	unsigned __int128 tmp;
 	y_0 = y_inital->blocks[0];
 	BigInt tmp1 = GET_BIGINT_PTR(BI_MONTGOMERY_MUL_TMP1_TAG);
@@ -120,7 +127,11 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	for (unsigned int i = 0; i < p->significant_blocks; ++i)
 	{
 		a_0 = res->blocks[0];
-		x_i = x_inital->blocks[i];
+		if(x->significant_blocks > i) {
+			x_i = x_inital->blocks[i];
+		} else {
+			x_i = 0;
+		}
 		tmp = (a_0 + ((unsigned __int128)x_i * (unsigned __int128)y_0)) * p_prime;
 		__COUNT_OP(&global_opcount,3);
 		u = tmp;
@@ -131,7 +142,6 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 		bigint_add_inplace(res, tmp1);
 		bigint_add_inplace(res, tmp2);
 		bigint_right_shift_inplace_64(res);
-
 		__COUNT_INDEX(&global_index_count, 1);
 	}
 	

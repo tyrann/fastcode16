@@ -313,11 +313,13 @@ TEST(precompute_points, precompute_points_SECP384R1)
 	precompute_points(&params);
 	point_copy(&expected, &params.generator);
 	get_precomputed_point(&P, 0);
+	point_convert_to_affine_coordinates(&P, &params);
 	ASSERT_TRUE(point_are_equal(&P, &expected));
 
 
 	create_point_from_hex(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, BI_TESTS_EXPECTEDZ_TAG, "d5d89c3b5282369c5fbd88e2b231511a6b80dff0e5152cf6a464fa9428a8583bac8ebc773d157811a462b892401dafcf", "d815229de12906d241816d5e9a9448f1d41d4fc40e2a3bdb9caba57e440a7abad1210cb8f49bf2236822b755ebab3673", params.p);
 	get_precomputed_point(&P, 4);
+	point_convert_to_affine_coordinates(&P, &params);
 	ASSERT_TRUE(point_are_equal(&P, &expected));
 
 	bigint_destroy_buffer();

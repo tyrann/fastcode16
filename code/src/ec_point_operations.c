@@ -3,9 +3,11 @@
 #include "opcount/opcount.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <memory.h>
 
 extern uint64_t global_opcount;
 extern uint64_t global_index_count;
+extern BigInt montgomery_inverse_two;
 
 void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter *params)
 {	
@@ -15,12 +17,10 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 	
     // SEC 1: Elliptic Curve Cryptography Certicom Research Version 2.0 page 7
     
-    // Rule 1
     if(a->is_at_infinity && b->is_at_infinity)
     {
 		// Nothing to do here
     }
-    // Rule 2
     else if(a->is_at_infinity)
     {
 		point_copy(a, b);
@@ -29,125 +29,111 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
     {
 		// Nothing to do here
     }
-    // Rule 5
-    else if(bigint_are_equal(a->x, b->x) && bigint_are_equal(a->y, b->y)
-		&& !bigint_are_equal(a->y, bigint_zero))
-    {
+    else {
 		// Get BigInt objects
-		BigInt tmp = GET_BIGINT_PTR(BI_POINTADD_TMP_TAG);
-		BigInt numerator = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
-		BigInt denominator = GET_BIGINT_PTR(BI_POINTADD_DENOMINATOR_TAG);
-		BigInt lambda = GET_BIGINT_PTR(BI_POINTADD_LAMBDA_TAG);
-		BigInt lambda_squared = GET_BIGINT_PTR(BI_POINTADD_LAMBDASQUARED_TAG);
-		BigInt x_twice = GET_BIGINT_PTR(BI_POINTADD_XTWICE_TAG);
-		BigInt y_1 = GET_BIGINT_PTR(BI_POINTADD_Y1_TAG);
-		BigInt x_1_minus_x_3 = GET_BIGINT_PTR(BI_POINTADD_X1MINUSX3_TAG);
+		BigInt lambda1 = GET_BIGINT_PTR(BI_POINTADD_LAMBDA1_TAG);
+		BigInt lambda2 = GET_BIGINT_PTR(BI_POINTADD_LAMBDA2_TAG);
+		BigInt lambda3 = GET_BIGINT_PTR(BI_POINTADD_LAMBDA3_TAG);
+		BigInt lambda4 = GET_BIGINT_PTR(BI_POINTADD_LAMBDA4_TAG);
+		BigInt lambda5 = GET_BIGINT_PTR(BI_POINTADD_LAMBDA5_TAG);
+		BigInt lambda6 = GET_BIGINT_PTR(BI_POINTADD_LAMBDA6_TAG);
+		BigInt lambda7 = GET_BIGINT_PTR(BI_POINTADD_LAMBDA7_TAG);
+		BigInt lambda8 = GET_BIGINT_PTR(BI_POINTADD_LAMBDA8_TAG);
+		BigInt lambda9 = GET_BIGINT_PTR(BI_POINTADD_LAMBDA9_TAG);
+		BigInt z1_squared = GET_BIGINT_PTR(BI_POINTADD_Z1_SQUARED_TAG);
+		BigInt z2_squared = GET_BIGINT_PTR(BI_POINTADD_Z2_SQUARED_TAG);
 
-		// numerator
-		montgomery_mul(tmp, a->x, a->x, params->p);
+		// calculate lambda1
+		montgomery_mul(z2_squared, b->z, b->z, params->p);
+		montgomery_mul(lambda1, a->x, z2_squared, params->p);
+		//bigint_print_prime("lambda1", lambda1, params->p);
 
-		bigint_copy(y_1, a->y);
-		montgomery_mul(numerator, tmp, params->three, params->p);
+		// calculate lambda2
+		bigint_copy(lambda2, b->x);
+		montgomery_mul(z1_squared, a->z, a->z, params->p);
+		montgomery_mul(lambda2, lambda2, z1_squared, params->p);
+		//bigint_print_prime("lambda2", lambda2, params->p);
 
-		bigint_add_inplace(numerator, params->a);
-		bigint_modulo_inplace(numerator, params->p);
+		//calculate lambda3
+		bigint_copy(lambda3, lambda1);
+		bigint_sub_inplace_mod(lambda3, lambda2, params->p);
+		//bigint_print_prime("lambda3", lambda3, params->p);
 
-		// denominator
-		montgomery_mul(denominator, a->y, params->two, params->p);
+		//calculate lambda4
+		bigint_copy(lambda4, b->z);
+		montgomery_mul(lambda4, lambda4, z2_squared, params->p);
+		montgomery_mul(lambda4, lambda4, a->y, params->p);
+		//bigint_print_prime("lambda4", lambda4, params->p);
 
-		// calculate lambda
-		bigint_divide(lambda, numerator, denominator, params->p);
-		__montgomery_convert(tmp, lambda, params->p);
-		
-		//calculate x
-		bigint_copy(x_1_minus_x_3, a->x);
-		montgomery_mul(lambda_squared, tmp, tmp, params->p);
-		montgomery_mul(x_twice, a->x, params->two, params->p);
-		bigint_copy(a->x, lambda_squared);		
+		//calculate lambda5
+		bigint_copy(lambda5, a->z);
+		montgomery_mul(lambda5, lambda5, z1_squared, params->p);
+		montgomery_mul(lambda5, lambda5, b->y, params->p);
+		//bigint_print_prime("lambda5", lambda5, params->p);
 
-		bigint_add_inplace(a->x, params->p);
-		bigint_sub_inplace(a->x, x_twice);
-		bigint_modulo_inplace(a->x, params->p);
-	
-		// calculate y
-		
-		// x_1 - x_3
-		bigint_add_inplace(x_1_minus_x_3, params->p);
-		bigint_sub_inplace(x_1_minus_x_3, a->x);
-				
-		// calculate lambda(x_1 - x_3)
-		montgomery_mul(a->y, tmp, x_1_minus_x_3, params->p);
+		//calculate lambda6
+		bigint_copy(lambda6, lambda4);
+		bigint_sub_inplace_mod(lambda6, lambda5, params->p);
+		//bigint_print_prime("lambda6", lambda6, params->p);
 
-		bigint_add_inplace(a->y, params->p);
-		bigint_sub_inplace(a->y, y_1);
-		bigint_modulo_inplace(a->y, params->p);
+		if(bigint_are_equal(lambda3, bigint_zero))
+		{
+			if(bigint_are_equal(lambda6, bigint_zero))
+			{
+				ec_point_double_inplace(a, params);
+				return;
+			}
+			else
+			{
+				a->is_at_infinity = 1;
+				return;
+			}
+		}
+
+		//calculate lambda7
+		bigint_copy(lambda7, lambda1);
+		bigint_add_inplace_mod(lambda7, lambda2, params->p);
+		//bigint_print_prime("lambda7", lambda7, params->p);
+
+		//calculate lambda8
+		bigint_copy(lambda8, lambda4);
+		bigint_add_inplace_mod(lambda8, lambda5, params->p);
+		//bigint_print_prime("lambda8", lambda8, params->p);
+
+		//calculate z3
+		montgomery_mul(a->z, a->z, b->z, params->p);
+		montgomery_mul(a->z, a->z, lambda3, params->p);
+		//bigint_print_prime("z3", a->z, params->p);
+
+		//calculate x3
+		bigint_copy(lambda1, lambda3);
+		montgomery_mul(lambda1, lambda3, lambda3, params->p);
+		bigint_copy(a->x, lambda6);
+		montgomery_mul(a->x, a->x, a->x, params->p);
+		montgomery_mul(lambda1, lambda1, lambda7, params->p);
+		bigint_copy(a->y, lambda1);
+		bigint_sub_inplace_mod(a->x, lambda1, params->p);
+		//bigint_print_prime("x3", a->x, params->p);
+
+		//calculate lambda9
+		bigint_copy(lambda9, lambda1);
+		bigint_copy(lambda1, a->x);
+		bigint_left_shift_inplace(lambda1);
+		bigint_modulo_inplace(lambda1, params->p);
+		bigint_sub_inplace_mod(lambda9, lambda1, params->p);
+		//bigint_print_prime("lambda9", lambda9, params->p);
+
+		//calculate y_3
+		montgomery_mul(a->y, lambda9, lambda6, params->p);
+		montgomery_mul(lambda1, lambda3, lambda3, params->p);
+		montgomery_mul(lambda1, lambda1, lambda3, params->p);
+		montgomery_mul(lambda1, lambda1, lambda8, params->p);
+		bigint_sub_inplace_mod(a->y, lambda1, params->p);
+		montgomery_mul(a->y, a->y, montgomery_inverse_two, params->p);
+		//bigint_print_prime("y3", a->y, params->p);
 
 		a->is_at_infinity = 0;
     } 
-    // Rule 3
-    else if(bigint_are_equal(a->x, b->x))
-    {
-		a->is_at_infinity = 1;
-    }
-    // Rule 4
-    else if(!bigint_are_equal(a->x, b->x))
-    {
-		// Get BigInt objects
-		BigInt tmp = GET_BIGINT_PTR(BI_POINTADD_TMP_TAG);
-		BigInt numerator = GET_BIGINT_PTR(BI_POINTADD_NUMERATOR_TAG);
-		BigInt denominator = GET_BIGINT_PTR(BI_POINTADD_DENOMINATOR_TAG);
-		BigInt lambda = GET_BIGINT_PTR(BI_POINTADD_LAMBDA_TAG);
-		BigInt lambda_squared = GET_BIGINT_PTR(BI_POINTADD_LAMBDASQUARED_TAG);
-		BigInt x_1_add_inverse = GET_BIGINT_PTR(BI_POINTADD_X1ADDINVERSE_TAG);
-		BigInt y_1_add_inverse = GET_BIGINT_PTR(BI_POINTADD_Y1ADDINVERSE_TAG);
-		BigInt x_1_minus_x_3 = GET_BIGINT_PTR(BI_POINTADD_X1MINUSX3_TAG);
-	
-		// Compute inverses
-		bigint_copy(x_1_add_inverse, params->p);
-		bigint_sub_inplace(x_1_add_inverse, a->x);
-		
-		bigint_copy(y_1_add_inverse, params->p);
-		bigint_sub_inplace(y_1_add_inverse, a->y);
-	
-		//Calculate y_2 - y_1
-		bigint_copy(numerator, b->y);
-		bigint_add_inplace(numerator, y_1_add_inverse);
-		bigint_modulo_inplace(numerator, params->p);
-	
-		//Calculate x_2 - x_1		
-		bigint_copy(denominator, b->x);
-		bigint_add_inplace(denominator, x_1_add_inverse);
-		bigint_modulo_inplace(denominator, params->p);
-	
-		//Calculate lambda
-		bigint_divide(lambda, numerator, denominator, params->p);
-		__montgomery_convert(tmp, lambda, params->p);
-
-		//Calculate lambda^2
-		bigint_copy(x_1_minus_x_3, a->x);
-		montgomery_mul(lambda_squared, tmp, tmp, params->p);
-		bigint_copy(a->x, lambda_squared);
-	
-		bigint_add_inplace(a->x, x_1_add_inverse);
-		bigint_add_inplace(a->x, params->p);
-		bigint_sub_inplace(a->x, b->x);
-		bigint_modulo_inplace(a->x, params->p);
-
-		// Calculate y_3
-		bigint_add_inplace(x_1_minus_x_3, params->p);
-		bigint_sub_inplace(x_1_minus_x_3, a->x);
-
-		montgomery_mul(a->y, tmp, x_1_minus_x_3, params->p);
-		
-		bigint_add_inplace(a->y, y_1_add_inverse);
-		bigint_modulo_inplace(a->y, params->p);
-	
-		a->is_at_infinity = 0;
-    }
-    else
-    {
-		assert("ec_point_add - this code should not be reached");
-    }
 }
 
 void ec_point_double_inplace(Point *a, const EllipticCurveParameter *params)

@@ -33,6 +33,7 @@ int ecdh_compute_shared_secret(BigInt shared_info, BigInt private_key, const Poi
 	// Compute the elliptic curve point P = (xP , yP ) = priv_keyU*pub_keyV
 	__montgomery_init(parameters->p);
 	ec_point_mul(&shared_point, private_key, public_key, parameters);
+	point_convert_to_affine_coordinates(&shared_point, parameters);
 	
 	// Check that P != O. If P = O, output “invalid” and stop
 	char ret = shared_point.is_at_infinity;
