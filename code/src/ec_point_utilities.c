@@ -125,10 +125,13 @@ void point_convert_to_affine_coordinates(Point* p, const EllipticCurveParameter 
 	BigInt tmp = GET_BIGINT_PTR(BI_CONVERT_TO_AFFINE_COORDINATES_TMP_TAG);
 	montgomery_mul(tmp, p->z, p->z, params->p);
 	bigint_divide(p->x, p->x, tmp, params->p);
-	__montgomery_convert(p->x, p->x, params->p);
+	__montgomery_convert(tmp, p->x, params->p);
+	bigint_copy(p->x, tmp);
+	montgomery_mul(tmp, p->z, p->z, params->p);
 	montgomery_mul(tmp, tmp, p->z, params->p);
 	bigint_divide(p->y, p->y, tmp, params->p);
-	__montgomery_convert(p->y, p->y, params->p);
+	__montgomery_convert(tmp, p->y, params->p);
+	bigint_copy(p->y, tmp);
 	__montgomery_convert(p->z, bigint_one, params->p);
 }
 

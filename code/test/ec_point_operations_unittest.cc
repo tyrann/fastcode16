@@ -135,9 +135,7 @@ TEST(ec_point_add_inplace, a_plus_b__SECP384R1_rule4_twice)
     create_point_from_hex(&expected, BI_TESTS_EXPECTEDX_TAG, BI_TESTS_EXPECTEDY_TAG, BI_TESTS_EXPECTEDZ_TAG, "eddf94c533f6f9858d1bf6afeb17c797700c09c3d2f4a31e2e17dd69c09ce3473f999b2ea23a24b4188609bc107b356d", "c048a02bf9fd542b474fb5a8368373078020abdab40654657a6a0999612c18ccaa4e01bf1d0c34cefd66d3cad5530f2f", params.p);
 	expected.is_at_infinity = 0;
     ec_point_add_inplace(&a, &b, &params);
-    print_point(&a, params.p);
     ec_point_add_inplace(&a, &b, &params);
-    print_point(&a, params.p);
     point_convert_to_affine_coordinates(&a, &params);
     ASSERT_TRUE(point_are_equal(&a, &expected));
 
