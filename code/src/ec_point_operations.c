@@ -46,35 +46,29 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		// calculate lambda1
 		montgomery_mul(z2_squared, b->z, b->z, params->p);
 		montgomery_mul(lambda1, a->x, z2_squared, params->p);
-		//bigint_print_prime("lambda1", lambda1, params->p);
 
 		// calculate lambda2
 		bigint_copy(lambda2, b->x);
 		montgomery_mul(z1_squared, a->z, a->z, params->p);
 		montgomery_mul(lambda2, lambda2, z1_squared, params->p);
-		//bigint_print_prime("lambda2", lambda2, params->p);
 
 		//calculate lambda3
 		bigint_copy(lambda3, lambda1);
 		bigint_sub_inplace_mod(lambda3, lambda2, params->p);
-		//bigint_print_prime("lambda3", lambda3, params->p);
 
 		//calculate lambda4
 		bigint_copy(lambda4, b->z);
 		montgomery_mul(lambda4, lambda4, z2_squared, params->p);
 		montgomery_mul(lambda4, lambda4, a->y, params->p);
-		//bigint_print_prime("lambda4", lambda4, params->p);
 
 		//calculate lambda5
 		bigint_copy(lambda5, a->z);
 		montgomery_mul(lambda5, lambda5, z1_squared, params->p);
 		montgomery_mul(lambda5, lambda5, b->y, params->p);
-		//bigint_print_prime("lambda5", lambda5, params->p);
 
 		//calculate lambda6
 		bigint_copy(lambda6, lambda4);
 		bigint_sub_inplace_mod(lambda6, lambda5, params->p);
-		//bigint_print_prime("lambda6", lambda6, params->p);
 
 		if(bigint_are_equal(lambda3, bigint_zero))
 		{
@@ -93,17 +87,14 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		//calculate lambda7
 		bigint_copy(lambda7, lambda1);
 		bigint_add_inplace_mod(lambda7, lambda2, params->p);
-		//bigint_print_prime("lambda7", lambda7, params->p);
 
 		//calculate lambda8
 		bigint_copy(lambda8, lambda4);
 		bigint_add_inplace_mod(lambda8, lambda5, params->p);
-		//bigint_print_prime("lambda8", lambda8, params->p);
 
 		//calculate z3
 		montgomery_mul(a->z, a->z, b->z, params->p);
 		montgomery_mul(a->z, a->z, lambda3, params->p);
-		//bigint_print_prime("z3", a->z, params->p);
 
 		//calculate x3
 		bigint_copy(lambda1, lambda3);
@@ -113,7 +104,6 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		montgomery_mul(lambda1, lambda1, lambda7, params->p);
 		bigint_copy(a->y, lambda1);
 		bigint_sub_inplace_mod(a->x, lambda1, params->p);
-		//bigint_print_prime("x3", a->x, params->p);
 
 		//calculate lambda9
 		bigint_copy(lambda9, lambda1);
@@ -121,7 +111,6 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		bigint_left_shift_inplace(lambda1);
 		bigint_modulo_inplace(lambda1, params->p);
 		bigint_sub_inplace_mod(lambda9, lambda1, params->p);
-		//bigint_print_prime("lambda9", lambda9, params->p);
 
 		//calculate y_3
 		montgomery_mul(a->y, lambda9, lambda6, params->p);
@@ -130,7 +119,6 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		montgomery_mul(lambda1, lambda1, lambda8, params->p);
 		bigint_sub_inplace_mod(a->y, lambda1, params->p);
 		montgomery_mul(a->y, a->y, montgomery_inverse_two, params->p);
-		//bigint_print_prime("y3", a->y, params->p);
 
 		a->is_at_infinity = 0;
     } 
