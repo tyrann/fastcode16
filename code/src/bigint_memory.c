@@ -51,7 +51,7 @@ void bigint_create_buffer()
 	res = posix_memalign(
 		(void**)&__bigint__precomputation_buffer,
 		BIGINT_ALIGNMENT,
-		MAX_NUMBER_OF_POINTS * 2 * BIGINT_SIZE);
+		MAX_NUMBER_OF_POINTS * 3 * BIGINT_SIZE);
 
 	if (res == 0)
 	{
@@ -59,7 +59,7 @@ void bigint_create_buffer()
 	}
 	assert(__bigint__precomputation_buffer != 0);
 
-	memset(__bigint__precomputation_buffer, 0, MAX_NUMBER_OF_POINTS * 2 * BIGINT_SIZE);
+	memset(__bigint__precomputation_buffer, 0, MAX_NUMBER_OF_POINTS * 3 * BIGINT_SIZE);
 
     __create_default_bigints();
 }

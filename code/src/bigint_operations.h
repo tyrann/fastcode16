@@ -36,11 +36,19 @@ void bigint_add_inplace(BigInt a, const BigInt b);
 
 void bigint_sub_inplace(BigInt a, const BigInt b);
 
+void bigint_add_inplace_mod(BigInt a, const BigInt b, const BigInt p);
+
+/*
+ * 0 <= a < p && 0 <= b < p is assumed
+ */
+void bigint_sub_inplace_mod(BigInt a, const BigInt b, const BigInt p);
+
 void bigint_modulo_inplace(BigInt a, const BigInt mod);
 
 // Compute b/a over Fp, storing the result in dest.
 void bigint_divide(BigInt dest, const BigInt b, const BigInt a, const BigInt p);
 
 extern uint64_t p_prime;
+extern BigInt montgomery_inverse_two;
 
 #endif

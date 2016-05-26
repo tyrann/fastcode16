@@ -26,24 +26,26 @@ EllipticCurveParameter get_parameter_by_key_length(int key_length)
 {
     EllipticCurveParameter params;
     
+    const char precompute = 1;
+
     switch(key_length) {
     case 192 :
-	ec_generate_parameter(&params, SECP192K1);
+	ec_generate_parameter(&params, SECP192K1, precompute);
         break;
     case 224 :
-	ec_generate_parameter(&params, SECP224R1);
+	ec_generate_parameter(&params, SECP224R1, precompute);
         break;
     case 256 :
-	ec_generate_parameter(&params, SECP256K1);
+	ec_generate_parameter(&params, SECP256K1, precompute);
         break;
     case 384 :
-	ec_generate_parameter(&params, SECP384R1);
+	ec_generate_parameter(&params, SECP384R1, precompute);
         break;
     case 521 :
-	ec_generate_parameter(&params, SECP521R1);
+	ec_generate_parameter(&params, SECP521R1, precompute);
         break;
     default :
-	ec_generate_parameter(&params, SECP192K1);
+	ec_generate_parameter(&params, SECP192K1, precompute);
     }
 
     return params;
@@ -64,12 +66,14 @@ void compute_ECDH(char* dURand, char* dVRand, int keyLength)
     Point pub_keyU;
     pub_keyU.x = GET_BIGINT_PTR(BI_ECDH_PUBKEYUX_TAG);
     pub_keyU.y = GET_BIGINT_PTR(BI_ECDH_PUBKEYUY_TAG);
+    pub_keyU.z = GET_BIGINT_PTR(BI_ECDH_PUBKEYUZ_TAG);
     BigInt sharedInfoU = GET_BIGINT_PTR(BI_ECDH_SHAREDU_TAG);
    
     ECDH vECDH;
     Point pub_keyV;
     pub_keyV.x = GET_BIGINT_PTR(BI_ECDH_PUBKEYVX_TAG);
     pub_keyV.y = GET_BIGINT_PTR(BI_ECDH_PUBKEYVY_TAG);
+    pub_keyV.z = GET_BIGINT_PTR(BI_ECDH_PUBKEYVZ_TAG);
     BigInt sharedInfoV = GET_BIGINT_PTR(BI_ECDH_SHAREDV_TAG);
     
     start = start_tsc();
@@ -257,7 +261,7 @@ int main(){
     global_index_count = 0;
     printf("==========ECDH open_ssl secp521==========\n");  
     compute_ECDH_open_ssl("01EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA15868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409","01EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868738BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409", 521);
-    
+
     bigint_destroy_buffer();
   
     return 0;

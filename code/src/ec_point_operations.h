@@ -13,6 +13,8 @@ void ec_point_add(Point *result, const Point *a, const Point *b, const EllipticC
 /* Inplace addition of two points on a curve*/
 void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter *p);
 
+void ec_point_double_inplace(Point *a, const EllipticCurveParameter *p);
+
 /* Multiplication of a point on a curve by a scalar*/
 /* result = d*P */
 void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticCurveParameter *p);
