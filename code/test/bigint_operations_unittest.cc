@@ -529,21 +529,36 @@ TEST(bigint_right_shift_inplace, test_same_size)
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
     ASSERT_EQ(a->significant_blocks, 1);
+    bigint_destroy_buffer();
+}
 
-	a = bigint_from_hex_string(BI_TESTS_A_TAG, "10");
-	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "8");
+TEST(bigint_right_shift_inplace, test_same_size1)
+{
+    bigint_create_buffer();
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "8");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
     ASSERT_EQ(a->significant_blocks, 1);
+    bigint_destroy_buffer();
+}
 
-	a = bigint_from_hex_string(BI_TESTS_A_TAG, "FFFFFFFFFFFFFFFF");
-	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "7FFFFFFFFFFFFFFF");
+TEST(bigint_right_shift_inplace, test_same_size2)
+{
+    bigint_create_buffer();
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FFFFFFFFFFFFFFFF");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "7FFFFFFFFFFFFFFF");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
     ASSERT_EQ(a->significant_blocks, 1);
+    bigint_destroy_buffer();
+}
 
-	a = bigint_from_hex_string(BI_TESTS_A_TAG, "8cd2c5edd23d55f01c9007ffffffc007");
-	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "466962f6e91eaaf80e4803ffffffe003");
+TEST(bigint_right_shift_inplace, test_same_size3)
+{
+    bigint_create_buffer();
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "8cd2c5edd23d55f01c9007ffffffc007");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "466962f6e91eaaf80e4803ffffffe003");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
     ASSERT_EQ(a->significant_blocks, 2);
@@ -881,8 +896,8 @@ TEST(bigint_right_shift_inplace_64, bigint_right_shift_inplace_64_1)
 {
     bigint_create_buffer();
 
-    BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10000000000000000");
-	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "1");
+    BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "000000000000000070000000000000006000000000000000500000000000000040000000000000003000000000000000200000000000000010000000000000000");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "00000000000000007000000000000000600000000000000050000000000000004000000000000000300000000000000020000000000000001");
 	bigint_right_shift_inplace_64(a);
     ASSERT_TRUE(bigint_are_equal(a, expected));
 

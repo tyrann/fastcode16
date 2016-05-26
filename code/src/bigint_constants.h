@@ -7,7 +7,7 @@
 #endif
 
 // Alignment of bigint buffers in bytes
-#define BIGINT_ALIGNMENT 16
+#define BIGINT_ALIGNMENT 32
 
 // Size of the header informations of a BigInt (one uint64_t field)
 #define BIGINT_HEADER_SIZE 8
