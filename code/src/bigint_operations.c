@@ -21,7 +21,7 @@
 #define B 2
 
 #define PRINT_SIMD 0
-#define VECTORIZATION 1
+#define __AVX2 1
 
 #if PRINT_SIMD > 0
 	#define PRINT_AVX_U64(f)	printf("%llu %llu %llu %llu \n", f[0], f[1], f[2], f[3]);
@@ -204,7 +204,37 @@ void bigint_multiply_inplace(BigInt a, uint64_t b)
 void bigint_left_shift_inplace(BigInt a)
 {
     BIGINT_ASSERT_VALID(a);
-    
+#if __AVX2 == 2	
+   /*Version 1*/
+   for (uint64_t i = 0; i <= a->significant_blocks; i+=4)
+   {
+   	__m256i l0 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i));
+   	__m256i l1 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i + 4));
+   	__m256i perm128 = _mm256_permute2f128_si256(l0,l1, 0x21);
+   	__m256d tmp = _mm256_shuffle_pd(_mm256_castsi256_pd(l0), _mm256_castsi256_pd(perm128), 0x15);
+   	//long long int * pr = (long long int *)&tmp;
+   			
+   	//[x1 x2 x3 x4] << 63 
+   	__m256i hi_shift = _mm256_slli_epi64(_mm256_castpd_si256(tmp),0x3F);
+
+   	//[x0 x1 x2 x3] >> 1 
+   	__m256i lo_shift = _mm256_srli_epi64(l0,0x1); 
+   	__m256i ret = _mm256_add_epi64(hi_shift,lo_shift);
+
+   	_mm256_store_pd((double *)a->blocks + i, _mm256_castsi256_pd(ret)); 
+   	// Check if the number of significant octets decreased
+   	
+   }
+   // Need to find a better way
+   if (a->blocks[a->significant_blocks-1] && 0x8000000000000000)
+    {
+		__COUNT_OP(&global_opcount, 1);
+        a->blocks[a->significant_blocks] = 0x1;
+		a->significant_blocks++;
+		memset(a->blocks + a->significant_blocks, 0, (ROUND_UP_MUL4(a->significant_blocks) - a->significant_blocks) * 8);
+    }
+#else
+   
     // Left shift octets by one, propagating the carry across octets.
     uint64_t carry = 0;
     for (uint64_t i = 0; i < a->significant_blocks; i++)
@@ -226,12 +256,42 @@ void bigint_left_shift_inplace(BigInt a)
 		a->significant_blocks++;
 		memset(a->blocks + a->significant_blocks, 0, (ROUND_UP_MUL4(a->significant_blocks) - a->significant_blocks) * 8);
     }
+
+#endif
 }
 
 void bigint_right_shift_inplace(BigInt a)
 {
     BIGINT_ASSERT_VALID(a);
     
+#if __AVX2 > 0	
+	/*Version 1*/
+    for (uint64_t i = 0; i <= a->significant_blocks; i+=4)
+    {
+		__m256i l0 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i));
+		__m256i l1 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i + 4));
+		__m256i perm128 = _mm256_permute2f128_si256(l0,l1, 0x21);
+		__m256d tmp = _mm256_shuffle_pd(_mm256_castsi256_pd(l0), _mm256_castsi256_pd(perm128), 0x15);
+		//long long int * pr = (long long int *)&tmp;
+				
+		//[x1 x2 x3 x4] << 63 
+		__m256i hi_shift = _mm256_slli_epi64(_mm256_castpd_si256(tmp),0x3F);
+
+		//[x0 x1 x2 x3] >> 1 
+		__m256i lo_shift = _mm256_srli_epi64(l0,0x1); 
+		__m256i ret = _mm256_add_epi64(hi_shift,lo_shift);
+
+		_mm256_store_pd((double *)a->blocks + i, _mm256_castsi256_pd(ret)); 
+		// Check if the number of significant octets decreased
+		
+	}
+	if (a->blocks[a->significant_blocks-1] == 0 && a->significant_blocks > 1)
+	{
+		__COUNT_OP(&global_opcount, 2);
+		a->significant_blocks--;
+		__COUNT_OP(&global_opcount, 1);
+	}
+#else
     // Right shift octets by one, propagating the carry across octets.
     uint64_t carry = 0;
     for (uint64_t i = a->significant_blocks; i > 0; i--)
@@ -252,6 +312,8 @@ void bigint_right_shift_inplace(BigInt a)
         a->significant_blocks--;
 		__COUNT_OP(&global_opcount, 1);
 	}
+#endif
+
 }
 
 void bigint_right_shift_inplace_64(BigInt a)
@@ -270,7 +332,7 @@ void bigint_right_shift_inplace_64(BigInt a)
 	}
 
 	/*Version 2*/
-
+	//TODO
 
 
 	if(a->significant_blocks > 1)
@@ -278,7 +340,8 @@ void bigint_right_shift_inplace_64(BigInt a)
 		a->significant_blocks--;
 	}
 #else
-	
+
+	//SISD Version	
     for (uint64_t i = 0; i < a->significant_blocks; i++)
     {
         a->blocks[i] = a->blocks[i+1];
