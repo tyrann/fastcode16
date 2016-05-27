@@ -10,5 +10,10 @@
 #include "ec_dh.h"
 #include "logging/logging.h"
 
-void openssl_Benchmark(void);
+void openssl_Benchmark_Add(void);
+void openssl_Benchmark_Mult(void);
+void openssl_Benchmark_Mont_Mult(void);
+void openssl_Benchmark_Div(void);
+void openssl_Benchmark_Shift(void);
+
 #endif
