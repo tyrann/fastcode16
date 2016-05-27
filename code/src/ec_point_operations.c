@@ -43,27 +43,27 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		BigInt z1_squared = GET_BIGINT_PTR(BI_POINTADD_Z1_SQUARED_TAG);
 		BigInt z2_squared = GET_BIGINT_PTR(BI_POINTADD_Z2_SQUARED_TAG);
 
-		// calculate lambda1
-		montgomery_mul(z2_squared, b->z, b->z, params->p);
-		montgomery_mul(lambda1, a->x, z2_squared, params->p);
-
-		// calculate lambda2
+		// calculate lambda1 and lambda2
 		bigint_copy(lambda2, b->x);
+		
+		montgomery_mul(z2_squared, b->z, b->z, params->p);
 		montgomery_mul(z1_squared, a->z, a->z, params->p);
+		
+		montgomery_mul(lambda1, a->x, z2_squared, params->p);
 		montgomery_mul(lambda2, lambda2, z1_squared, params->p);
 
 		//calculate lambda3
 		bigint_copy(lambda3, lambda1);
 		bigint_sub_inplace_mod(lambda3, lambda2, params->p);
 
-		//calculate lambda4
+		//calculate lambda4 and lambda5
 		bigint_copy(lambda4, b->z);
-		montgomery_mul(lambda4, lambda4, z2_squared, params->p);
-		montgomery_mul(lambda4, lambda4, a->y, params->p);
-
-		//calculate lambda5
 		bigint_copy(lambda5, a->z);
+		
+		montgomery_mul(lambda4, lambda4, z2_squared, params->p);
 		montgomery_mul(lambda5, lambda5, z1_squared, params->p);
+		
+		montgomery_mul(lambda4, lambda4, a->y, params->p);
 		montgomery_mul(lambda5, lambda5, b->y, params->p);
 
 		//calculate lambda6
@@ -98,11 +98,13 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 
 		//calculate x3
 		bigint_copy(lambda1, lambda3);
-		montgomery_mul(lambda1, lambda3, lambda3, params->p);
 		bigint_copy(a->x, lambda6);
+		
+		montgomery_mul(lambda1, lambda3, lambda3, params->p);
 		montgomery_mul(a->x, a->x, a->x, params->p);
+		
 		montgomery_mul(lambda1, lambda1, lambda7, params->p);
-		bigint_copy(a->y, lambda1);
+		// bigint_copy(a->y, lambda1);
 		bigint_sub_inplace_mod(a->x, lambda1, params->p);
 
 		//calculate lambda9

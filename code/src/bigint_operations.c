@@ -21,7 +21,7 @@
 #define B 2
 
 #define PRINT_SIMD 0
-#define __AVX2 1
+#define __AVX2 0
 
 #if PRINT_SIMD > 0
 	#define PRINT_AVX_U64(f)	printf("%llu %llu %llu %llu \n", f[0], f[1], f[2], f[3]);
@@ -149,19 +149,77 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 		tmp = (a_0 + ((unsigned __int128)x_i * (unsigned __int128)y_0)) * p_prime;
 		__COUNT_OP(&global_opcount,3);
 		u = tmp;
-		bigint_copy(tmp1, y_inital);
-		bigint_multiply_inplace(tmp1, x_i);
-		bigint_copy(tmp2, p);
-		bigint_multiply_inplace(tmp2, u);
+		
+		// ==============================================
+		//     - parallelize muls
+		//     - three operands add using two carry chains 
+		// bigint_multiply_inplace(tmp1, x_i);
+		// bigint_multiply_inplace(tmp2, u);
+		bigint_multiply(tmp1, y_inital, x_i);
+		bigint_multiply(tmp2, p, u);
+		
 		bigint_add_inplace(res, tmp1);
 		bigint_add_inplace(res, tmp2);
+		// ==============================================
+		
+		// Optional: perform shift when writing result in
+		// the functions above
 		bigint_right_shift_inplace_64(res);
+		
 		__COUNT_INDEX(&global_index_count, 1);
 	}
 	
 	if(bigint_is_greater(res, p))
 	{
 		bigint_sub_inplace(res, p);
+	}
+}
+
+void bigint_multiply(BigInt res, BigInt a, uint64_t b)
+{
+	unsigned __int128 tmp;
+	uint64_t carry = 0;
+	uint64_t carry_current = 0;
+	uint64_t result;
+	char carry2 = 0;
+	if(b == 0)
+	{
+		bigint_copy(res, bigint_zero);
+	}
+	else
+	{
+		tmp = ((unsigned  __int128)a->blocks[0]) * ((unsigned  __int128)b);
+		// mul_low = _mulx_u64(a->blocks[0], b, &mul_hi);
+		result = (uint64_t)tmp;
+		uint64_t sig_blocks = a->significant_blocks;
+		res->significant_blocks = a->significant_blocks;
+		carry = tmp >> 64;
+		__COUNT_OP(&global_opcount, 2);
+		for(unsigned int i = 0; i < sig_blocks + 1; i++)
+		{
+			__COUNT_INDEX(&global_index_count, 1);
+			carry2 = _addcarryx_u64(carry2, carry_current, result, (unsigned long long*)&(res->blocks)[i]);
+			if(res->blocks[i] > 0 )
+			{
+				res->significant_blocks = i+1;
+				__COUNT_OP(&global_opcount,1);
+			}
+			if(i+1 < sig_blocks) {
+				tmp = ((unsigned  __int128)a->blocks[i+1]) * ((unsigned  __int128)b);
+				__COUNT_OP(&global_opcount,1);
+				__COUNT_INDEX(&global_index_count, 2);
+			}
+			else
+			{
+				tmp = 0;
+			}
+			result = (uint64_t)tmp;
+			carry_current = carry;
+			carry = tmp >> 64;
+			
+			__COUNT_OP(&global_opcount, 2);
+			__COUNT_INDEX(&global_index_count, 1);
+		}
 	}
 }
 
