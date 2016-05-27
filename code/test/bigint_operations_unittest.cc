@@ -462,6 +462,48 @@ TEST(bigint_sub_inplace, very_large_number)
     bigint_destroy_buffer();
 }
 
+TEST(bigint_add_inplace_mod, very_large_number)
+{
+    bigint_create_buffer();
+
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "2A94608F8D29FBB7AF52D1BC1667F505440CC75CABABDC5961BFCC9F54DADD1A4000000000000000000000000000723894712893741809273480912734809127");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "2A94608F8D29FBB7AF52D1BC1667F505440CC75CABABDC5961BFCC9F54DADD1A3FFFFFFFFFFFFFFFFFFFFFFFFFFF230498523049852309845234523405923845");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "5528c11f1a53f76f5ea5a3782ccfea0a88198eb95757b8b2c37f993ea9b5ba347fffffffffffffffffffffffffff953d2cc358dcf93b12ab86b4e35b3a12c96c");
+	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "1ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    bigint_add_inplace_mod(a, b, p);
+    ASSERT_TRUE(bigint_are_equal(a, c));
+
+    bigint_destroy_buffer();
+}
+
+TEST(bigint_sub_inplace_mod, very_large_number)
+{
+    bigint_create_buffer();
+
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "2A94608F8D29FBB7AF52D1BC1667F505440CC75CABABDC5961BFCC9F54DADD1A4000000000000000000000000000723894712893741809273480912734809");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "2A94608F8D29FBB7AF52D1BC1667F505440CC75CABABDC5961BFCC9F54DADD1A3FFFFFFFFFFFFFFFFFFF");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "2a94608f8d29fbb7af52d1bc1667f505440cc75ca902965068ed2ce3d9e5affe7e9980afabbf338a3545423a69e4756e9f237ac1d0180927348091273480a");
+	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "1ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    bigint_sub_inplace_mod(a, b, p);
+    ASSERT_TRUE(bigint_are_equal(a, c));
+
+    bigint_destroy_buffer();
+}
+
+TEST(bigint_sub_inplace_mod, very_large_number2)
+{
+    bigint_create_buffer();
+
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "2A94608F8D29FBB7AF52D1BC1667F505440CC75CABABDC5961BFCC9F54DADD1A4000000000000000000000000000723894712893741809273480912734809");
+	BigInt b = bigint_from_hex_string(BI_TESTS_B_TAG, "2A94608F8D29FBB7AF52D1BC1667F505440CC75CABABDC5961BFCC9F54DADD1A3FFFFFFFFFFFFFFFFFFF");
+	BigInt c = bigint_from_hex_string(BI_TESTS_C_TAG, "1fffffd56b9f7072d6044850ad2e43e9980afabbf338a356fd69af9712d31c261a500181667f505440cc75cababdc5961b8a9160dc853e2fe7f6d8cb7f6ed8cb7f5");
+	BigInt p = bigint_from_hex_string(BI_TESTS_P_TAG, "1ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    bigint_sub_inplace_mod(b, a, p);
+    ASSERT_TRUE(bigint_are_equal(b, c));
+
+    bigint_destroy_buffer();
+}
+
 // Test left shift
 TEST(bigint_left_shift_inplace, test_same_size)
 {
@@ -529,21 +571,36 @@ TEST(bigint_right_shift_inplace, test_same_size)
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
     ASSERT_EQ(a->significant_blocks, 1);
+    bigint_destroy_buffer();
+}
 
-	a = bigint_from_hex_string(BI_TESTS_A_TAG, "10");
-	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "8");
+TEST(bigint_right_shift_inplace, test_same_size1)
+{
+    bigint_create_buffer();
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "8");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
     ASSERT_EQ(a->significant_blocks, 1);
+    bigint_destroy_buffer();
+}
 
-	a = bigint_from_hex_string(BI_TESTS_A_TAG, "FFFFFFFFFFFFFFFF");
-	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "7FFFFFFFFFFFFFFF");
+TEST(bigint_right_shift_inplace, test_same_size2)
+{
+    bigint_create_buffer();
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "FFFFFFFFFFFFFFFF");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "7FFFFFFFFFFFFFFF");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
     ASSERT_EQ(a->significant_blocks, 1);
+    bigint_destroy_buffer();
+}
 
-	a = bigint_from_hex_string(BI_TESTS_A_TAG, "8cd2c5edd23d55f01c9007ffffffc007");
-	expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "466962f6e91eaaf80e4803ffffffe003");
+TEST(bigint_right_shift_inplace, test_same_size3)
+{
+    bigint_create_buffer();
+	BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "8cd2c5edd23d55f01c9007ffffffc007");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "466962f6e91eaaf80e4803ffffffe003");
     bigint_right_shift_inplace(a);
     ASSERT_EQ(bigint_are_equal(a, expected), 1);
     ASSERT_EQ(a->significant_blocks, 2);
@@ -705,6 +762,16 @@ TEST(bigint_montgomery_mul, bigint_montgomery_mul_SECP224R1)
     __montgomery_revert(b, c, p);
 
     ASSERT_TRUE(bigint_are_equal(b, expected));
+
+    expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "ec057e9ae26b07d0280b7f434f8f5c2b1eae06c7dfeffffff24b00f0");
+    x = bigint_from_hex_string(BI_TESTS_X_TAG, "10000000000000");
+	y = bigint_from_hex_string(BI_TESTS_Y_TAG, "DB4FF10EC057E9AE26B07D0280B7F4341DA5D1B1EAE06C7DFF");
+	__montgomery_convert(x_conv, x, p);
+	__montgomery_convert(y_conv, y, p);
+	montgomery_mul(c, x_conv, y_conv, p);
+	__montgomery_revert(b, c, p);
+
+	ASSERT_TRUE(bigint_are_equal(b, expected));
 
 	bigint_destroy_buffer();
 }
@@ -881,8 +948,8 @@ TEST(bigint_right_shift_inplace_64, bigint_right_shift_inplace_64_1)
 {
     bigint_create_buffer();
 
-    BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "10000000000000000");
-	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "1");
+    BigInt a = bigint_from_hex_string(BI_TESTS_A_TAG, "000000000000000070000000000000006000000000000000500000000000000040000000000000003000000000000000200000000000000010000000000000000");
+	BigInt expected = bigint_from_hex_string(BI_TESTS_EXPECTED_TAG, "00000000000000007000000000000000600000000000000050000000000000004000000000000000300000000000000020000000000000001");
 	bigint_right_shift_inplace_64(a);
     ASSERT_TRUE(bigint_are_equal(a, expected));
 

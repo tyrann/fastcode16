@@ -20,6 +20,9 @@ int bigint_is_even(BigInt a);
 // Create a copy of a BigInt
 void bigint_copy(BigInt dest, const BigInt a);
 
+void bigint_print(BigInt val);
+void bigint_print_prime(char *label, const BigInt val, const BigInt prime);
+
 // Checks if a BigInt object is currently valid
 #define BIGINT_ASSERT_VALID(num) \
 { \
