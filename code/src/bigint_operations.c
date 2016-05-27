@@ -177,45 +177,42 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 
 void bigint_multiply(BigInt res, BigInt a, uint64_t b)
 {
-	unsigned __int128 tmp;
 	uint64_t carry = 0;
 	uint64_t carry_current = 0;
-	uint64_t result;
 	char carry2 = 0;
+	unsigned long long int mul_low, mul_hi;
 	if(b == 0)
 	{
 		bigint_copy(res, bigint_zero);
 	}
 	else
 	{
-		tmp = ((unsigned  __int128)a->blocks[0]) * ((unsigned  __int128)b);
-		// mul_low = _mulx_u64(a->blocks[0], b, &mul_hi);
-		result = (uint64_t)tmp;
+		mul_low = _mulx_u64(a->blocks[0], b, &mul_hi);
 		uint64_t sig_blocks = a->significant_blocks;
 		res->significant_blocks = a->significant_blocks;
-		carry = tmp >> 64;
+		carry = mul_hi;
 		__COUNT_OP(&global_opcount, 2);
 		for(unsigned int i = 0; i < sig_blocks + 1; i++)
 		{
 			__COUNT_INDEX(&global_index_count, 1);
-			carry2 = _addcarryx_u64(carry2, carry_current, result, (unsigned long long*)&(res->blocks)[i]);
+			carry2 = _addcarryx_u64(carry2, carry_current, mul_low, (unsigned long long*)&(res->blocks)[i]);
 			if(res->blocks[i] > 0 )
 			{
 				res->significant_blocks = i+1;
 				__COUNT_OP(&global_opcount,1);
 			}
 			if(i+1 < sig_blocks) {
-				tmp = ((unsigned  __int128)a->blocks[i+1]) * ((unsigned  __int128)b);
+				mul_low = _mulx_u64(a->blocks[i+1], b, &mul_hi);
 				__COUNT_OP(&global_opcount,1);
 				__COUNT_INDEX(&global_index_count, 2);
 			}
 			else
 			{
-				tmp = 0;
+				mul_low = 0;
+				mul_hi = 0;
 			}
-			result = (uint64_t)tmp;
 			carry_current = carry;
-			carry = tmp >> 64;
+			carry = mul_hi;
 			
 			__COUNT_OP(&global_opcount, 2);
 			__COUNT_INDEX(&global_index_count, 1);
