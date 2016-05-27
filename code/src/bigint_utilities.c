@@ -102,3 +102,19 @@ int bigint_is_even(const BigInt a)
     }
     return 1;
 }
+
+void bigint_print(BigInt val)
+{
+	char *val_str = bigint_to_hex_string(val);
+	printf("%s\n", val_str);
+	free(val_str);
+}
+
+void bigint_print_prime(char *label, const BigInt val, const BigInt prime)
+{
+	BigInt tmp = GET_BIGINT_PTR(BI_BIGINT_PRINT_PRIME_TAG);
+	__montgomery_revert(tmp, val, prime);
+	char *val_str = bigint_to_hex_string(tmp);
+	printf("%s: %s\n", label, val_str);
+	free(val_str);
+}
