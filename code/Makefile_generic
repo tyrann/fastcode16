@@ -23,5 +23,5 @@ VPATH = ./src:./test:./src/logging:./src/benchmark:./src/opcount:./src/config:./
 
 # GCC architecture flags
 AFLAGS = 
-INFLAGS = -I ./lib/openssl/usr/include
+INFLAGS = -I ./lib/openssl/usr/include/openssl
 CFLAGS = -g -I ./src -Wall -Wextra -std=c99 -DLOG_LEVEL=2 $(INFLAGS) $(AFLAGS) -DNDEBUG -O3 -mavx2

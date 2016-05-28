@@ -10,7 +10,7 @@ Here are some guidelines on how to compile openssl from source and link it to th
 
 If not done already, you need to change the include path in the code so that it now points to the new local openssl. (should be done)
 
-Before compiling our code, set the environement variable LD_LIBRARY_PATH (or LIBRARY_PATH depending on your system) to point to our newly compiled libcrypto.a.
+Before compiling our code, set the environement variable LD_LIBRARY_PATH (and LIBRARY_PATH depending on your system) to point to our newly compiled libcrypto.a.
 
 
 
