@@ -12,7 +12,7 @@
 #include <openssl/crypto.h>
 #include <stdlib.h>
 
-#define NUM_RUNS 1
+#define NUM_RUNS 10
 #define CYCLES_REQUIRED 1e8
 #define FREQUENCY 3.4e9
 #define CALIBRATE
