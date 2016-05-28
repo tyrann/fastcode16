@@ -6,6 +6,7 @@ TMP = $(SOURCES_TESTING:.c=.o)
 OBJECTS_TESTING = $(TMP:.cc=.o)
 
 OBJECTS_MAIN = $(SOURCES_MAIN:.c=.o)
+OBJECTS_BENCH = $(SOURCE_BENCHMARK:.c=.o)
 
 # Paths
 GTEST_DIR = ./lib/googletest
@@ -29,7 +30,7 @@ CXXFLAGS += -g -Wall -Wextra -pthread
 
 # targets
 
-EXEC = $(BIN_DIR)/unittests $(BIN_DIR)/ecc
+EXEC = $(BIN_DIR)/unittests $(BIN_DIR)/benchmark $(BIN_DIR)/ecc
 
 all : $(EXEC)
 
@@ -58,6 +59,9 @@ $(BIN_DIR)/unittests : $(OBJ_DIR)/gtest_main.a $(addprefix $(OBJ_DIR)/,$(OBJECTS
 
 $(BIN_DIR)/ecc : $(addprefix $(OBJ_DIR)/,$(OBJECTS_MAIN)) | $(BIN_DIR)
 	$(CC) $(CFLAS) $^ -lcrypto -o $@
+
+$(BIN_DIR)/benchmark : $(addprefix $(OBJ_DIR)/,$(OBJECTS_BENCH)) | $(BIN_DIR)
+	$(CC) $(CFLAS) $^ -lcrypto -o $@ 
 
 $(BIN_DIR):
 	 mkdir $(BIN_DIR)

@@ -1,7 +1,7 @@
 #ifndef WIN32
 #include <sys/time.h>
 #include <inttypes.h>
-#include "main.h"
+#include "benchmark/benchmark.h" 
 #endif
 #include <stdlib.h>
 #include <stdio.h>
