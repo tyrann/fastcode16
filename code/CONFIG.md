@@ -14,4 +14,4 @@ Before compiling our code, set the environement variable LD_LIBRARY_PATH (or LIB
 
 
 
-./config -fPIC shared --prefix=/home/tyrann/HDD_Satellite/ETHZ/MA2/Fast_Numerical_Code/fastcode16/code/lib/openssl/usr --openssldir=/home/tyrann/HDD_Satellite/ETHZ/MA2/Fast_Numerical_Code/fastcode16/code/lib/openssl/etc
+
