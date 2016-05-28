@@ -6,9 +6,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#ifdef SYS_OSSL
 #include <openssl/ec.h>
 #include <openssl/bn.h>
 #include <openssl/crypto.h>
+#else
+#include "../lib/openssl/usr/include/openssl/ec.h"
+#include "../lib/openssl/usr/include/openssl/bn.h"
+#include "../lib/openssl/usr/include/openssl/crypto.h"
+#endif
 #include <stdlib.h>
 #include <openssl_benchmark.h>
 #define NUM_RUNS 1
