@@ -1,16 +1,38 @@
 \documentclass{beamer}
+\usetheme{Dresden}
+\usecolortheme{orchid}
+\usepackage{color}
+\usepackage[utf8]{inputenc} 
+
 \usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{listings}          
+%\usepackage{enumitem}
 
 
-%setbeamersize{text margin left=1.2em}
-%\setlength{\leftmargini}{1.2em}
+\setbeamersize{text margin left=1.2em}
+\setlength{\leftmargini}{1.2em}
 
-\setbeamertemplate{itemize item}[square]
-\setbeamercolor{itemize item}{fg=black}
-\setbeamertemplate{navigation symbols}{}
+\title{Elliptic Curve Cryptography}
+
+\subtitle{Fast implentation of the Diffie-Hellman key exchange}
+
+\author{M. Gollub \and C. Heiniger \and T. Rubeli \and H. Zhao}
+
+\institute{ETH}
+\date{\today}
+
+
+\subject{Computer Science}
 
 \begin{document}
+  \begin{frame}[plain]
+  \titlepage
+  \end{frame}
+  \section{Introduction}
+  \setcounter{subsection}{1}
   \begin{frame}
+  \frametitle{Elliptic Curve}
   \begin{itemize}
   \item{
   An elliptic curve $E(\mathbb{F}_p)$ consists of the set of the points $P(x,y)$, $x,y \in \mathbb{F}_p$ satisfying
@@ -23,7 +45,9 @@
   }
   \end{itemize}
   \end{frame}
-  \begin{frame}
+  \begin{frame}[shrink=20]
+  \frametitle{Diffie Hellman key exchange}
+  \begin{table}
   \begin{tabular}{|p{5cm} p{5cm} |}
       \hline			
       \multicolumn{2}{|p{10cm}|}{\rule{0em}{1.2em}\bf{Public parameters}}\\
@@ -49,7 +73,26 @@
       \multicolumn{2}{|p{10cm}|}{
       The shared secret is $aQ = a(bG) = b(aG) = bP$}\\ \hline
     \end{tabular}
+    \end{table}
     \vfill
     \tiny{Adaption of Table 2.2 J. Hoffstein et al., \emph{An Introduction to Mathematical Cryptography}}
-  \end{frame}
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Double-and-add-Method}
+\begin{lstlisting}[frame=single]  % Start your code-block
+N <- P
+Q <- 0
+for i from 0 to m do
+  if di = 1 then
+    Q <- point_add(Q, N)
+  N <- point_double(N)
+return Q
+\end{lstlisting}
+\end{frame}
+\begin{frame}
+\begin{figure}\flushleft
+\includegraphics[scale=0.95, trim={0.6cm 0 0 0}]{exc4_performance}
+\end{figure}
+
+\end{frame}
 \end{document}
