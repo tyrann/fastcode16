@@ -24,6 +24,8 @@ void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p);
  */
 void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p);
 
+void bigint_mul_add_rshift_inplace_x2(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d, const uint64_t mul_size);
+
 void bigint_mul_add_inplace_x2(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d, const uint64_t mul_size);
 
 // Compute res += a * b

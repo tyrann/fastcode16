@@ -154,6 +154,7 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	if (p->significant_blocks < mul_size)
 		memset(p->blocks + p->significant_blocks, 0, (ROUND_UP_MUL4(mul_size) - p->significant_blocks) * 8);
 	memset(res->blocks, 0, ROUND_UP_MUL4(mul_size + 2) * 8);
+	
 	for (unsigned int i = 0; i < p->significant_blocks; ++i)
 	{
 		a_0 = res->blocks[0];
@@ -166,30 +167,127 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 		__COUNT_OP(&global_opcount,3);
 		u = tmp;
 		
-		// ==============================================
-		//     - parallelize muls
-		//     - three operands add using two carry chains
-		// bigint_multiply(tmp1, y_inital, x_i);
-		// bigint_add_inplace(res, tmp1);
-			
-		bigint_mul_add_inplace_x2(res, y_inital, x_i, p, u, mul_size);
+		// ===================================================
+		//     > Original code (equivalent of the
+		//       bigint_mul_add_rshift_inplace_x2 function)
+		// bigint_copy(tmp1, y_inital); 
+		// bigint_multiply_inplace(tmp1, x_i); 
+		// bigint_copy(tmp2, p); 
+		// bigint_multiply_inplace(tmp2, u); 
+		// bigint_add_inplace(res, tmp1); 
+		// bigint_add_inplace(res, tmp2); 
+		// bigint_right_shift_inplace_64(res); 
+		// ===================================================
+		bigint_mul_add_rshift_inplace_x2(res, y_inital, x_i, p, u, mul_size);
 		
-		// bigint_multiply(tmp2, p, u);
-		// bigint_add_inplace(res, tmp2);
-		// bigint_mul_add_inplace(res, p, u, mul_size);
-		// ==============================================
-		
-		res->significant_blocks = mul_size + 2;
-		while(res->blocks[res->significant_blocks-1] == 0 && res->significant_blocks > 1) res->significant_blocks--;
-		
-		// Optional: perform shift when writing result in
-		// the functions above
-		bigint_right_shift_inplace_64(res);
 		__COUNT_INDEX(&global_index_count, 1);
 	}
+	
+	res->significant_blocks = mul_size + 1;
+	while(res->blocks[res->significant_blocks-1] == 0 && res->significant_blocks > 1) res->significant_blocks--;
+	
 	if(bigint_is_greater(res, p))
 	{
 		bigint_sub_inplace(res, p);
+	}
+}
+
+void bigint_mul_add_rshift_inplace_x2(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d, const uint64_t mul_size) {
+	
+	unsigned char add_carry_m1 = 0, add_carry_1 = 0;
+	unsigned char add_carry_m2 = 0, add_carry_2 = 0;
+	unsigned long long int low_m1, hi_m1, carry_m1, temp_m1;
+	unsigned long long int low_m2, hi_m2, carry_m2, temp_m2, partial, unused;
+
+	if (b != 0 && d != 0)
+	{
+		// Block 0
+		low_m1 = _mulx_u64(a->blocks[0], b, &carry_m1);
+		add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[0], low_m1, &partial);
+		low_m2 = _mulx_u64(c->blocks[0], d, &carry_m2);
+		add_carry_2 = _addcarryx_u64(add_carry_2, partial, low_m2, &unused);
+
+		// Blocks 1 : mul_size-1
+		for (unsigned int i = 1; i < mul_size; i++) {
+			__COUNT_INDEX(&global_index_count, 1);
+			__COUNT_OP(&global_opcount, 4);
+
+			low_m1 = _mulx_u64(a->blocks[i], b, &hi_m1);
+			add_carry_m1 = _addcarryx_u64(add_carry_m1, carry_m1, low_m1, &temp_m1);
+			add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[i], temp_m1, &partial);
+			carry_m1 = hi_m1;
+
+			low_m2 = _mulx_u64(c->blocks[i], d, &hi_m2);
+			add_carry_m2 = _addcarryx_u64(add_carry_m2, carry_m2, low_m2, &temp_m2);
+			add_carry_2 = _addcarryx_u64(add_carry_2, partial, temp_m2, (unsigned long long*)&(res->blocks)[i-1]);
+			carry_m2 = hi_m2;
+		}
+
+		// Block mul_size
+		_addcarryx_u64(add_carry_m1, carry_m1, 0, &temp_m1);
+		add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[mul_size], temp_m1, &partial);
+		_addcarryx_u64(add_carry_m2, carry_m2, 0, &temp_m2);
+		add_carry_2 = _addcarryx_u64(add_carry_2, partial, temp_m2, (unsigned long long*)&(res->blocks)[mul_size-1]);
+
+		// Block mul_size + 1
+		res->blocks[mul_size] = res->blocks[mul_size+1] + (uint64_t)add_carry_1 + (uint64_t)add_carry_2;
+		res->blocks[mul_size + 1] = 0;
+	}
+	else if (b != 0)
+	{
+		// Block 0
+		low_m1 = _mulx_u64(a->blocks[0], b, &carry_m1);
+		add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[0], low_m1, &unused);
+
+		// Blocks 1 : mul_size-1
+		for (unsigned int i = 1; i < mul_size; i++) {
+			__COUNT_INDEX(&global_index_count, 1);
+			__COUNT_OP(&global_opcount, 2);
+
+			low_m1 = _mulx_u64(a->blocks[i], b, &hi_m1);
+			add_carry_m1 = _addcarryx_u64(add_carry_m1, carry_m1, low_m1, &temp_m1);
+			add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[i], temp_m1, (unsigned long long*)&(res->blocks)[i-1]);
+			carry_m1 = hi_m1;
+		}
+
+		// Block mul_size
+		_addcarryx_u64(add_carry_m1, carry_m1, 0, &temp_m1);
+		add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[mul_size], temp_m1, (unsigned long long*)&(res->blocks)[mul_size-1]);
+
+		// Block mul_size + 1
+		res->blocks[mul_size] += (uint64_t)add_carry_1;
+	}
+	else if (d != 0) {
+		// Block 0
+		low_m2 = _mulx_u64(c->blocks[0], d, &carry_m2);
+		add_carry_2 = _addcarryx_u64(add_carry_2, res->blocks[0], low_m2, &unused);
+
+		// Blocks 1 : mul_size-1
+		for (unsigned int i = 1; i < mul_size; i++) {
+			__COUNT_INDEX(&global_index_count, 1);
+			__COUNT_OP(&global_opcount, 2);
+
+			low_m2 = _mulx_u64(c->blocks[i], d, &hi_m2);
+			add_carry_m2 = _addcarryx_u64(add_carry_m2, carry_m2, low_m2, &temp_m2);
+			add_carry_2 = _addcarryx_u64(add_carry_2, res->blocks[i], temp_m2, (unsigned long long*)&(res->blocks)[i-1]);
+			carry_m2 = hi_m2;
+		}
+
+		// Block mul_size
+		_addcarryx_u64(add_carry_m2, carry_m2, 0, &temp_m2);
+		add_carry_2 = _addcarryx_u64(add_carry_2, res->blocks[mul_size], temp_m2, (unsigned long long*)&(res->blocks)[mul_size-1]);
+
+		// Block mul_size + 1
+		res->blocks[mul_size] += (uint64_t)add_carry_2;
+	}
+	else
+	{
+		for (uint64_t i = 0; i < mul_size + 1; i++)
+    	{
+        	res->blocks[i] = res->blocks[i+1];
+			__COUNT_INDEX(&global_index_count, 2);
+    	}
+		res->blocks[mul_size + 1] = 0U;
 	}
 }
 
@@ -204,9 +302,9 @@ void bigint_mul_add_inplace_x2(BigInt res, const BigInt a, const uint64_t b, con
 	{
 		// Block 0
 		low_m1 = _mulx_u64(a->blocks[0], b, &carry_m1);
-		add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[0], low_m1, (unsigned long long*)&(res->blocks)[0]);
+		add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[0], low_m1, &partial);
 		low_m2 = _mulx_u64(c->blocks[0], d, &carry_m2);
-		add_carry_2 = _addcarryx_u64(add_carry_2, res->blocks[0], low_m2, (unsigned long long*)&(res->blocks)[0]);
+		add_carry_2 = _addcarryx_u64(add_carry_2, partial, low_m2, (unsigned long long*)&(res->blocks)[0]);
 
 		// Blocks 1 : mul_size-1
 		for (unsigned int i = 1; i < mul_size; i++) {
@@ -226,9 +324,9 @@ void bigint_mul_add_inplace_x2(BigInt res, const BigInt a, const uint64_t b, con
 
 		// Block mul_size
 		_addcarryx_u64(add_carry_m1, carry_m1, 0, &temp_m1);
-		add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[mul_size], temp_m1, (unsigned long long*)&(res->blocks)[mul_size]);
+		add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[mul_size], temp_m1, &partial);
 		_addcarryx_u64(add_carry_m2, carry_m2, 0, &temp_m2);
-		add_carry_2 = _addcarryx_u64(add_carry_2, res->blocks[mul_size], temp_m2, (unsigned long long*)&(res->blocks)[mul_size]);
+		add_carry_2 = _addcarryx_u64(add_carry_2, partial, temp_m2, (unsigned long long*)&(res->blocks)[mul_size]);
 
 		// Block mul_size + 1
 		res->blocks[mul_size + 1] += (uint64_t)add_carry_2;
