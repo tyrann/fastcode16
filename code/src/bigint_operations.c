@@ -132,40 +132,28 @@ void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p)
 void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 {
 	assert(p_prime != 0);
-	BigInt x_inital = GET_BIGINT_PTR(BI_MONTGOMERYMUL_X_INITAL_TAG);
-	BigInt y_inital = GET_BIGINT_PTR(BI_MONTGOMERYMUL_Y_INITAL_TAG);
-	bigint_copy(x_inital, x);
-	bigint_copy(y_inital, y);
-
+	
 	//Set res to 0
 	bigint_copy(res, bigint_zero);
-
 	uint64_t u, a_0, y_0, x_i;
-
-	unsigned __int128 tmp;
-	y_0 = y_inital->blocks[0];
-	// BigInt tmp1 = GET_BIGINT_PTR(BI_MONTGOMERY_MUL_TMP1_TAG);
-	// BigInt tmp2 = GET_BIGINT_PTR(BI_MONTGOMERY_MUL_TMP2_TAG);
+	y_0 = y->blocks[0];
 	
 	// Clear memory
-	uint64_t mul_size = max(y_inital->significant_blocks, p->significant_blocks);
-	if (y_inital->significant_blocks < mul_size)
-		memset(y_inital->blocks + y_inital->significant_blocks, 0, (ROUND_UP_MUL4(mul_size) - y_inital->significant_blocks) * 8);
-	if (p->significant_blocks < mul_size)
-		memset(p->blocks + p->significant_blocks, 0, (ROUND_UP_MUL4(mul_size) - p->significant_blocks) * 8);
+	uint64_t mul_size = p->significant_blocks;
+	if (y->significant_blocks < mul_size)
+		memset(y->blocks + y->significant_blocks, 0, (ROUND_UP_MUL4(mul_size) - y->significant_blocks) * 8);
 	memset(res->blocks, 0, ROUND_UP_MUL4(mul_size + 2) * 8);
 	
 	for (unsigned int i = 0; i < p->significant_blocks; ++i)
 	{
 		a_0 = res->blocks[0];
-		if(x_inital->significant_blocks > i) {
-			x_i = x_inital->blocks[i];
+		if(x->significant_blocks > i) {
+			x_i = x->blocks[i];
 		} else {
 			x_i = 0;
 		}
-		tmp = (a_0 + ((unsigned __int128)x_i * (unsigned __int128)y_0)) * p_prime;
+		u = (a_0 + (x_i * y_0)) * p_prime;
 		__COUNT_OP(&global_opcount,3);
-		u = tmp;
 		
 		// ===================================================
 		//     > Original code (equivalent of the
@@ -178,8 +166,7 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 		// bigint_add_inplace(res, tmp2); 
 		// bigint_right_shift_inplace_64(res); 
 		// ===================================================
-		bigint_mul_add_rshift_inplace_x2(res, y_inital, x_i, p, u, mul_size);
-		
+		bigint_mul_add_rshift_inplace_x2(res, y, x_i, p, u, mul_size);
 		__COUNT_INDEX(&global_index_count, 1);
 	}
 	
@@ -206,11 +193,11 @@ void bigint_mul_add_rshift_inplace_x2(BigInt res, const BigInt a, const uint64_t
 		add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[0], low_m1, &partial);
 		low_m2 = _mulx_u64(c->blocks[0], d, &carry_m2);
 		add_carry_2 = _addcarryx_u64(add_carry_2, partial, low_m2, &unused);
-
+		
 		// Blocks 1 : mul_size-1
 		for (unsigned int i = 1; i < mul_size; i++) {
 			__COUNT_INDEX(&global_index_count, 1);
-			__COUNT_OP(&global_opcount, 4);
+			__COUNT_OP(&global_opcount, 6);
 
 			low_m1 = _mulx_u64(a->blocks[i], b, &hi_m1);
 			add_carry_m1 = _addcarryx_u64(add_carry_m1, carry_m1, low_m1, &temp_m1);
@@ -232,6 +219,8 @@ void bigint_mul_add_rshift_inplace_x2(BigInt res, const BigInt a, const uint64_t
 		// Block mul_size + 1
 		res->blocks[mul_size] = res->blocks[mul_size+1] + (uint64_t)add_carry_1 + (uint64_t)add_carry_2;
 		res->blocks[mul_size + 1] = 0;
+		
+		__COUNT_OP(&global_opcount, 10);
 	}
 	else if (b != 0)
 	{
@@ -242,7 +231,7 @@ void bigint_mul_add_rshift_inplace_x2(BigInt res, const BigInt a, const uint64_t
 		// Blocks 1 : mul_size-1
 		for (unsigned int i = 1; i < mul_size; i++) {
 			__COUNT_INDEX(&global_index_count, 1);
-			__COUNT_OP(&global_opcount, 2);
+			__COUNT_OP(&global_opcount, 3);
 
 			low_m1 = _mulx_u64(a->blocks[i], b, &hi_m1);
 			add_carry_m1 = _addcarryx_u64(add_carry_m1, carry_m1, low_m1, &temp_m1);
@@ -256,6 +245,8 @@ void bigint_mul_add_rshift_inplace_x2(BigInt res, const BigInt a, const uint64_t
 
 		// Block mul_size + 1
 		res->blocks[mul_size] += (uint64_t)add_carry_1;
+		
+		__COUNT_OP(&global_opcount, 5);
 	}
 	else if (d != 0) {
 		// Block 0
@@ -265,7 +256,7 @@ void bigint_mul_add_rshift_inplace_x2(BigInt res, const BigInt a, const uint64_t
 		// Blocks 1 : mul_size-1
 		for (unsigned int i = 1; i < mul_size; i++) {
 			__COUNT_INDEX(&global_index_count, 1);
-			__COUNT_OP(&global_opcount, 2);
+			__COUNT_OP(&global_opcount, 3);
 
 			low_m2 = _mulx_u64(c->blocks[i], d, &hi_m2);
 			add_carry_m2 = _addcarryx_u64(add_carry_m2, carry_m2, low_m2, &temp_m2);
@@ -279,6 +270,8 @@ void bigint_mul_add_rshift_inplace_x2(BigInt res, const BigInt a, const uint64_t
 
 		// Block mul_size + 1
 		res->blocks[mul_size] += (uint64_t)add_carry_2;
+		
+		__COUNT_OP(&global_opcount, 5);
 	}
 	else
 	{

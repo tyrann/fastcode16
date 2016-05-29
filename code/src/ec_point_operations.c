@@ -43,28 +43,31 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		BigInt z1_squared = GET_BIGINT_PTR(BI_POINTADD_Z1_SQUARED_TAG);
 		BigInt z2_squared = GET_BIGINT_PTR(BI_POINTADD_Z2_SQUARED_TAG);
 
-		// calculate lambda1 and lambda2
-		bigint_copy(lambda2, b->x);
+		BigInt tmp1 = GET_BIGINT_PTR(BI_POINTADD_TMP1_TAG);
+		BigInt tmp2 = GET_BIGINT_PTR(BI_POINTADD_TMP2_TAG);
 		
+		// calculate lambda1 and lambda2
+				
+		// TODO: merge
 		montgomery_mul(z2_squared, b->z, b->z, params->p);
 		montgomery_mul(z1_squared, a->z, a->z, params->p);
 		
+		// TODO: merge
 		montgomery_mul(lambda1, a->x, z2_squared, params->p);
-		montgomery_mul(lambda2, lambda2, z1_squared, params->p);
+		montgomery_mul(lambda2, b->x, z1_squared, params->p);
 
 		//calculate lambda3
 		bigint_copy(lambda3, lambda1);
 		bigint_sub_inplace_mod(lambda3, lambda2, params->p);
 
-		//calculate lambda4 and lambda5
-		bigint_copy(lambda4, b->z);
-		bigint_copy(lambda5, a->z);
+		//calculate lambda4 and lambda5		
+		// TODO: merge
+		montgomery_mul(tmp1, b->z, z2_squared, params->p);
+		montgomery_mul(tmp2, a->z, z1_squared, params->p);
 		
-		montgomery_mul(lambda4, lambda4, z2_squared, params->p);
-		montgomery_mul(lambda5, lambda5, z1_squared, params->p);
-		
-		montgomery_mul(lambda4, lambda4, a->y, params->p);
-		montgomery_mul(lambda5, lambda5, b->y, params->p);
+		// TODO: merge
+		montgomery_mul(lambda4, tmp1, a->y, params->p);
+		montgomery_mul(lambda5, tmp2, b->y, params->p);
 
 		//calculate lambda6
 		bigint_copy(lambda6, lambda4);
@@ -93,34 +96,34 @@ void ec_point_add_inplace(Point *a, const Point *b, const EllipticCurveParameter
 		bigint_add_inplace_mod(lambda8, lambda5, params->p);
 
 		//calculate z3
-		montgomery_mul(a->z, a->z, b->z, params->p);
-		montgomery_mul(a->z, a->z, lambda3, params->p);
+		// TODO: merge
+		montgomery_mul(tmp1, a->z, b->z, params->p);
+		montgomery_mul(lambda1, lambda3, lambda3, params->p);
 
 		//calculate x3
-		bigint_copy(lambda1, lambda3);
-		bigint_copy(a->x, lambda6);
+		// TODO: merge	
+		montgomery_mul(a->x, lambda6, lambda6, params->p);
+		montgomery_mul(a->z, tmp1, lambda3, params->p);
 		
-		montgomery_mul(lambda1, lambda3, lambda3, params->p);
-		montgomery_mul(a->x, a->x, a->x, params->p);
-		
-		montgomery_mul(lambda1, lambda1, lambda7, params->p);
-		// bigint_copy(a->y, lambda1);
-		bigint_sub_inplace_mod(a->x, lambda1, params->p);
+		montgomery_mul(lambda9, lambda1, lambda7, params->p);
+		bigint_sub_inplace_mod(a->x, lambda9, params->p);
 
 		//calculate lambda9
-		bigint_copy(lambda9, lambda1);
 		bigint_copy(lambda1, a->x);
 		bigint_left_shift_inplace(lambda1);
 		bigint_modulo_inplace(lambda1, params->p);
 		bigint_sub_inplace_mod(lambda9, lambda1, params->p);
 
 		//calculate y_3
-		montgomery_mul(a->y, lambda9, lambda6, params->p);
+		// TODO: merge
+		montgomery_mul(tmp2, lambda9, lambda6, params->p);
 		montgomery_mul(lambda1, lambda3, lambda3, params->p);
-		montgomery_mul(lambda1, lambda1, lambda3, params->p);
-		montgomery_mul(lambda1, lambda1, lambda8, params->p);
-		bigint_sub_inplace_mod(a->y, lambda1, params->p);
-		montgomery_mul(a->y, a->y, montgomery_inverse_two, params->p);
+		
+		montgomery_mul(tmp1, lambda1, lambda3, params->p);
+		montgomery_mul(lambda1, tmp1, lambda8, params->p);
+		bigint_sub_inplace_mod(tmp2, lambda1, params->p);
+		
+		montgomery_mul(a->y, tmp2, montgomery_inverse_two, params->p);
 
 		a->is_at_infinity = 0;
     } 
@@ -135,25 +138,30 @@ void ec_point_double_inplace(Point *a, const EllipticCurveParameter *params)
 	BigInt y_1 = GET_BIGINT_PTR(BI_EC_POINT_DOUBLE_INPLACE_Y1_TAG);
 	BigInt z_1 = GET_BIGINT_PTR(BI_EC_POINT_DOUBLE_INPLACE_Z1_TAG);
 
-	bigint_copy(x_1, a->x);
-	bigint_copy(y_1, a->y);
+	BigInt tmp1 = GET_BIGINT_PTR(BI_POINTADD_TMP1_TAG);
+		
 	bigint_copy(z_1, a->z);
 	bigint_copy(lambda2, a->x);
-
-	// calculate lambda1
-	montgomery_mul(x_1, x_1, x_1, params->p);
+	
+	// TODO: merge
+	montgomery_mul(lambda1, a->z, a->z, params->p);
+	montgomery_mul(x_1, a->x, a->x, params->p);
+	
 	bigint_copy(a->x, x_1);
 	bigint_left_shift_inplace(x_1);
 	bigint_modulo_inplace(x_1, params->p);
 	bigint_add_inplace_mod(x_1, a->x, params->p);
+	
+	// TODO: merge
+	montgomery_mul(tmp1, lambda1, lambda1, params->p);
+	montgomery_mul(a->z, a->y, z_1, params->p);
 
-	bigint_copy(lambda1, z_1);
-	montgomery_mul(lambda1, lambda1, lambda1, params->p);
-	montgomery_mul(lambda1, lambda1, lambda1, params->p);
-	montgomery_mul(lambda1, lambda1, params->a, params->p);
+	// TODO: merge
+	montgomery_mul(lambda1, tmp1, params->a, params->p);
+	montgomery_mul(y_1, a->y, a->y, params->p);
+	
 	bigint_add_inplace_mod(lambda1, x_1, params->p);
 
-	montgomery_mul(a->z, y_1, z_1, params->p);
 	bigint_left_shift_inplace(a->z);
 	bigint_modulo_inplace(a->z, params->p);
 
@@ -163,28 +171,30 @@ void ec_point_double_inplace(Point *a, const EllipticCurveParameter *params)
 	bigint_modulo_inplace(lambda2, params->p);
 	bigint_left_shift_inplace(lambda2);
 	bigint_modulo_inplace(lambda2, params->p);
-	montgomery_mul(y_1, y_1, y_1, params->p);
-	montgomery_mul(lambda2, lambda2, y_1, params->p);
+	
+	// TODO: merge
+	montgomery_mul(a->x, lambda1, lambda1, params->p);
+	montgomery_mul(tmp1, lambda2, y_1, params->p);
 
 	// calculate x_3
-	montgomery_mul(a->x, lambda1, lambda1, params->p);
-	bigint_copy(a->y, lambda2);
+	bigint_copy(a->y, tmp1);
 	bigint_left_shift_inplace(a->y);
 	bigint_modulo_inplace(a->y, params->p);
 	bigint_sub_inplace_mod(a->x, a->y, params->p);
 
 	// calculate lambda3
-	montgomery_mul(y_1, y_1, y_1, params->p);
-	bigint_copy(lambda3, y_1);
+	montgomery_mul(lambda3, y_1, y_1, params->p);
+	
 	bigint_left_shift_inplace(lambda3);
 	bigint_modulo_inplace(lambda3, params->p);
 	bigint_left_shift_inplace(lambda3);
 	bigint_modulo_inplace(lambda3, params->p);
 	bigint_left_shift_inplace(lambda3);
 	bigint_modulo_inplace(lambda3, params->p);
-	bigint_copy(a->y, lambda2);
-	bigint_sub_inplace_mod(a->y, a->x, params->p);
-	montgomery_mul(a->y, a->y, lambda1, params->p);
+	
+	bigint_sub_inplace_mod(tmp1, a->x, params->p);
+	
+	montgomery_mul(a->y, tmp1, lambda1, params->p);
 	bigint_sub_inplace_mod(a->y, lambda3, params->p);
 }
 
