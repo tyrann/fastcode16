@@ -1,0 +1,22 @@
+\documentclass{beamer}
+\usepackage{amsmath}
+
+\begin{document}
+  \begin{frame}
+  \begin{itemize}
+  \item{
+  An elliptic curve $E(\mathbb{F}_p)$ consists of the set of the points $P(x,y)$, $x,y \in \mathbb{F}_p$ satisfying
+  \begin{equation*}
+  y^2 \equiv x^3 + ax + b \quad (\text{mod } p)
+  \end{equation*}
+  together with $\mathcal{O}$, the point at infinity.
+  }
+  \item{
+  It is possible to define an addition rule to add points on $E$
+  }
+  \item{
+  We are interested in calculating $kP = \underbrace{P+...+P}_{k-times}$ fast, where $k \in \mathbb{N}, P \in E$
+  }
+  \end{itemize}
+  \end{frame}
+\end{document}
