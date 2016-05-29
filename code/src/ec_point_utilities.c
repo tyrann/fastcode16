@@ -95,21 +95,22 @@ char point_is_on_curve(const Point* p, const EllipticCurveParameter *params)
         BigInt y_result = GET_BIGINT_PTR(BI_POINTISONCURVE_YRESULT_TAG);
         BigInt a_x = GET_BIGINT_PTR(BI_POINTISONCURVE_AX_TAG);
         BigInt b_x = GET_BIGINT_PTR(BI_POINTISONCURVE_BX_TAG);
-        
+        BigInt tmp1 = GET_BIGINT_PTR(BI_POINTADD_TMP1_TAG);
+		
         montgomery_mul(x_squared, p->x, p->x, params->p);
 		montgomery_mul(x_result, x_squared, p->x, params->p);
 
 		montgomery_mul(a_x, p->z, p->z, params->p);
 		montgomery_mul(z_squared, p->z, p->z, params->p);
-		montgomery_mul(a_x, a_x, z_squared, params->p);
-		montgomery_mul(a_x, a_x, p->x, params->p);
-		montgomery_mul(a_x, a_x, params->a, params->p);
+		montgomery_mul(tmp1, a_x, z_squared, params->p);
+		montgomery_mul(a_x, tmp1, p->x, params->p);
+		montgomery_mul(tmp1, a_x, params->a, params->p);
 
-		bigint_add_inplace_mod(x_result, a_x, params->p);
+		bigint_add_inplace_mod(x_result, tmp1, params->p);
 
 		montgomery_mul(b_x, z_squared, p->z, params->p);
-		montgomery_mul(b_x, b_x, b_x, params->p);
-		montgomery_mul(b_x, b_x, params->b, params->p);
+		montgomery_mul(tmp1, b_x, b_x, params->p);
+		montgomery_mul(b_x, tmp1, params->b, params->p);
 
 		bigint_add_inplace_mod(x_result, b_x, params->p);
 
@@ -123,12 +124,14 @@ char point_is_on_curve(const Point* p, const EllipticCurveParameter *params)
 void point_convert_to_affine_coordinates(Point* p, const EllipticCurveParameter *params)
 {
 	BigInt tmp = GET_BIGINT_PTR(BI_CONVERT_TO_AFFINE_COORDINATES_TMP_TAG);
+	BigInt tmp1 = GET_BIGINT_PTR(BI_POINTADD_TMP1_TAG);
+	
 	montgomery_mul(tmp, p->z, p->z, params->p);
 	bigint_divide(p->x, p->x, tmp, params->p);
 	__montgomery_convert(tmp, p->x, params->p);
 	bigint_copy(p->x, tmp);
-	montgomery_mul(tmp, p->z, p->z, params->p);
-	montgomery_mul(tmp, tmp, p->z, params->p);
+	montgomery_mul(tmp1, p->z, p->z, params->p);
+	montgomery_mul(tmp, tmp1, p->z, params->p);
 	bigint_divide(p->y, p->y, tmp, params->p);
 	__montgomery_convert(tmp, p->y, params->p);
 	bigint_copy(p->y, tmp);
