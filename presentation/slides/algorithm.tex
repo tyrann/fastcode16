@@ -1,0 +1,58 @@
+\begin{frame}
+  \frametitle{Elliptic Curve}
+  \begin{itemize}
+  \item{
+  An elliptic curve $E(\mathbb{F}_p)$ consists of the set of the points $P(x,y)$, $x,y \in \mathbb{F}_p$ satisfying
+  \begin{equation*}
+  y^2 \equiv x^3 + ax + b \quad (\text{mod } p)
+  \end{equation*}
+  }
+  \item{
+  Possible to define an addition rule to add points on $E$
+  }
+  \end{itemize}
+\end{frame}
+\begin{frame}[shrink=20]
+  \frametitle{Diffie Hellman key exchange}
+  \begin{table}
+  \begin{tabular}{|p{5cm} p{5cm} |}
+      \hline			
+      \multicolumn{2}{|p{10cm}|}{\rule{0em}{1.2em}\bf{Public parameters}}\\
+      \multicolumn{2}{|p{10cm}|}{$ y^2 \equiv x^3 + ax + b \quad (\text{mod } p)$}\\
+      \multicolumn{2}{|p{10cm}|}{$a,b \in \mathbb{F}_p$, a prime $p$ and a base point $G$ are known}\\
+      \hline
+      \multicolumn{2}{|p{10cm}|}{\rule{0em}{1.2em}\bf{Private computations}}\\
+      \bf{\small{Alice}} & \bf{\small{Bob}}\\
+      Secret integer $a$. & Secret integer $b$.\\
+      Compute $P = aG$ &  Compute $Q = bG$ \\
+      \hline
+      \multicolumn{2}{|p{10cm}|}{\rule{0em}{1.2em}\bf{Public exchange of values}}\\
+      \multicolumn{2}{|p{10cm}|}{
+      \bf{\small{Alice}} $\xrightarrow{\hspace*{0.6cm}P\hspace*{0.6cm}}$ \bf{\small{Bob}}
+      } \\
+      \multicolumn{2}{|p{10cm}|}{
+      \bf{\small{Alice}} $\xleftarrow{\hspace*{0.6cm}Q\hspace*{0.6cm}}$ \bf{\small{Bob}}
+      }\\
+      \hline
+      \multicolumn{2}{|p{10cm}|}{\rule{0em}{1.2em}\bf{Further private computations}}\\
+      \bf{\small{Alice}} & \bf{\small{Bob}}\\
+      Compute $aQ$ & Compute $bP$ \\
+      \multicolumn{2}{|p{10cm}|}{
+      The shared secret is $aQ = a(bG) = b(aG) = bP$}\\ \hline
+    \end{tabular}
+    \end{table}
+    \vfill
+    \tiny{Adaption of Table 2.2 J. Hoffstein et al., \emph{An Introduction to Mathematical Cryptography}}
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Double-and-add-Method}
+\begin{lstlisting}[frame=single]  % Start your code-block
+N <- P
+Q <- 0
+for i from 0 to m do
+  if di = 1 then
+    Q <- point_add(Q, N)
+  N <- point_double(N)
+return Q
+\end{lstlisting}
+\end{frame}
