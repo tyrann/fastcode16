@@ -129,7 +129,66 @@ void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p)
 	}
 }
 
-void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
+void montgomery_mul_x2(BigInt restrict res1, const BigInt x1, const BigInt y1, BigInt restrict res2, const BigInt x2, const BigInt y2, const BigInt p)
+{
+	assert(p_prime != 0);
+	
+	bigint_copy(res1, bigint_zero);
+	bigint_copy(res2, bigint_zero);
+	
+	uint64_t u1, u2, a1_0, a2_0, y1_0, y2_0, x1_i, x2_i;
+	y1_0 = y1->blocks[0];
+	y2_0 = y2->blocks[0];
+	
+	// Clear memory
+	uint64_t mul_size = p->significant_blocks;
+	if (y1->significant_blocks < mul_size)
+		memset(y1->blocks + y1->significant_blocks, 0, (ROUND_UP_MUL4(mul_size) - y1->significant_blocks) * 8);
+	if (y2->significant_blocks < mul_size)
+		memset(y2->blocks + y2->significant_blocks, 0, (ROUND_UP_MUL4(mul_size) - y2->significant_blocks) * 8);
+	memset(res1->blocks, 0, ROUND_UP_MUL4(mul_size + 2) * 8);
+	memset(res2->blocks, 0, ROUND_UP_MUL4(mul_size + 2) * 8);
+	
+	for (unsigned int i = 0; i < p->significant_blocks; ++i)
+	{
+		a1_0 = res1->blocks[0];
+		a2_0 = res2->blocks[0];
+		if(x1->significant_blocks > i) {
+			x1_i = x1->blocks[i];
+		} else {
+			x1_i = 0;
+		}
+		if(x2->significant_blocks > i) {
+			x2_i = x2->blocks[i];
+		} else {
+			x2_i = 0;
+		}
+		
+		u1 = (a1_0 + (x1_i * y1_0)) * p_prime;
+		u2 = (a2_0 + (x2_i * y2_0)) * p_prime;
+		__COUNT_OP(&global_opcount, 6);
+		
+		bigint_mul_add_rshift_inplace_x2(res1, y1, x1_i, p, u1, mul_size);
+		bigint_mul_add_rshift_inplace_x2(res2, y2, x2_i, p, u2, mul_size);
+		__COUNT_INDEX(&global_index_count, 1);
+	}
+	
+	res1->significant_blocks = mul_size + 1;
+	res2->significant_blocks = mul_size + 1;
+	while(res1->blocks[res1->significant_blocks-1] == 0 && res1->significant_blocks > 1) res1->significant_blocks--;
+	while(res2->blocks[res2->significant_blocks-1] == 0 && res2->significant_blocks > 1) res2->significant_blocks--;
+	
+	if(bigint_is_greater(res1, p))
+	{
+		bigint_sub_inplace(res1, p);
+	}
+	if(bigint_is_greater(res2, p))
+	{
+		bigint_sub_inplace(res2, p);
+	}
+}
+
+void montgomery_mul(BigInt restrict res, const BigInt x, const BigInt y, const BigInt p)
 {
 	assert(p_prime != 0);
 	
@@ -179,7 +238,7 @@ void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p)
 	}
 }
 
-void bigint_mul_add_rshift_inplace_x2(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d, const uint64_t mul_size) {
+void bigint_mul_add_rshift_inplace_x2(BigInt restrict res, const BigInt restrict a, const uint64_t b, const BigInt restrict c, const uint64_t d, const uint64_t mul_size) {
 	
 	unsigned char add_carry_m1 = 0, add_carry_1 = 0;
 	unsigned char add_carry_m2 = 0, add_carry_2 = 0;
