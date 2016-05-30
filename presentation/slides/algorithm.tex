@@ -46,13 +46,21 @@
 \end{frame}
 \begin{frame}[fragile]
 \frametitle{Double-and-add-Method}
-\begin{lstlisting}[frame=single]  % Start your code-block
+\begin{itemize}
+\item{Input $P \in E(F_p)$, $d \in \mathbb{Z}$}
+\item{Output: $d\cdot P \in E(F_p)$}
+\end{itemize}
+\begin{lstlisting}[frame=single]
 N <- P
 Q <- 0
 for i from 0 to m do
-  if di = 1 then
+  if d[i] = 1 then
     Q <- point_add(Q, N)
   N <- point_double(N)
 return Q
 \end{lstlisting}
+where
+$d = d_0 + d_1 2 + ... + d_m 2^m \quad d_i \, \in \{0,1\}$
+\vfill
+\tiny{https://en.wikipedia.org/wiki/Elliptic\_curve\_point\_multiplication\#Double-and-add}
 \end{frame}
