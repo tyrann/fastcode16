@@ -12,9 +12,8 @@
   }
   \end{itemize}
 \end{frame}
-\begin{frame}[shrink=20]
+\begin{frame}
   \frametitle{Diffie Hellman key exchange}
-  \begin{table}
   \begin{tabular}{|p{5cm} p{5cm} |}
       \hline			
       \multicolumn{2}{|p{10cm}|}{\rule{0em}{1.2em}\bf{Public parameters}}\\
@@ -23,16 +22,13 @@
       \hline
       \multicolumn{2}{|p{10cm}|}{\rule{0em}{1.2em}\bf{Private computations}}\\
       \bf{\small{Alice}} & \bf{\small{Bob}}\\
-      Secret integer $a$. & Secret integer $b$.\\
       Compute $P = aG$ &  Compute $Q = bG$ \\
       \hline
       \multicolumn{2}{|p{10cm}|}{\rule{0em}{1.2em}\bf{Public exchange of values}}\\
-      \multicolumn{2}{|p{10cm}|}{
       \bf{\small{Alice}} $\xrightarrow{\hspace*{0.6cm}P\hspace*{0.6cm}}$ \bf{\small{Bob}}
-      } \\
-      \multicolumn{2}{|p{10cm}|}{
+      &
       \bf{\small{Alice}} $\xleftarrow{\hspace*{0.6cm}Q\hspace*{0.6cm}}$ \bf{\small{Bob}}
-      }\\
+      \\
       \hline
       \multicolumn{2}{|p{10cm}|}{\rule{0em}{1.2em}\bf{Further private computations}}\\
       \bf{\small{Alice}} & \bf{\small{Bob}}\\
@@ -40,7 +36,6 @@
       \multicolumn{2}{|p{10cm}|}{
       The shared secret is $aQ = a(bG) = b(aG) = bP$}\\ \hline
     \end{tabular}
-    \end{table}
     \vfill
     \tiny{Adaption of Table 2.2 J. Hoffstein et al., \emph{An Introduction to Mathematical Cryptography}}
 \end{frame}
