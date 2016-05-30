@@ -20,7 +20,6 @@
 #define CYCLES_REQUIRED 1e8
 #define FREQUENCY 1.8e9
 #define CALIBRATE
-#define OP_COUNT 1
 
 unsigned short int n;
 extern uint64_t global_opcount; 
