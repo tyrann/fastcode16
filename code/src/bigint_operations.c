@@ -96,7 +96,7 @@ void __montgomery_convert(BigInt res, const BigInt x, const BigInt p)
 	/*n is the R parameter in the Montgomery convertion*/
 
 	uint64_t n = p->significant_blocks * 8 * 8;
-	__COUNT_OP(&mul_opcount, 2);
+	__COUNT_OP(&mul_opcount, 1);
 	uint64_t i;
     
 	for (i = 0; i < n; ++i)
@@ -115,7 +115,7 @@ void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p)
 	bigint_copy(rev, x);
 
 	uint64_t n = p->significant_blocks * 8 * 8;
-	__COUNT_OP(&mul_opcount, 2);
+	__COUNT_OP(&mul_opcount, 1);
 	uint64_t i;
 
 	for (i = 0; i < n; ++i)
