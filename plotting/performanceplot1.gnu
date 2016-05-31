@@ -1,5 +1,5 @@
-set term png
-set output "perfplot1.png"
+set term pdf
+set output "perfplot1.pdf"
 
 # disable legend
 #unset key
