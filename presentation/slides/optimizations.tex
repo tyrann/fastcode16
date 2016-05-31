@@ -1,3 +1,38 @@
+\begin{frame}
+\frametitle{Optimizations}
+\framesubtitle{Stages}
+\begin{tikzpicture}[
+rect/.style={
+draw,
+text width=24em,
+},
+myedge/.style={
+out=45,
+in=45,
+->,
+>=stealth,
+},
+font=\small,
+scale = 0.5
+]
+\node[rect] at (0,8) (1) {\textbf{Baseline 1} - Implementation without memory optimization};
+\node[rect] at (0,6) (2) {\textbf{Baseline 2} - Implementation with memory optimization};
+\node[rect] at (0,4) (3) {Comparison with OpenSSL};
+\node[rect] at (0,2) (4) {\textbf{Optimal 1} - Algorithmic changes, jacobian coordinates};
+\node[rect] at (0,0) (5) {\textbf{Optimal 2} - Final performance optimization };
+
+
+\path (1.east) edge [myedge] (2.east);
+\path (2.east) edge [myedge] (4.east);
+\path (4.east) edge [myedge] (5.east);
+
+\node[text width=2cm] at (12.4,7) {Performance };
+\node[text width=2cm] at (12.4,4) {Algorithm };
+\node[text width=2cm] at (12.4,1) {Performance };
+
+\end{tikzpicture}
+\end{frame}
+
 \begin{frame}[fragile]
 \frametitle{Intel ADX}
 \begin{columns}[c] % the "c" option specifies center vertical alignment
