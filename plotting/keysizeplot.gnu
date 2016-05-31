@@ -1,5 +1,5 @@
-set term png
-set output "keysize.png"
+set term pdf
+set output "keysize.pdf"
 
 # disable legend
 #unset key
@@ -7,7 +7,7 @@ set output "keysize.png"
 # label and titles
 set xlabel "Key length"
 set label "Speedup plot with varied private key form, compared to OpenSSL" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
-set label "Speedup X" at screen 0.038, 0.86 left
+set label "Speedup/OpenSSL X" at screen 0.038, 0.86 left
 
 # layout
 set tmargin at screen 0.8
