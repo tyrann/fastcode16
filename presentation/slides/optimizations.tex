@@ -81,6 +81,34 @@ addb    $-1, %bpl
 \tiny{http://gcc.godbolt.org/}
 \end{frame}
 
+\begin{frame}
+\frametitle{ADX vs AVX2}
+\begin{itemize}
+\item{Bottleneck operation: BigInt - block multiplication}
+\item{Unavoidable dependecies in carry chain -$>$ vectorization by processing 4 multiplications in parallel}
+\end{itemize}
+
+\begin{tabular}{| p{3cm} | p{3cm} | p{4.5cm} |}
+\hline
+\textbf{Approach} & \textbf{Lower bound} & \textbf{Bottleneck}\\ \hline
+ADX & 8 cycles/iteration & ADX throughput\\ \hline
+AVX (base 32) & 10 cycles/iteration & \multirow{2}{3cm}{Emulation of carry flag} \\
+AVX2 (base 64) & 24 cycles/iteration & \\
+\hline
+\end{tabular}
+
+\begin{itemize}
+\item{Further AVX2 downsides
+\begin{itemize}
+\item{higher mul latencies}
+\item{unfriendly data layout}
+\item{multiplications not always independent}
+\end{itemize}
+}
+\end{itemize}
+
+\end{frame}
+
 %\begin{frame}
 %  \frametitle{Vectorization}
 %  \begin{tikzpicture}[scale=0.55]
