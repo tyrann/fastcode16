@@ -2,7 +2,7 @@ set term png
 set output "perfplot.png"
 
 # disable legend
-unset key
+#unset key
 
 # label and titles
 set xlabel "Key length"
@@ -27,4 +27,4 @@ set grid ytics lt 1 lw 1 lc rgb "#FFFFFF"
 # plot data
 set style line 1 lc rgb '#0060ad' lt 1 lw 1 pt 7 ps 0.5
 set pointintervalbox 3
-plot "performance.csv" u 1:2 w lp pt 5 ti "Baseline","performance.csv" u 1:3 w lp pt 7 ti "Optimal","performance.csv" u 1:4 w lp pt 9 ti "Optimal"
+plot "performance.csv" u 1:2 w lp pt 5 title "Baseline","performance.csv" u 1:3 w lp pt 7 ti "Optimal","performance.csv" u 1:4 w lp pt 9 ti "OpenSSL"

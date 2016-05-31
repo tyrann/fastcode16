@@ -2,7 +2,7 @@ set term png
 set output "speedup.png"
 
 # disable legend
-unset key
+#unset key
 
 # label and titles
 set xlabel "Key length"
