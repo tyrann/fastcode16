@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <memory.h>
 
-extern uint64_t global_opcount;
+extern uint64_t shift_opcount;
 extern uint64_t global_index_count;
 extern BigInt montgomery_inverse_two;
 
@@ -214,7 +214,7 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
     {
 		for(uint64_t j = 0; j < 64; j++) 
 		{
-			__COUNT_OP(&global_opcount,2);
+			__COUNT_OP(&shift_opcount,1);
 	    	if(d->blocks[i] & (((uint64_t)1) << j)) 
 	    	{
 				ec_point_add_inplace(result, &p2, params);	
@@ -232,7 +232,7 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
 
 	for(uint64_t j = 0; j < max; j++)
 	{
-		__COUNT_OP(&global_opcount,2);
+		__COUNT_OP(&shift_opcount,1);
 		if(d->blocks[i] & (((uint64_t)1) << j))
 		{
 			ec_point_add_inplace(result, &p2, params);
@@ -260,7 +260,7 @@ void ec_point_mul_generator(Point *result, const BigInt d, const EllipticCurvePa
     {
 		for(uint64_t j = 0; j < 64; j++)
 		{
-			__COUNT_OP(&global_opcount,2);
+			__COUNT_OP(&shift_opcount,1);
 	    	if(d->blocks[i] & (((uint64_t)1) << j))
 	    	{
 	    		BigInt x = get_precomputed_bigint(3*(i*64 + j));

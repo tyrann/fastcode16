@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern uint64_t global_opcount;
 extern uint64_t global_index_count;
 extern block* __bigint__precomputation_buffer;
 
@@ -156,7 +155,6 @@ int point_are_equal(const Point *p, const Point *q)
 		}
         else if(!bigint_are_equal(p->x, q->x) || !bigint_are_equal(p->y, q->y) || !bigint_are_equal(p->z, q->z))
 		{ 
-			__COUNT_OP(&global_opcount,1);
             return 0;
 		}
 		else
