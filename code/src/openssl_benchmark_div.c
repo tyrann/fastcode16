@@ -22,8 +22,13 @@
 #define CALIBRATE
 
 unsigned short int n;
-extern uint64_t global_opcount; 
 extern uint64_t global_index_count; 
+extern uint64_t mul_opcount; 
+extern uint64_t add_opcount; 
+extern uint64_t shift_opcount;
+extern uint64_t avx_opcount; 
+
+
 
 /*
  * Test division
@@ -49,7 +54,11 @@ void test_Div()
     }
     cycles = stop_tsc(start);
 
-    global_opcount = global_opcount/num_runs;
+    mul_opcount = mul_opcount/num_runs;
+    add_opcount = add_opcount/num_runs; 
+    shift_opcount = shift_opcount/num_runs;
+    avx_opcount = avx_opcount/num_runs;
+
     global_index_count = global_index_count/num_runs;
     double r;  
     r = cycles / num_runs;

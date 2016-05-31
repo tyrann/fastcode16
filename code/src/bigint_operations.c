@@ -40,8 +40,12 @@
        __typeof__ (b) _b = (b); \
      _a < _b ? _a : _b; })
 	 
-uint64_t global_opcount = 0;
+uint64_t mul_opcount = 0;
+uint64_t add_opcount = 0;
+uint64_t shift_opcount = 0;
+uint64_t avx_opcount = 0;
 uint64_t global_index_count = 0;
+
 uint64_t p_prime = 0;
 BigInt montgomery_inverse_two;
 
@@ -92,7 +96,7 @@ void __montgomery_convert(BigInt res, const BigInt x, const BigInt p)
 	/*n is the R parameter in the Montgomery convertion*/
 
 	uint64_t n = p->significant_blocks * 8 * 8;
-	__COUNT_OP(&global_opcount, 1);
+	__COUNT_OP(&mul_opcount, 1);
 	uint64_t i;
     
 	for (i = 0; i < n; ++i)
@@ -111,7 +115,7 @@ void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p)
 	bigint_copy(rev, x);
 
 	uint64_t n = p->significant_blocks * 8 * 8;
-	__COUNT_OP(&global_opcount, 1);
+	__COUNT_OP(&mul_opcount, 1);
 	uint64_t i;
 
 	for (i = 0; i < n; ++i)
@@ -149,7 +153,8 @@ typedef unsigned long long int uint64;
 		/* Blocks 1 : mul_size-1 */ \
 		for (unsigned int i = 1; i < mul_size; i++) { \
 			__COUNT_INDEX(&global_index_count, 1); \
-			__COUNT_OP(&global_opcount, 6); \
+			__COUNT_OP(&mul_opcount, 1); \
+			__COUNT_OP(&add_opcount, 2); \
  			\
 			low_m1 = _mulx_u64(a->blocks[i], b, &hi_m1); \
 			add_carry_m1 = _addcarryx_u64(add_carry_m1, carry_m1, low_m1, &temp_m1); \
@@ -164,6 +169,11 @@ typedef unsigned long long int uint64;
 		add_carry_2 = _addcarryx_u64(add_carry_2, tmp->blocks[0], low_m2, &unused); \
 		 \
 		for (unsigned int i = 1; i < mul_size; i++) { \
+		\
+			__COUNT_INDEX(&global_index_count, 1); \
+			__COUNT_OP(&mul_opcount, 1); \
+			__COUNT_OP(&add_opcount, 2); \
+			\
 			low_m2 = _mulx_u64(c->blocks[i], d, &hi_m2); \
 			add_carry_m2 = _addcarryx_u64(add_carry_m2, carry_m2, low_m2, &temp_m2); \
 			add_carry_2 = _addcarryx_u64(add_carry_2, tmp->blocks[i], temp_m2, (uint64*)&(res->blocks)[i-1]); \
@@ -178,7 +188,8 @@ typedef unsigned long long int uint64;
 		res->blocks[mul_size] = res->blocks[mul_size+1] + (uint64_t)add_carry_1 + (uint64_t)add_carry_2; \
 		res->blocks[mul_size + 1] = 0; \
 		 \
-		__COUNT_OP(&global_opcount, 10); \
+		__COUNT_OP(&mul_opcount, 2); \
+		__COUNT_OP(&add_opcount, 8); \
 	} \
 	else if (b != 0) \
 	{ \
@@ -189,7 +200,8 @@ typedef unsigned long long int uint64;
 		/* Blocks 1 : mul_size-1 */\
 		for (unsigned int i = 1; i < mul_size; i++) { \
 			__COUNT_INDEX(&global_index_count, 1); \
-			__COUNT_OP(&global_opcount, 3); \
+			__COUNT_OP(&mul_opcount, 1); \
+			__COUNT_OP(&add_opcount, 2); \
  			\
 			low_m1 = _mulx_u64(a->blocks[i], b, &hi_m1); \
 			add_carry_m1 = _addcarryx_u64(add_carry_m1, carry_m1, low_m1, &temp_m1); \
@@ -204,7 +216,8 @@ typedef unsigned long long int uint64;
 		/* Block mul_size + 1 */\
 		res->blocks[mul_size] += (uint64_t)add_carry_1; \
 		 \
-		__COUNT_OP(&global_opcount, 5); \
+		__COUNT_OP(&mul_opcount, 1); \
+		__COUNT_OP(&add_opcount, 4); \
 	} \
 	else if (d != 0) \
 	{ \
@@ -215,7 +228,8 @@ typedef unsigned long long int uint64;
 		/* Blocks 1 : mul_size-1 */\
 		for (unsigned int i = 1; i < mul_size; i++) { \
 			__COUNT_INDEX(&global_index_count, 1); \
-			__COUNT_OP(&global_opcount, 3); \
+			__COUNT_OP(&mul_opcount, 1); \
+			__COUNT_OP(&add_opcount, 2); \
  			\
 			low_m2 = _mulx_u64(c->blocks[i], d, &hi_m2); \
 			add_carry_m2 = _addcarryx_u64(add_carry_m2, carry_m2, low_m2, &temp_m2); \
@@ -230,7 +244,8 @@ typedef unsigned long long int uint64;
 		/* Block mul_size + 1 */\
 		res->blocks[mul_size] += (uint64_t)add_carry_2; \
 		 \
-		__COUNT_OP(&global_opcount, 5); \
+		__COUNT_OP(&mul_opcount, 1); \
+		__COUNT_OP(&add_opcount, 4); \
 	} \
 	else \
 	{ \
@@ -382,8 +397,14 @@ void montgomery_mul(BigInt restrict res, const BigInt x, const BigInt y, const B
 	// Clear memory
 	uint64_t mul_size = p->significant_blocks;
 	if (y->significant_blocks < mul_size)
+	{
 		memset(y->blocks + y->significant_blocks, 0, (ROUND_UP_MUL4(mul_size) - y->significant_blocks) * 8);
+		__COUNT_OP(&mul_opcount, 1);
+		__COUNT_OP(&add_opcount, 2);
+	}
 	memset(res->blocks, 0, ROUND_UP_MUL4(mul_size + 2) * 8);
+	__COUNT_OP(&mul_opcount, 1);
+	__COUNT_OP(&add_opcount, 1);
 	
 	for (unsigned int i = 0; i < p->significant_blocks; ++i)
 	{
@@ -394,7 +415,8 @@ void montgomery_mul(BigInt restrict res, const BigInt x, const BigInt y, const B
 			x_i = 0;
 		}
 		u = (a_0 + (x_i * y_0)) * p_prime;
-		__COUNT_OP(&global_opcount,3);
+		__COUNT_OP(&add_opcount, 1);
+		__COUNT_OP(&mul_opcount,2);
 		
 		// ===================================================
 		//     > Original code (equivalent of the
@@ -448,7 +470,12 @@ void montgomery_mul(BigInt restrict res, const BigInt x, const BigInt y, const B
 	}
 	
 	res->significant_blocks = mul_size + 1;
-	while(res->blocks[res->significant_blocks-1] == 0 && res->significant_blocks > 1) res->significant_blocks--;
+	__COUNT_OP(&add_opcount, 1);
+	while(res->blocks[res->significant_blocks-1] == 0 && res->significant_blocks > 1)
+	{
+		res->significant_blocks--;
+		__COUNT_OP(&add_opcount, 2); 
+	}
 	
 	if(bigint_is_greater(res, p))
 	{
@@ -470,7 +497,9 @@ void bigint_mul_add_inplace(BigInt res, const BigInt a, const uint64_t b, const 
 		for(unsigned int i = 1; i < mul_size; i++)
 		{
 			__COUNT_INDEX(&global_index_count, 1);
-			__COUNT_OP(&global_opcount, 2);
+			__COUNT_OP(&add_opcount, 1);
+			__COUNT_OP(&mul_opcount, 2);
+
 		
 			mul_low = _mulx_u64(a->blocks[i], b, &mul_hi);
 			add_carry = _addcarryx_u64(add_carry, mul_carry, mul_low, &temp);
@@ -484,6 +513,9 @@ void bigint_mul_add_inplace(BigInt res, const BigInt a, const uint64_t b, const 
 			
 		// Block mul_size + 1
 		res->blocks[mul_size+1] += (uint64_t)add_carry_1;
+		__COUNT_OP(&add_opcount, 5);
+		__COUNT_OP(&mul_opcount, 1);
+
 	}
 }
 
@@ -502,7 +534,8 @@ void bigint_multiply(BigInt res, const BigInt a, const uint64_t b)
 		for(unsigned int i = 1; i < a->significant_blocks; i++)
 		{
 			__COUNT_INDEX(&global_index_count, 1);
-			__COUNT_OP(&global_opcount, 2);
+			__COUNT_OP(&add_opcount, 1);
+			__COUNT_OP(&mul_opcount, 1);
 			
 			mul_low = _mulx_u64(a->blocks[i], b, &mul_hi);
 			add_carry = _addcarryx_u64(add_carry, mul_carry, mul_low, (unsigned long long*)&(res->blocks)[i]);
@@ -513,11 +546,14 @@ void bigint_multiply(BigInt res, const BigInt a, const uint64_t b)
 		if (res->blocks[a->significant_blocks] > 0)
 		{
 			res->significant_blocks += 1;
+			__COUNT_OP(&add_opcount, 1);
 			__COUNT_INDEX(&global_index_count, 1);
 		}
 		
 		__COUNT_INDEX(&global_index_count, 1);
-		__COUNT_OP(&global_opcount, 2);
+		__COUNT_OP(&add_opcount, 1);
+		__COUNT_OP(&mul_opcount, 1);
+
 	}
 }
 
@@ -535,24 +571,24 @@ void bigint_multiply_inplace(BigInt a, uint64_t b)
 	else
 	{
 		tmp = ((unsigned  __int128)a->blocks[0]) * ((unsigned  __int128)b);
-		__COUNT_OP(&global_opcount,1);
+		__COUNT_OP(&mul_opcount, 1);
 		result = (uint64_t)tmp;
 		uint64_t sig_blocks = a->significant_blocks;
 		carry = tmp >> 64;
-		__COUNT_OP(&global_opcount,1);
+		__COUNT_OP(&shift_opcount, 1);
 		for(unsigned int i = 0; i < sig_blocks + 1; i++)
 		{
 			__COUNT_INDEX(&global_index_count, 1);
 			carry2 = _addcarry_u64(carry2, carry_current, result, (unsigned long long*)&(a->blocks)[i]);
-			__COUNT_OP(&global_opcount,1);
+			__COUNT_OP(&add_opcount,1);
 			if(a->blocks[i] > 0 )
 			{
 				a->significant_blocks = i+1;
-				__COUNT_OP(&global_opcount,1);
+				__COUNT_OP(&add_opcount,1);
 			}
 			if(i+1 < sig_blocks) {
 				tmp = ((unsigned  __int128)a->blocks[i+1]) * ((unsigned  __int128)b);
-				__COUNT_OP(&global_opcount,1);
+				__COUNT_OP(&mul_opcount,1);
 				__COUNT_INDEX(&global_index_count, 2);
 			}
 			else
@@ -562,8 +598,7 @@ void bigint_multiply_inplace(BigInt a, uint64_t b)
 			result = (uint64_t)tmp;
 			carry_current = carry;
 			carry = tmp >> 64;
-			__COUNT_OP(&global_opcount,1);
-
+			__COUNT_OP(&shift_opcount,1);
 			__COUNT_INDEX(&global_index_count, 1);
 		}
 	}
@@ -584,20 +619,22 @@ void bigint_left_shift_inplace(BigInt a)
     {
         uint64_t cur_carry = carry;
         carry = a->blocks[i] >> 63;
-		__COUNT_OP(&global_opcount, 1);
+		__COUNT_OP(&shift_opcount, 1);
     
         a->blocks[i] = cur_carry + (a->blocks[i] << 1);
-		__COUNT_OP(&global_opcount, 1);
+		__COUNT_OP(&add_opcount, 1);
+		__COUNT_OP(&shift_opcount, 1);
 		__COUNT_INDEX(&global_index_count, 1);
     }
     
     // Add carry to last octet if necessary
     if (carry > 0)
     {
-		__COUNT_OP(&global_opcount, 1);
         a->blocks[a->significant_blocks] = carry;
 		a->significant_blocks++;
 		memset(a->blocks + a->significant_blocks, 0, (ROUND_UP_MUL4(a->significant_blocks) - a->significant_blocks) * 8);
+		__COUNT_OP(&add_opcount, 3);
+		__COUNT_OP(&mul_opcount, 1);
     }
 
 #endif
@@ -613,6 +650,7 @@ void bigint_right_shift_inplace(BigInt a)
     {
 		__m256i l0 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i));
 		__m256i l1 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i + 4));
+
 		__m256i perm128 = _mm256_permute2f128_si256(l0,l1, 0x21);
 		__m256d tmp = _mm256_shuffle_pd(_mm256_castsi256_pd(l0), _mm256_castsi256_pd(perm128), 0x15);
 		//long long int * pr = (long long int *)&tmp;
@@ -626,13 +664,14 @@ void bigint_right_shift_inplace(BigInt a)
 
 		_mm256_store_pd((double *)a->blocks + i, _mm256_castsi256_pd(ret)); 
 		// Check if the number of significant octets decreased
+		__COUNT_OP(&add_opcount, 2);
+		__COUNT_OP(&avx_opcount, 5);
 		
 	}
 	if (a->blocks[a->significant_blocks-1] == 0 && a->significant_blocks > 1)
 	{
-		__COUNT_OP(&global_opcount, 2);
+		__COUNT_OP(&add_opcount, 2);
 		a->significant_blocks--;
-		__COUNT_OP(&global_opcount, 1);
 	}
 #else
     // Right shift octets by one, propagating the carry across octets.
@@ -641,19 +680,20 @@ void bigint_right_shift_inplace(BigInt a)
     {
         uint64_t cur_carry = carry;
         carry = a->blocks[i-1] << 63;
-		__COUNT_OP(&global_opcount, 2);
+		__COUNT_OP(&shift_opcount, 2);
+		__COUNT_INDEX(&global_index_count, 1);
 
         a->blocks[i-1] = cur_carry + (a->blocks[i-1] >> 1);
-		__COUNT_OP(&global_opcount, 3);
+		__COUNT_OP(&add_opcount, 1);
+		__COUNT_OP(&shift_opcount, 1);
 		__COUNT_INDEX(&global_index_count, 1);
     }
     
     // Check if the number of significant octets decreased
     if (a->blocks[a->significant_blocks-1] == 0 && a->significant_blocks > 1)
 	{
-		__COUNT_OP(&global_opcount, 2);
+		__COUNT_OP(&add_opcount, 2);
         a->significant_blocks--;
-		__COUNT_OP(&global_opcount, 1);
 	}
 #endif
 
@@ -672,15 +712,16 @@ void bigint_right_shift_inplace_64(BigInt a)
 		__m256d ret = _mm256_shuffle_pd(_mm256_castsi256_pd(l0), _mm256_castsi256_pd(perm128), 0x15);
 		//PRINT_AVX_U64((long long int *)&ret);
 		_mm256_store_pd((double *)a->blocks + i, ret); 
+
+		__COUNT_OP(&avx_opcount, 2);
+		__COUNT_OP(&add_opcount, 2);
+		__COUNT_INDEX(&global_index_count, 1);
+
 	}
-
-	/*Version 2*/
-	//TODO
-
-
 	if(a->significant_blocks > 1)
 	{
 		a->significant_blocks--;
+		__COUNT_OP(&add_opcount, 1);
 	}
 #else
 
@@ -691,12 +732,12 @@ void bigint_right_shift_inplace_64(BigInt a)
 		__COUNT_INDEX(&global_index_count, 2);
     }
 	a->blocks[a->significant_blocks-1] = 0U;
-	__COUNT_INDEX(&global_opcount, 1);
+	__COUNT_OP(&add_opcount, 1);
 
 	if(a->significant_blocks > 1)
 	{
 		a->significant_blocks--;
-		__COUNT_INDEX(&global_opcount, 1);
+		__COUNT_OP(&add_opcount, 1);
 	}
 
 #endif
@@ -719,7 +760,8 @@ void bigint_add_inplace(BigInt a, const BigInt b)
 	if(a->significant_blocks < b->significant_blocks)
 	{
 		memset(a->blocks + a->significant_blocks, 0, (ROUND_UP_MUL4(b->significant_blocks) - a->significant_blocks) * 8);
-		__COUNT_OP(&global_opcount, 2);
+		__COUNT_OP(&add_opcount, 2);
+		__COUNT_OP(&mul_opcount, 1);
 		a->significant_blocks = b->significant_blocks;
 
 	}
@@ -733,20 +775,20 @@ void bigint_add_inplace(BigInt a, const BigInt b)
 		if(i < b->significant_blocks)
 		{
 			carry = _addcarry_u64(carry, a->blocks[i], b->blocks[i], (unsigned long long*)&(a->blocks)[i]);
-			__COUNT_OP(&global_opcount, 2);
+			__COUNT_OP(&add_opcount, 1);
 		}
 		else
 		{
 			if (carry == 0) break;
 			carry = _addcarry_u64(carry, a->blocks[i], 0, (unsigned long long*)&(a->blocks)[i]);
-			__COUNT_OP(&global_opcount, 1);
+			__COUNT_OP(&add_opcount, 1);
 		}
     }
 	// If needed, allocate 1 more block for the carry
 	if(carry > 0)
 	{
 		a->significant_blocks += 1;
-		__COUNT_OP(&global_opcount, 1);
+		__COUNT_OP(&add_opcount, 1);
 		a->blocks[i] = (uint64_t)carry;
 	}	
 }
@@ -767,20 +809,21 @@ void bigint_sub_inplace(BigInt a, const BigInt b)
 	    if(i < b->significant_blocks)
 	    {
 			borrow = _subborrow_u64(borrow, b->blocks[i], a->blocks[i], (unsigned long long*)&(a->blocks)[i]);
-			__COUNT_OP(&global_opcount, 1);
+			__COUNT_OP(&add_opcount, 1);
 	    }
 	    else
 	    {
 			if (borrow == 0) break;
 			borrow = _subborrow_u64(borrow, 0, a->blocks[i], (unsigned long long*)&(a->blocks)[i]);
-			__COUNT_OP(&global_opcount, 1);
+			__COUNT_OP(&add_opcount, 1);
 	    }
 	}
 
 	for(; a->significant_blocks > 1; a->significant_blocks--)
 	{
 		if (a->blocks[a->significant_blocks-1] != 0) break;
-		__COUNT_OP(&global_opcount, 3);
+		__COUNT_OP(&add_opcount, 1);
+		__COUNT_INDEX(&global_index_count, 1);
 	}
 }
 
@@ -831,7 +874,6 @@ void bigint_divide(BigInt dest, const BigInt b, const BigInt a, const BigInt p)
 		// 3)
 		while (!bigint_are_equal(u, bigint_one) && !bigint_are_equal(v, bigint_one))
 		{
-			__COUNT_OP(&global_opcount, 1);
 			// 3.1)
 			while (bigint_is_even(u))
 			{
