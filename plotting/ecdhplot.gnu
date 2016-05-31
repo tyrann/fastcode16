@@ -1,5 +1,5 @@
-set term png
-set output "ecdh.png"
+set term pdf
+set output "ecdh.pdf"
 
 # disable legend
 #unset key

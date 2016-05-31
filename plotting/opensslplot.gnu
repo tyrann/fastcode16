@@ -1,5 +1,5 @@
-set term png
-set output "openssl.png"
+set term pdf
+set output "openssl.pdf"
 
 if (!exists("MP_LEFT"))   MP_LEFT = .1
 if (!exists("MP_RIGHT"))  MP_RIGHT = .95
@@ -7,7 +7,7 @@ if (!exists("MP_BOTTOM")) MP_BOTTOM = .1
 if (!exists("MP_TOP"))    MP_TOP = .9
 if (!exists("MP_GAP"))    MP_GAP = 0.05
 
-set multiplot layout 2,2 columnsfirst title "{/:Bold=15 Comparison with OpenSSL}"\
+set multiplot layout 2,2 columnsfirst title "{/:Bold=15 Final optimization compare with OpenSSL}"\
 
 
 set style data histogram
