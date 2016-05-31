@@ -33,6 +33,35 @@ scale = 0.5
 \end{tikzpicture}
 \end{frame}
 
+\begin{frame}
+\frametitle{Optimizations}
+\framesubtitle{Overview}
+
+\begin{itemize}
+\setlength\itemsep{1.5em}
+\item{
+Code Optimizations
+\begin{itemize}
+\setlength\itemsep{0.5em}
+\item{combine instructions}
+\item{change the base from 8 bit to 64 bit for the big integers}
+\item{Precomputation of $2k\cdot G$ where $k \in \mathbb{N}$ and $G \in E$}
+\item{change the base from 2 bit to 64 bit in the montgomery multiplication}
+\item{Inlining functions}
+\item{better memory allocation}
+\end{itemize}
+}
+\item{
+Algorithmic Optimizations
+\begin{itemize}
+\setlength\itemsep{0.5em}
+\item{Introduction of Jacobian coordinates}
+\end{itemize}
+}
+\end{itemize}
+
+\end{frame}
+
 \begin{frame}[fragile]
 \frametitle{Intel ADX}
 C Code
