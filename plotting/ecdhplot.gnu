@@ -1,13 +1,13 @@
 set term png
-set output "speedup.png"
+set output "ecdh.png"
 
 # disable legend
 #unset key
 
 # label and titles
 set xlabel "Key length"
-set label "Speedup plot compared to Baseline1" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
-set label "Speedup X" at screen 0.038, 0.86 left
+set label "ECDH execution cycles comparison" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
+set label "[Cycles]" at screen 0.038, 0.86 left
 
 # layout
 set tmargin at screen 0.8
@@ -32,6 +32,4 @@ set grid ytics lt 1 lw 1 lc rgb "#FFFFFF"
 # plot data
 set style line 1 lc rgb '#0060ad' lt 1 lw 1 pt 7 ps 0.5
 set pointintervalbox 3
-plot "speedup.csv" u 1:2 w lp pt 1 title "Baseline2","speedup.csv" u 1:3 w lp pt 1 ti "Optimal1", "speedup.csv" u 1:4 w lp pt 1 ti "Optimal2","speedup.csv" u 1:5 w lp pt 1 ti "Final"
-
-#"speedup.csv" u 1:6 w lp pt 1 ti "OpenSSL"
+plot "ecdh.csv" u 1:2 w lp pt 1 title "Final" , "ecdh.csv" u 1:3 w lp pt 1 ti "OpenSSL"
