@@ -1,6 +1,7 @@
 \begin{frame}
   \frametitle{Elliptic Curve}
   \begin{itemize}
+  \setlength\itemsep{1.5em}
   \item{
   An elliptic curve $E(\mathbb{F}_p)$ consists of the set of the points $P(x,y)$, $x,y \in \mathbb{F}_p$ satisfying
   \begin{equation*}
@@ -45,14 +46,14 @@
 \item{Input $P \in E(F_p)$, $d \in \mathbb{Z}$}
 \item{Output: $d\cdot P \in E(F_p)$}
 \end{itemize}
-\begin{lstlisting}[frame=single]
-N <- P
-Q <- 0
+\begin{lstlisting}[frame=single, mathescape=true]
+$N$ <- $P$
+$Q$ <- $\mathcal{O}$
 for i from 0 to m do
-  if d[i] = 1 then
-    Q <- point_add(Q, N)
-  N <- point_double(N)
-return Q
+  if $d_i$ = 1 then
+    $Q$ <- point_add($Q$, $N$)
+  $N$ <- point_double($N$)
+return $Q$
 \end{lstlisting}
 where
 $d = d_0 + d_1 2 + ... + d_m 2^m \quad d_i \, \in \{0,1\}$
