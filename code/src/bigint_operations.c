@@ -249,13 +249,11 @@ void bigint_mul_add_rshift_inplace_x2_ ## size (BigInt res, const BigInt a, cons
 	BIGINT_MUL_ADD_RSHIFT_INPLACE_X2_BODY(size); \
 }
 
-/*
 void bigint_mul_add_rshift_inplace_x2_generic(BigInt restrict res, const BigInt restrict a, const uint64_t b, const BigInt restrict c, const uint64_t d, const uint64_t mul_size)
 {
 	BIGINT_MUL_ADD_RSHIFT_INPLACE_X2_BODY(mul_size)
 }
-*/
-/*
+
 DECLARE_BIGINT_MUL_ADD_RSHIFT_INPLACE_X2(1);
 DECLARE_BIGINT_MUL_ADD_RSHIFT_INPLACE_X2(2);
 DECLARE_BIGINT_MUL_ADD_RSHIFT_INPLACE_X2(3);
@@ -266,7 +264,7 @@ DECLARE_BIGINT_MUL_ADD_RSHIFT_INPLACE_X2(7);
 DECLARE_BIGINT_MUL_ADD_RSHIFT_INPLACE_X2(8);
 DECLARE_BIGINT_MUL_ADD_RSHIFT_INPLACE_X2(9);
 DECLARE_BIGINT_MUL_ADD_RSHIFT_INPLACE_X2(10);
-*/
+
 void montgomery_mul_x2(BigInt restrict res1, const BigInt x1, const BigInt y1, BigInt restrict res2, const BigInt x2, const BigInt y2, const BigInt p)
 {
 	assert(p_prime != 0);
@@ -305,9 +303,6 @@ void montgomery_mul_x2(BigInt restrict res1, const BigInt x1, const BigInt y1, B
 		u1 = (a1_0 + (x1_i * y1_0)) * p_prime;
 		u2 = (a2_0 + (x2_i * y2_0)) * p_prime;
 		__COUNT_OP(&global_opcount, 6);
-		
-		// bigint_mul_add_rshift_inplace_x2_generic(res1, y1, x1_i, p, u1, mul_size);
-		// bigint_mul_add_rshift_inplace_x2_generic(res2, y2, x2_i, p, u2, mul_size);
 		
 		switch (mul_size) {
  		case 1:
@@ -351,7 +346,9 @@ void montgomery_mul_x2(BigInt restrict res1, const BigInt x1, const BigInt y1, B
 			bigint_mul_add_rshift_inplace_x2_10(res2, y2, x2_i, p, u2);
     		break;
  		default:
-		 	assert("Error: no specialized version of bigint_mul_add_rshift_inplace_x2 available\n");
+		 	printf("WARNING: no specialized version of bigint_mul_add_rshift_inplace_x2 available\n");
+			bigint_mul_add_rshift_inplace_x2_generic(res1, y1, x1_i, p, u1, mul_size);
+			bigint_mul_add_rshift_inplace_x2_generic(res2, y2, x2_i, p, u2, mul_size);
     		break;
 		 } 
 		 
@@ -410,10 +407,6 @@ void montgomery_mul(BigInt restrict res, const BigInt x, const BigInt y, const B
 		// bigint_add_inplace(res, tmp2); 
 		// bigint_right_shift_inplace_64(res); 
 		// ===================================================
-		
-		
-		// bigint_mul_add_rshift_inplace_x2_generic(res, y, x_i, p, u, mul_size);
-		
 		switch (mul_size) {
  		case 1:
 			bigint_mul_add_rshift_inplace_x2_1(res, y, x_i, p, u);
@@ -446,7 +439,8 @@ void montgomery_mul(BigInt restrict res, const BigInt x, const BigInt y, const B
 			bigint_mul_add_rshift_inplace_x2_10(res, y, x_i, p, u);
     		break;
  		default:
-		 	assert("Error: no specialized version of bigint_mul_add_rshift_inplace_x2 available\n");
+		 	printf("WARNING: no specialized version of bigint_mul_add_rshift_inplace_x2 available\n");
+			bigint_mul_add_rshift_inplace_x2_generic(res, y, x_i, p, u, mul_size);
     		break;
 		 } 
 	
