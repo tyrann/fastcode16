@@ -317,7 +317,8 @@ void montgomery_mul_x2(BigInt restrict res1, const BigInt x1, const BigInt y1, B
 		
 		u1 = (a1_0 + (x1_i * y1_0)) * p_prime;
 		u2 = (a2_0 + (x2_i * y2_0)) * p_prime;
-		__COUNT_OP(&global_opcount, 6);
+		__COUNT_OP(&add_opcount, 2);
+		__COUNT_OP(&mul_opcount, 4);
 		
 		switch (mul_size) {
  		case 1:

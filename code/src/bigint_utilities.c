@@ -7,7 +7,6 @@
 #include "logging/logging.h"
 #include "opcount/opcount.h"
 
-extern uint64_t global_opcount;
 extern uint64_t global_index_count;
 
 void bigint_clear(BigInt a)

@@ -10,8 +10,8 @@
 #include "logging/logging.h"
 #include "opcount/opcount.h"
 
-extern uint64_t global_opcount;
 extern uint64_t global_index_count;
+extern uint64_t add_opcount;
 
 // Clear the passed BigInt object, setting its value to zero
 void bigint_clear(BigInt a);
@@ -58,12 +58,12 @@ static inline int bigint_is_greater(const BigInt a, const BigInt b)
 		{
 			if(a->blocks[i-1] > b->blocks[i-1])
 			{
-				__COUNT_OP(&global_opcount,2);
+				__COUNT_OP(&add_opcount,2);
 				return 1;
 			}
 			else if(b->blocks[i-1] > a->blocks[i-1])
 			{
-				__COUNT_OP(&global_opcount,2);
+				__COUNT_OP(&add_opcount,2);
 				return 0;
 			} 
 
