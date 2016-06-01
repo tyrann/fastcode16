@@ -24,6 +24,26 @@ void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p);
  */
 void montgomery_mul(BigInt res, const BigInt x, const BigInt y, const BigInt p);
 
+void montgomery_mul_x2(BigInt res1, const BigInt x1, const BigInt y1, BigInt res2, const BigInt x2, const BigInt y2, const BigInt p);
+
+void bigint_mul_add_rshift_inplace_x2_1(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d);
+void bigint_mul_add_rshift_inplace_x2_2(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d);
+void bigint_mul_add_rshift_inplace_x2_3(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d);
+void bigint_mul_add_rshift_inplace_x2_4(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d);
+void bigint_mul_add_rshift_inplace_x2_5(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d);
+void bigint_mul_add_rshift_inplace_x2_6(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d);
+void bigint_mul_add_rshift_inplace_x2_7(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d);
+void bigint_mul_add_rshift_inplace_x2_8(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d);
+void bigint_mul_add_rshift_inplace_x2_9(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d);
+void bigint_mul_add_rshift_inplace_x2_10(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d);
+
+void bigint_mul_add_inplace_x2(BigInt res, const BigInt a, const uint64_t b, const BigInt c, const uint64_t d, const uint64_t mul_size);
+
+// Compute res += a * b
+void bigint_mul_add_inplace(BigInt res, const BigInt a, const uint64_t b, const uint64_t mul_size);
+
+void bigint_multiply(BigInt res, const BigInt a, const uint64_t b);
+
 void bigint_multiply_inplace(BigInt a, uint64_t b);
 
 void bigint_left_shift_inplace(BigInt a);
