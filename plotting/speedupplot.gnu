@@ -2,12 +2,16 @@ set term pdf
 set output "speedup.pdf"
 
 # disable legend
-set key at screen 0.95, 0.55
+unset key
 
 # label and titles
 set xlabel "Key length"
 set label "Speedup plot compared to Baseline" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
 set label "Speedup X" at screen 0.038, 0.86 left
+
+set label "Final" at screen 0.5, 0.77 left textcolor rgb '#990600'
+set label "Jacobian coordinates" at screen 0.5, 0.62 left textcolor rgb '#0060AD'
+set label "Memory optimization" at screen 0.5, 0.35 left textcolor rgb '#AA6000'
 
 set logscale y
 
@@ -35,6 +39,6 @@ set grid ytics lt 1 lw 1 lc rgb "#FFFFFF"
 # plot data
 set style line 1 lc rgb '#0060ad' lt 1 lw 1 pt 7 ps 0.5
 set pointintervalbox 3
-plot "speedup.csv" u 1:5 w lp pt 1 lc rgb '#990600' title "Final", "speedup.csv" u 1:4 w lp pt 1 lc rgb '#0060AD' title "Jacobian coordinates", "speedup.csv" u 1:2 w lp pt 1 title "Memory optimization"
+plot "speedup.csv" u 1:5 w lp pt 1 lc rgb '#990600' title "Final", "speedup.csv" u 1:4 w lp pt 1 lc rgb '#0060AD' title "Jacobian coordinates", "speedup.csv" u 1:2 w lp pt 1 lc rgb '#AA6000' title "Memory optimization"
 
 #"speedup.csv" u 1:6 w lp pt 1 ti "OpenSSL"
