@@ -22,11 +22,6 @@ set yrange [0:250]
 
 plot "openssl.csv" using 2:xticlabels(1) lt 1 title ""
 
-set xlabel 'Mult'
-set ylabel 'Cycles'
-#set xrange [-2*pi:2*pi]
-set yrange [0:7500]
-plot "openssl.csv" using 3:xticlabels(1) lt 2 title ""
 
 set xlabel 'Montgomery Mult'
 #set xrange [-2*pi:2*pi]

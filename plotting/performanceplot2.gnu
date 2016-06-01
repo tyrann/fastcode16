@@ -8,7 +8,7 @@ set output "perfplot2.pdf"
 set xlabel "Key length"
 set label "Performance plot Part 2" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
 set label "[Ops/Cycle]" at screen 0.038, 0.86 left
-
+set key font ",10"
 # layout
 set tmargin at screen 0.8
 set lmargin at screen 0.1

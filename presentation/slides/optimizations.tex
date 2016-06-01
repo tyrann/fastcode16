@@ -43,12 +43,14 @@ scale = 0.5
 Code Optimizations
 \begin{itemize}
 \setlength\itemsep{0.5em}
-\item{combine instructions}
-\item{change the base from 8 bit to 64 bit for the big integers}
+\item{Combine instructions}
+\item{Change the base from 8 bit to 64 bit for the big integers}
 \item{Precomputation of $2k\cdot G$ where $k \in \mathbb{N}$ and $G \in E$}
-\item{change the base from 2 bit to 64 bit in the montgomery multiplication}
+\item{Change the base from 2 bit to 64 bit for Montogomery}
 \item{Inlining functions}
-\item{better memory allocation}
+\item{Unrolling}
+\item{Vectorize shifting using AVX2}
+\item{Improved  memory allocation}
 \end{itemize}
 }
 \item{
@@ -121,7 +123,7 @@ addb    $-1, %bpl
 \hline
 \textbf{Approach} & \textbf{Lower bound} & \textbf{Bottleneck}\\ \hline
 ADX & 8 cycles/iteration & ADX throughput\\ \hline
-AVX (base 32) & 10 cycles/iteration & \multirow{2}{3cm}{Emulation of carry flag} \\
+AVX2 (base 32) & 10 cycles/iteration & \multirow{2}{3cm}{Emulation of carry flag} \\
 AVX2 (base 64) & 24 cycles/iteration & \\
 \hline
 \end{tabular}

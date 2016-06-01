@@ -8,6 +8,7 @@ set output "speedup.pdf"
 set xlabel "Key length"
 set label "Speedup plot compared to Baseline" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
 set label "Speedup X" at screen 0.038, 0.86 left
+set key font ",10"
 
 # layout
 set tmargin at screen 0.8
