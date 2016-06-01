@@ -2,12 +2,14 @@ set term pdf
 set output "speedup.pdf"
 
 # disable legend
-set key at screen 0.95, 0.65
+set key at screen 0.95, 0.55
 
 # label and titles
 set xlabel "Key length"
 set label "Speedup plot compared to Baseline" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
 set label "Speedup X" at screen 0.038, 0.86 left
+
+set logscale y
 
 # layout
 set tmargin at screen 0.8
