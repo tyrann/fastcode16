@@ -12,6 +12,7 @@ set label "Speedup X" at screen 0.038, 0.86 left
 # layout
 set tmargin at screen 0.8
 set lmargin at screen 0.1
+set rmargin at screen 0.95
 
 # axis
 set style line 11 lc rgb '#000000' lt 1 lw 1
