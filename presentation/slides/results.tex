@@ -9,8 +9,9 @@
   \item{64 bit multiplication (mul, mulx): 1 op/cycle}
   \item{64 bit addition/subtraction (add, sub): 4 op/cycle}
   \item{64 bit addition with carry (adc, adcx, adox): 1 op/cycle}
-  \item{Carry addition only: peak performance of 2 ops/cycle ~6 Gops/s on 1 core}
-  \item{Compile flag: -O3 -mavx2 -mbmi2 -madx}
+  \item{Carry addition only: peak performance of 2 ops/cycle
+  {\raise.17ex\hbox{$\scriptstyle\sim$}} 6 Gops/s on 1 core}
+  \item{Compilation flags: -fomit-frame-pointer -O3 -mavx2 -mbmi2 -madx}
   \end{itemize}
 }
   \setlength\itemsep{1.5em}
@@ -39,11 +40,6 @@
 \begin{frame}
 \begin{figure}\flushleft		
 \includegraphics[scale=0.9, trim={0 0 0 0}]{perfplot2}		
-\end{figure}
-\end{frame}
-\begin{frame}
-\begin{figure}\flushleft		
-\includegraphics[scale=0.4, trim={0 0 0 0}]{tablewithtitle}		
 \end{figure}
 \end{frame}
 \begin{frame}
