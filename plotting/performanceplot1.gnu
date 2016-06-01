@@ -2,12 +2,15 @@ set term pdf
 set output "perfplot1.pdf"
 
 # disable legend
-#unset key
+unset key
 
 # label and titles
 set xlabel "Key length"
 set label "Performance plot Part 1" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
 set label "[Ops/Cycle]" at screen 0.038, 0.86 left
+
+set label "Memory optimization" at screen 0.5, 0.66 left textcolor rgb '#990600'
+set label "Baseline" at screen 0.5, 0.3 left textcolor rgb '#0060AD'
 
 # layout
 set tmargin at screen 0.8
