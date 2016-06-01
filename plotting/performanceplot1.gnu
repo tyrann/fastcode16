@@ -36,4 +36,4 @@ set grid ytics lt 1 lw 1 lc rgb "#FFFFFF"
 # plot data
 set style line 1 lc rgb '#0060ad' lt 1 lw 1 pt 7 ps 0.5
 set pointintervalbox 3
-plot "performance.csv" u 1:2 w lp pt 1 title "Baseline","performance.csv" u 1:3 w lp pt 1 ti "Memory optimization"
+plot "performance.csv" u 1:3 w lp pt 1  lc rgb '#990600' title "Memory optimization", "performance.csv" u 1:2 w lp pt 1 lc rgb '#0060AD' title "Baseline"
