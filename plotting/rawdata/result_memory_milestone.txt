@@ -1,0 +1,66 @@
+
+CYCLE COUNT:
+
+======EC keyLength: 192 =====
+RDTSC instruction:
+ 790603831.000000 cycles measured => 0.232531 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+
+global_opcount = 0
+global_index_count = 0
+======EC keyLength: 224 =====
+RDTSC instruction:
+ 1123159318.000000 cycles measured => 0.330341 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+
+global_opcount = 0
+global_index_count = 0
+======EC keyLength: 256 =====
+RDTSC instruction:
+ 1712149850.000000 cycles measured => 0.503573 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+
+global_opcount = 0
+global_index_count = 0
+======EC keyLength: 384 =====
+RDTSC instruction:
+ 5159837213.000000 cycles measured => 1.517599 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+
+global_opcount = 0
+global_index_count = 0
+======EC keyLength: 521 =====
+RDTSC instruction:
+ 12676189480.000000 cycles measured => 3.728291 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+
+global_opcount = 0
+global_index_count = 0
+
+OPCOUNT:
+
+======EC keyLength: 192 =====
+RDTSC instruction:
+ 2917498703.000000 cycles measured => 0.858088 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+
+global_opcount = 911365775
+global_index_count = 1149753
+======EC keyLength: 224 =====
+RDTSC instruction:
+ 4233011526.000000 cycles measured => 1.245003 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+
+global_opcount = 1382881493
+global_index_count = 1544361
+======EC keyLength: 256 =====
+RDTSC instruction:
+ 6518962419.000000 cycles measured => 1.917342 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+
+global_opcount = 2120899615
+global_index_count = 2030699
+======EC keyLength: 384 =====
+RDTSC instruction:
+ 21003492229.000000 cycles measured => 6.177498 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+
+global_opcount = 7042973360
+global_index_count = 4575745
+======EC keyLength: 521 =====
+RDTSC instruction:
+ 54648010552.000000 cycles measured => 16.072944 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+
+global_opcount = 18051162784
+global_index_count = 12020067
