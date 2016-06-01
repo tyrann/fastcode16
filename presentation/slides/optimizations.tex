@@ -18,7 +18,7 @@ scale = 0.5
 \node[rect] at (0,8) (1) {\textbf{Baseline} - Implementation without memory optimization};
 \node[rect] at (0,6) (2) {\textbf{Memory optimization} - Implementation with memory optimization};
 \node[rect] at (0,4) (3) {Comparison with OpenSSL};
-\node[rect] at (0,2) (4) {\textbf{Precomputation /Jacobian coordinates} - Algorithmic changes, jacobian coordinates};
+\node[rect] at (0,2) (4) {\textbf{Jacobian coordinates} - Algorithmic changes, jacobian coordinates};
 \node[rect] at (0,0) (5) {\textbf{Final} - Final performance optimization };
 
 
@@ -38,30 +38,35 @@ scale = 0.5
 \framesubtitle{Overview}
 
 \begin{itemize}
-\setlength\itemsep{1.5em}
+\setlength\itemsep{0.5em}
 \item{
-Code Optimizations
+\textbf{Baseline}
 \begin{itemize}
 \setlength\itemsep{0.5em}
-\item{Combine instructions}
+\item{Improved  memory allocation}
 \item{Change the base from 8 bit to 64 bit for the big integers}
-\item{Precomputation of $2^{k}\cdot G$ where $k \in \{1, ..., \log_2(p)\}$ and $G \in E$}
+\end{itemize}
+}
+\item{
+\textbf{Memory optimization}
+\begin{itemize}
+\setlength\itemsep{0.5em}
 \item{Change the base from 2 bit to 64 bit for Montogomery}
+\item{Precomputation of $2^{k}\cdot G$ where $k \in \{1, ..., \log_2(p)\}$ and $G \in E$}
+\item{Introduction of Jacobian coordinates}
+\item{Vectorize shifting using AVX2}
+\end{itemize}
+}
+
+\item{
+\textbf{Jacobian coordinates}
+\begin{itemize}
+\item{function stiching}
 \item{Inlining functions}
 \item{Unrolling}
-\item{Vectorize shifting using AVX2}
-\item{Improved  memory allocation}
-\end{itemize}
-}
-\item{
-Algorithmic Optimizations
-\begin{itemize}
-\setlength\itemsep{0.5em}
-\item{Introduction of Jacobian coordinates}
 \end{itemize}
 }
 \end{itemize}
-
 \end{frame}
 
 \begin{frame}[fragile]
