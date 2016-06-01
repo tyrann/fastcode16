@@ -2,12 +2,15 @@ set term pdf
 set output "ecdh.pdf"
 
 # disable legend
-set key left
+unset key
 
 # label and titles
 set xlabel "Key length"
 set label "ECDH execution cycles comparison" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
 set label "[Cycles]" at screen 0.038, 0.86 left
+
+set label "Final" at screen 0.5, 0.45 left textcolor rgb '#0060AD'
+set label "OpenSSL" at screen 0.5, 0.225 left textcolor rgb '#990600'
 
 # layout
 set tmargin at screen 0.8
