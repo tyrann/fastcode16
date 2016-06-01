@@ -39,29 +39,24 @@ scale = 0.5
 
 \begin{itemize}
 \setlength\itemsep{0.5em}
-\item{
-\textbf{Baseline}
-\begin{itemize}
-\setlength\itemsep{0.5em}
-\item{Improved  memory allocation}
-\item{Change the base from 8 bit to 64 bit for the big integers}
-\end{itemize}
-}
+
 \item{
 \textbf{Memory optimization}
 \begin{itemize}
 \setlength\itemsep{0.5em}
 \item{Change the base from 2 bit to 64 bit for Montogomery}
 \item{Precomputation of $2^{k}\cdot G$ where $k \in \{1, ..., \log_2(p)\}$ and $G \in E$}
-\item{Introduction of Jacobian coordinates}
 \item{Vectorize shifting using AVX2}
 \end{itemize}
 }
+\item \textbf{Jacobian coordinates}
 
 \item{
-\textbf{Jacobian coordinates}
+\textbf{Final optimization}
+
 \begin{itemize}
-\item{function stiching}
+	\setlength\itemsep{0.5em}
+\item{Function stiching}
 \item{Inlining functions}
 \item{Unrolling}
 \end{itemize}
@@ -79,7 +74,7 @@ add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[i], temp_m1, tmp->blocks[i
 carry_m1 = hi_m1;
 \end{lstlisting}
 Created Assembly code\\
-x86 icc 13.0.1 -m64 -march=CORE-AVX2 -O3
+x86 icc 13.0.1 -m64 -march=xCORE-AVX2 -O3
 \begin{lstlisting}[frame=single, basicstyle=\tiny, language={[x86masm]Assembler}]
 mov       rdx, QWORD PTR [48+rsi]
 mulx      rdx, rbx, rax
@@ -128,7 +123,7 @@ addb    $-1, %bpl
 \hline
 \textbf{Approach} & \textbf{Lower bound} & \textbf{Bottleneck}\\ \hline
 ADX & 8 cycles/iteration & ADX throughput\\ \hline
-AVX2 (base 32) & 10 cycles/iteration & \multirow{2}{3cm}{Emulation of carry flag} \\
+AVX2 (base 32) & 10 cycles/iteration & \multirow{2}{3cm}{Emulation\\ of carry flag} \\
 AVX2 (base 64) & 24 cycles/iteration & \\
 \hline
 \end{tabular}
