@@ -72,7 +72,7 @@ add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[i], temp_m1, tmp->blocks[i
 carry_m1 = hi_m1;
 \end{lstlisting}
 Created Assembly code\\
-x86 icc 13.0.1 -m64 -march=haswell -O3
+x86 icc 13.0.1 -m64 -march=CORE-AVX2 -O3
 \begin{lstlisting}[frame=single, basicstyle=\tiny, language={[x86masm]Assembler}]
 mov       rdx, QWORD PTR [48+rsi]
 mulx      rdx, rbx, rax
