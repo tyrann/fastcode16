@@ -32,6 +32,6 @@ set grid ytics lt 1 lw 1 lc rgb "#FFFFFF"
 # plot data
 set style line 1 lc rgb '#0060ad' lt 1 lw 1 pt 7 ps 0.5
 set pointintervalbox 3
-plot "speedup.csv" u 1:2 w lp pt 1 title "Memory optimization","speedup.csv" u 1:3 w lp pt 1 ti "Precomputation", "speedup.csv" u 1:4 w lp pt 1 ti "Jacobian coordinates","speedup.csv" u 1:5 w lp pt 1 ti "Final"
+plot "speedup.csv" u 1:2 w lp pt 1 title "Memory optimization", "speedup.csv" u 1:4 w lp pt 1 ti "Jacobian coordinates","speedup.csv" u 1:5 w lp pt 1 ti "Final"
 
 #"speedup.csv" u 1:6 w lp pt 1 ti "OpenSSL"

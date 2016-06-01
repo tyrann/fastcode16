@@ -34,4 +34,4 @@ set style line 1 lc rgb '#0060ad' lt 1 lw 1 pt 7 ps 0.5
 set pointintervalbox 3
 set arrow from 150,1.5 to 550,1.5 ls 7
 set label 'Peak performance' at 250,1.55 right textcolor ls 7
-plot "performance.csv" u 1:4 w lp pt 1 ti "Precomputation","performance.csv" u 1:5 w lp pt 1 ti "Jacobian coordinates","performance.csv" u 1:6 w lp pt 1 ti "Final"
+plot "performance.csv" u 1:5 w lp pt 1 ti "Jacobian coordinates","performance.csv" u 1:6 w lp pt 1 ti "Final"
