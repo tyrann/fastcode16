@@ -1,28 +1,39 @@
-Give a short, self-contained summary of necessary
-background information. For example, assume you present an
-implementation of FFT algorithms. You could organize into DFT
-definition, FFTs considered, and cost analysis. The goal of the
-background section is to make the paper self-contained for an audience
-as large as possible. As in every section
-you start with a very brief overview of the section. Here it could be as follows: In this section 
-we formally define the discrete Fourier transform, introduce the algorithms we use
-and perform a cost analysis.
+The purpose of this section is to familiarize the reader with the mathematical foundations of the project. It is heavily based on \cite{Brown:2009}, \cite{Washington:2008}.
 
-\mypar{Discrete Fourier Transform}
-Precisely define the transform so I understand it even if I have never
-seen it before.
+\mypar{Finite Field arithmetic} For elliptic curve cryptography one is mainly interested in the prime finite field $\mathbb{F}_p$ and the characteristic 2 finite field $\mathbb{F}_{2^m}$. In this paper only elliptic curves over $\mathbb{F}_p$ are discussed.
+ 
+\mypar{Elliptic Curve over $\mathbb{F}_p$ }
+An elliptic curve is defined by the equation
+\begin{equation}\label{eq:defining_eq_ec}
+y^2 \equiv x^3 + ax + b \quad (\text{mod } p)
+\end{equation}
+where $p$ is an odd prime number and $a,b \in \mathbb{F}_p$ are the parameters of the curve. Furthermore $a, b$ need to satisfy $4a^3 + 27b^2 \not\equiv 0$. The elliptic curve $E\left(\mathbb{F}_p\right)$ consists of the Points $P=(x,y)$ $x,y \in \mathbb{F}_p$ satisfying (\ref{eq:defining_eq_ec}). Additionally we introduce $\mathcal{O}$ the so called point at infinity. As soon as the addition is defined, this will be the neutral element of the group. How the addition can be defined see \cite{Brown:2009}.
 
-\mypar{Fast Fourier Transforms}
-Explain the algorithm you use.
+\mypar{Diffie Hellman key exchange}
+Alice and Bob want to establish a secret over a public channel. We assume that the elliptic curve parameter: a prime $p$, $a, b \in \mathbb{F}_p$ a point $G$ with high order are publicly known.
+\begin{enumerate}
+\item{Alice chooses a secret integer $u$, computes $G_u = uG$, and sends $G_u$ to Bob.}
+\item{Bob chooses a secret integer $v$, computes $G_v = vG$, and sends $G_v$ to Alice.}
+\item{Alice computes $uG_v = uvG$}
+\item{Bob computes $vG_u = vuG$.}
+\end{enumerate}
+One can verify that $uG_v = uvG = vuG = v G_u$. An eavesdropper knows $G, G_u, G_v$ and his goal is to calculate $uvG$. This is known as the Diffie-Hellman Problem and is assumed to be a hard problem.
 
-\mypar{Cost Analysis}
-First define you cost measure (what you count) and then compute the
-cost. Ideally precisely, at least asymptotically. In the latter case you will need to instrument your code to count
-the operations so you can create a performance plot.
+\mypar{Double-and-add method}
+In order to implement the Diffie-Hellman key exchange we need to calculate $dP$ fast.
+Input $P \in E(\mathbb{F}_p)$, $d \in \mathbb{N}$\\
+Output: $d\cdot P \in E(\mathbb{F}_p)$
+\begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=double-and-add method]
+$N$ <- $P$
+$Q$ <- $\mathcal{O}$
+for i from 0 to m do
+  if $d_i$ = 1 then
+    $Q$ <- point_add($Q$, $N$)
+  $N$ <- point_double($N$)
+return $Q$
+\end{lstlisting}
+where $d = d_0 + d_1 2 + ... + d_m 2^m \quad d_i \, \in \{0,1\}$
 
-Also state what is
-known about the complexity (asymptotic usually) 
-about your problem (including citations).
+\mypar{Complexity}
 
-Don't talk about "the complexity of the algorithm.'' It's incorrect,
-remember (Lecture 2)?
+\mypar{Cost measure}
