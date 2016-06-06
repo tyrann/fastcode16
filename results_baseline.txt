@@ -1,0 +1,68 @@
+
+CYCLES COUNT:
+
+======EC keyLength: 192 =====
+RDTSC instruction:
+ 7414640207.000000 cycles measured => 4.119245 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+
+global_opcount = 0
+global_index_count = 0
+======EC keyLength: 224 =====
+RDTSC instruction:
+ 12629776947.000000 cycles measured => 7.016543 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+
+global_opcount = 0
+global_index_count = 0
+======EC keyLength: 256 =====
+RDTSC instruction:
+ 16073934424.000000 cycles measured => 8.929964 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+
+global_opcount = 0
+global_index_count = 0
+======EC keyLength: 384 =====
+RDTSC instruction:
+ 57647172128.000000 cycles measured => 32.026207 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+
+global_opcount = 0
+global_index_count = 0
+======EC keyLength: 521 =====
+RDTSC instruction:
+ 142364375449.000000 cycles measured => 79.091320 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+
+global_opcount = 0
+global_index_count = 0
+
+
+OPCOUNT:
+
+
+======EC keyLength: 192 =====
+RDTSC instruction:
+ 13507172203.000000 cycles measured => 7.503985 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+
+global_opcount = 2115227422
+global_index_count = 2009582
+======EC keyLength: 224 =====
+RDTSC instruction:
+ 23042102183.000000 cycles measured => 12.801168 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+
+global_opcount = 3663590493
+global_index_count = 3084759
+======EC keyLength: 256 =====
+RDTSC instruction:
+ 30022678459.000000 cycles measured => 16.679266 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+
+global_opcount = 4897687084
+global_index_count = 3540835
+======EC keyLength: 384 =====
+RDTSC instruction:
+ 110881725749.000000 cycles measured => 61.600959 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+
+global_opcount = 18864144616
+global_index_count = 9178775
+======EC keyLength: 521 =====
+RDTSC instruction:
+ 286409649965.000000 cycles measured => 159.116472 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+
+global_opcount = 48721868546
+global_index_count = 27837252
