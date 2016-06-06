@@ -21,7 +21,7 @@
 #define B 2
 
 #define PRINT_SIMD 0
-#define __AVX2 0
+#define __AVX2 1
 
 #if PRINT_SIMD > 0
 	#define PRINT_AVX_U64(f)	printf("%llu %llu %llu %llu \n", f[0], f[1], f[2], f[3]);
@@ -95,9 +95,9 @@ void __montgomery_convert(BigInt res, const BigInt x, const BigInt p)
 	bigint_copy(res, x);
 	/*n is the R parameter in the Montgomery convertion*/
 
-	uint64_t n = p->significant_blocks * 8 * 8;
+	uint16_t n = p->significant_blocks * 8 * 8;
 	__COUNT_OP(&mul_opcount, 1);
-	uint64_t i;
+	uint16_t i;
     
 	for (i = 0; i < n; ++i)
    	{
@@ -114,9 +114,9 @@ void __montgomery_revert(BigInt rev, const BigInt x, const BigInt p)
 {
 	bigint_copy(rev, x);
 
-	uint64_t n = p->significant_blocks * 8 * 8;
+	uint16_t n = p->significant_blocks * 8 * 8;
 	__COUNT_OP(&mul_opcount, 1);
-	uint64_t i;
+	uint16_t i;
 
 	for (i = 0; i < n; ++i)
 	{
@@ -249,7 +249,7 @@ typedef unsigned long long int uint64;
 	} \
 	else \
 	{ \
-		for (uint64_t i = 0; i < mul_size + 1; i++) \
+		for (uint16_t i = 0; i < mul_size + 1; i++) \
     	{ \
         	res->blocks[i] = res->blocks[i+1]; \
 			__COUNT_INDEX(&global_index_count, 2); \
@@ -300,7 +300,7 @@ void montgomery_mul_x2(BigInt restrict res1, const BigInt x1, const BigInt y1, B
 	memset(res1->blocks, 0, ROUND_UP_MUL4(mul_size + 2) * 8);
 	memset(res2->blocks, 0, ROUND_UP_MUL4(mul_size + 2) * 8);
 	
-	for (unsigned int i = 0; i < p->significant_blocks; ++i)
+	for (uint16_t i = 0; i < p->significant_blocks; ++i)
 	{
 		a1_0 = res1->blocks[0];
 		a2_0 = res2->blocks[0];
@@ -407,7 +407,7 @@ void montgomery_mul(BigInt restrict res, const BigInt x, const BigInt y, const B
 	__COUNT_OP(&mul_opcount, 1);
 	__COUNT_OP(&add_opcount, 1);
 	
-	for (unsigned int i = 0; i < p->significant_blocks; ++i)
+	for (uint16_t i = 0; i < p->significant_blocks; ++i)
 	{
 		a_0 = res->blocks[0];
 		if(x->significant_blocks > i) {
@@ -495,7 +495,7 @@ void bigint_mul_add_inplace(BigInt res, const BigInt a, const uint64_t b, const 
 		add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[0], mul_low, (unsigned long long*)&(res->blocks)[0]);
 		
 		// Blocks 1 : mul_size-1
-		for(unsigned int i = 1; i < mul_size; i++)
+		for(uint16_t i = 1; i < mul_size; i++)
 		{
 			__COUNT_INDEX(&global_index_count, 1);
 			__COUNT_OP(&add_opcount, 1);
@@ -616,7 +616,7 @@ void bigint_left_shift_inplace(BigInt a)
    
     // Left shift octets by one, propagating the carry across octets.
     uint64_t carry = 0;
-    for (uint64_t i = 0; i < a->significant_blocks; i++)
+    for (uint16_t i = 0; i < a->significant_blocks; i++)
     {
         uint64_t cur_carry = carry;
         carry = a->blocks[i] >> 63;
@@ -647,7 +647,7 @@ void bigint_right_shift_inplace(BigInt a)
     
 #if __AVX2 > 0	
 	/*Version 1*/
-    for (uint64_t i = 0; i <= a->significant_blocks; i+=4)
+    for (uint16_t i = 0; i <= a->significant_blocks; i+=4)
     {
 		__m256i l0 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i));
 		__m256i l1 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i + 4));
@@ -677,7 +677,7 @@ void bigint_right_shift_inplace(BigInt a)
 #else
     // Right shift octets by one, propagating the carry across octets.
     uint64_t carry = 0;
-    for (uint64_t i = a->significant_blocks; i > 0; i--)
+    for (uint16_t i = a->significant_blocks; i > 0; i--)
     {
         uint64_t cur_carry = carry;
         carry = a->blocks[i-1] << 63;
@@ -705,7 +705,7 @@ void bigint_right_shift_inplace_64(BigInt a)
     BIGINT_ASSERT_VALID(a);
 #if __AVX2 > 0	
 	/*Version 1*/
-    for (uint64_t i = 0; i <= a->significant_blocks; i+=4)
+    for (uint16_t i = 0; i <= a->significant_blocks; i+=4)
     {
 		__m256i l0 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i));
 		__m256i l1 = _mm256_castpd_si256(_mm256_load_pd((double *)a->blocks + i + 4));
@@ -727,7 +727,7 @@ void bigint_right_shift_inplace_64(BigInt a)
 #else
 
 	//SISD Version	
-    for (uint64_t i = 0; i < a->significant_blocks; i++)
+    for (uint16_t i = 0; i < a->significant_blocks; i++)
     {
         a->blocks[i] = a->blocks[i+1];
 		__COUNT_INDEX(&global_index_count, 2);
@@ -768,7 +768,7 @@ void bigint_add_inplace(BigInt a, const BigInt b)
 	}
 
 	// Execute adding and propagate carry
-	uint64_t i = 0;
+	uint16_t i = 0;
 	unsigned char carry = 0;
 	for (; i < a->significant_blocks; i++)
     {
@@ -802,7 +802,7 @@ void bigint_sub_inplace(BigInt a, const BigInt b)
     // Negative representation is not implemented
     assert(!bigint_is_greater(b, a));
 
-	uint64_t i = 0;
+	uint16_t i = 0;
 	unsigned char borrow = 0;
 	for (; i < a->significant_blocks; i++)
 	{
