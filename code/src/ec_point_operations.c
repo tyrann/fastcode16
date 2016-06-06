@@ -181,11 +181,11 @@ void ec_point_mul(Point *result, const BigInt d, const Point *P, const EllipticC
 	bigint_copy(result->y, bigint_zero);
 	result->is_at_infinity = 1;
 	
-	uint64_t i = 0;
+	uint8_t i = 0;
     point_copy(&p2, P);
 	for(; i < d->significant_blocks; i++)
     {
-		for(uint64_t j = 0; j < 64; j++) 
+		for(uint8_t j = 0; j < 64; j++) 
 		{
 			__COUNT_OP(&shift_opcount,1);
 	    	if(d->blocks[i] & (((uint64_t)1) << j)) 
@@ -217,9 +217,9 @@ void ec_point_mul_generator(Point *result, const BigInt d, const EllipticCurvePa
 	result->is_at_infinity = 1;
 
     point_copy(&p2, &(params->generator));
-	for(uint64_t i = 0; i < d->significant_blocks; i++)
+	for(uint8_t i = 0; i < d->significant_blocks; i++)
     {
-		for(uint64_t j = 0; j < 64; j++)
+		for(uint8_t j = 0; j < 64; j++)
 		{
 			__COUNT_OP(&shift_opcount,1);
 	    	if(d->blocks[i] & (((uint64_t)1) << j))

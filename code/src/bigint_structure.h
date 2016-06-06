@@ -14,7 +14,7 @@ typedef unsigned char uchar;
 typedef struct 
 {
     // The number of octets (bytes) actually used storing the number
-    uint64_t significant_blocks;
+    uint8_t significant_blocks;
     
     // Padding bytes. This guarantees the required alignment on the octets array
     #if BIGINT_HEADER_PADDING != 0
