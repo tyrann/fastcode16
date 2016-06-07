@@ -1,23 +1,30 @@
-The purpose of this section is to familiarize the reader with the mathematical foundations of the project. It is heavily based on \cite{Brown:2009}, \cite{Washington:2008}.
+The purpose of this section is to familiarize the reader with the mathematical foundations of the Diffie-Hellman key exchange and which algorithms we used to achieve this task. This chapter follows a bottom-up approach.
 
-\mypar{Finite Field arithmetic} For elliptic curve cryptography one is mainly interested in the prime finite field $\mathbb{F}_p$ and the characteristic 2 finite field $\mathbb{F}_{2^m}$. In this paper only elliptic curves over $\mathbb{F}_p$ are discussed.
- 
-\mypar{Elliptic Curve over $\mathbb{F}_p$ }
+\mypar{Finite Field arithmetic \cite[p. 3-4]{Brown:2009}} For elliptic curve cryptography one is mainly interested in the prime finite field $\mathbb{F}_p$ and the characteristic 2 finite field $\mathbb{F}_{2^m}$. In this paper only elliptic curves over $\mathbb{F}_p$ are discussed.
+
+\mypar{Montgomery multiplication} 
+
+\mypar{Elliptic Curve over $\mathbb{F}_p$ \cite[p. 6-7]{Brown:2009}}
 An elliptic curve is defined by the equation
 \begin{equation}\label{eq:defining_eq_ec}
 y^2 \equiv x^3 + ax + b \quad (\text{mod } p)
 \end{equation}
-where $p$ is an odd prime number and $a,b \in \mathbb{F}_p$ are the parameters of the curve. Furthermore $a, b$ need to satisfy $4a^3 + 27b^2 \not\equiv 0$. The elliptic curve $E\left(\mathbb{F}_p\right)$ consists of the Points $P=(x,y)$ $x,y \in \mathbb{F}_p$ satisfying (\ref{eq:defining_eq_ec}). Additionally we introduce $\mathcal{O}$ the so called point at infinity. As soon as the addition is defined, this will be the neutral element of the group. How the addition can be defined see \cite{Brown:2009}.
-
-\mypar{Diffie Hellman key exchange}
-Alice and Bob want to establish a secret over a public channel. We assume that the elliptic curve parameter: a prime $p$, $a, b \in \mathbb{F}_p$ a point $G$ with high order are publicly known.
+where $p$ is an odd prime number and $a,b \in \mathbb{F}_p$ are the parameters of the curve. Furthermore $a, b$ need to satisfy $4a^3 + 27b^2 \not\equiv 0$. The elliptic curve $E\left(\mathbb{F}_p\right)$ consists of the Points $P=(x,y)$ $x,y \in \mathbb{F}_p$ satisfying (\ref{eq:defining_eq_ec}). Additionally we introduce $\mathcal{O}$ the so called point at infinity. The addition of points (affine coordinates) is defined as follows \cite{Brown:2009}
 \begin{enumerate}
-\item{Alice chooses a secret integer $u$, computes $G_u = uG$, and sends $G_u$ to Bob.}
-\item{Bob chooses a secret integer $v$, computes $G_v = vG$, and sends $G_v$ to Alice.}
-\item{Alice computes $uG_v = uvG$}
-\item{Bob computes $vG_u = vuG$.}
+\item{$\mathcal{O} + \mathcal{O} = \mathcal{O}$}
+\item{$(x,y) + \mathcal{O} = \mathcal{O} + (x,y) = (x,y) \quad \forall (x,y) \in E(\mathbb{F}_p)$}
+\item{$(x,y) + (x,-y) = \mathcal{O} \quad \forall (x,y) \in E(\mathbb{F}_p)$}
+\item{Assume  $x_1 \neq x_2$. $(x_1, y_1) + (x_2, y_2) = (x_3, y_3)$ is defined as $x_3 \equiv \lambda^2 - x_1 - x_2 \, (\text{mod } p),$ \\ $y_3 \equiv \lambda(x_1 - x_3) - y_1 \, (\text{mod } p)$ and $\lambda \equiv \frac{y_2 - y_1}{x_2 - x_1} \, (\text{mod } p)$}
+\item{$(x_1, y_1) + (x_1, y_1) = (x_3, y_3)$ is defined as $x_3 \equiv \lambda^2 -2 x_1 \, (\text{mod } p)$, $\lambda (x_1 - x_3) - y_1  \, (\text{mod } p)$ and $\lambda \equiv \frac{3 x_1^2 + a}{2y_1} \, (\text{mod } p)$}
 \end{enumerate}
-One can verify that $uG_v = uvG = vuG = v G_u$. An eavesdropper knows $G, G_u, G_v$ and his goal is to calculate $uvG$. This is known as the Diffie-Hellman Problem and is assumed to be a hard problem.
+Rule 4. describes how to add two different points whereas rule 5. explains how to double a point. The set of points satisfying (\ref{eq:defining_eq_ec}) and $\mathcal{O}$ together with this addition form a commutative group.
+
+\mypar{Jacobian Coordinates  \cite[p. 59 - 60]{Blake:1999}}
+"In cases where field inversions are significantly more expensive than multiplications, it is efficient to implement projective coordinates" \cite{Blake:1999} In Jacobian coordinates a point is represented as a triplet $(x,y,z)$ satisfying (\ref{eq:defining_eq_ec_jacobians}).
+\begin{equation}\label{eq:defining_eq_ec_jacobians}
+y^2 \equiv x^3 + axz^4 + bz^6 \quad (\text{mod } p)
+\end{equation}
+In this project Jacobian coordinates were implemented. For the definition of the rules see \cite[p. 59-60]{Blake:1999}
 
 \mypar{Double-and-add method}
 In order to implement the Diffie-Hellman key exchange we need to calculate $dP$ fast.
@@ -33,6 +40,16 @@ for i from 0 to m do
 return $Q$
 \end{lstlisting}
 where $d = d_0 + d_1 2 + ... + d_m 2^m \quad d_i \, \in \{0,1\}$
+
+\mypar{Diffie Hellman key exchange \cite[p. 170-171]{Washington:2008}}
+Alice and Bob want to establish a secret over a public channel. We assume that the elliptic curve parameter: a prime $p$, $a, b \in \mathbb{F}_p$ a point $G$ with high order are publicly known.
+\begin{enumerate}
+\item{Alice chooses a secret integer $u$, computes $G_u = uG$, and sends $G_u$ to Bob.}
+\item{Bob chooses a secret integer $v$, computes $G_v = vG$, and sends $G_v$ to Alice.}
+\item{Alice computes $uG_v = uvG$}
+\item{Bob computes $vG_u = vuG$.}
+\end{enumerate}
+One can verify that $uG_v = uvG = vuG = v G_u$. An eavesdropper knows $G, G_u, G_v$ and his goal is to calculate $uvG$. This is known as the Diffie-Hellman Problem and is assumed to be a hard problem. 
 
 \mypar{Complexity}
 
