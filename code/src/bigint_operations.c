@@ -170,8 +170,6 @@ typedef unsigned long long int uint64;
 				: "m"(res->blocks[i]), "r"(carry_m1), "r"(low_m1) \
 				: "cc" \
 			); \
-			/* add_carry_m1 = _addcarryx_u64(add_carry_m1, carry_m1, low_m1, &temp_m1); */ \
-			/* add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[i], temp_m1, (uint64*)&tmp->blocks[i]); */ \
 			carry_m1 = hi_m1; \
 		} \
 		\
@@ -186,8 +184,10 @@ typedef unsigned long long int uint64;
 			: "cc", "%r15" \
 		); \
 		if (add_carry_1 > 0) add_carry_1 = 1; \
-		__asm__ __volatile__("addq $0, %%r15;" : : : "cc", "%r15"); \
 		\
+		\
+		\
+		__asm__ __volatile__("addq $0, %%r15;" : : : "cc", "%r15"); \
 		low_m2 = _mulx_u64(c->blocks[0], d, &carry_m2); \
 		__asm__ __volatile__( \
 			"adcx %0, %1;" \
