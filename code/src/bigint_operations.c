@@ -139,10 +139,10 @@ typedef unsigned long long int uint64;
 #ifdef USE_INLINE_ASM
 #define BIGINT_MUL_ADD_RSHIFT_INPLACE_X2_BODY(mul_size) \
 {\
-	unsigned char add_carry_m1 = 0, add_carry_1 = 0; \
-	unsigned char add_carry_m2 = 0, add_carry_2 = 0; \
-	uint64 low_m1, hi_m1, carry_m1, temp_m1; \
-	uint64 low_m2, hi_m2, carry_m2, temp_m2, unused = 0, zero = 0; \
+	unsigned char add_carry_1 = 0; \
+	unsigned char add_carry_2 = 0; \
+	uint64 low_m1, hi_m1, carry_m1; \
+	uint64 low_m2, hi_m2, carry_m2, zero = 0; \
  	\
 	BigInt tmp = GET_BIGINT_PTR(BI_MONTGOMERYMUL_TMP1_TAG); \
  	\
@@ -173,18 +173,18 @@ typedef unsigned long long int uint64;
 			carry_m1 = hi_m1; \
 		} \
 		\
+		low_m2 = _mulx_u64(c->blocks[0], d, &carry_m2); \
 		__asm__ __volatile__( \
-			"adox %3, %2;" \
-			"adcx %4, %2;" \
+			"adox %4, %2;" \
+			"adcx %3, %2;" \
 			"movq %2, %0;" \
 			"setc %1;" \
-			: "=m"(tmp->blocks[mul_size]), "=r"(add_carry_1), "+r"(carry_m1), "+r"(zero) \
-			: ""(res->blocks[mul_size]) \
+			: "=m"(tmp->blocks[mul_size]), "=r"(add_carry_1), "+r"(carry_m1) \
+			: ""(res->blocks[mul_size]), "r"(zero) \
 			: "cc" \
 		); \
 		\
 		__asm__ __volatile__("addq $0, %0;" : "+r"(zero) : : "cc"); \
-		low_m2 = _mulx_u64(c->blocks[0], d, &carry_m2); \
 		__asm__ __volatile__( \
 			"adcx %1, %0;" \
 			: "+r"(low_m2) \
@@ -193,8 +193,6 @@ typedef unsigned long long int uint64;
 		); 	\
 		\
 		for (unsigned int i = 1; i < mul_size; i++) { \
-		\
-			\
 			low_m2 = _mulx_u64(c->blocks[i], d, &hi_m2); \
 			__asm__ __volatile__( \
 				"adox %3, %1;" \
@@ -208,12 +206,12 @@ typedef unsigned long long int uint64;
 		} \
  		\
 		__asm__ __volatile__( \
-			"adox %3, %2;" \
-			"adcx %4, %2;" \
+			"adox %4, %2;" \
+			"adcx %3, %2;" \
 			"movq %2, %0;" \
 			"setc %1;" \
-			: "=m"(res->blocks[mul_size-1]), "=r"(add_carry_2), "+r"(carry_m2), "+r"(zero) \
-			: ""(tmp->blocks[mul_size]) \
+			: "=m"(res->blocks[mul_size-1]), "=r"(add_carry_2), "+r"(carry_m2) \
+			: ""(tmp->blocks[mul_size]), "r"(zero) \
 			: "cc" \
 		); \
  		\
@@ -225,58 +223,81 @@ typedef unsigned long long int uint64;
 	else if (b != 0) \
 	{ \
 		/* Block 0 */ \
+		 __asm__ __volatile__("addq $0, %0;" : "+r"(zero) : : "cc"); \
 		low_m1 = _mulx_u64(a->blocks[0], b, &carry_m1); \
-		add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[0], low_m1, &unused); \
- 		\
+		__asm__ __volatile__( \
+			"adcx %1, %0;" \
+			: "+r"(low_m1) \
+			: ""(res->blocks[0]) \
+			: "cc" \
+		); \
 		/* Blocks 1 : mul_size-1 */\
 		for (unsigned int i = 1; i < mul_size; i++) { \
-			__COUNT_INDEX(&global_index_count, 1); \
-			__COUNT_OP(&mul_opcount, 1); \
-			__COUNT_OP(&add_opcount, 2); \
- 			\
 			low_m1 = _mulx_u64(a->blocks[i], b, &hi_m1); \
-			add_carry_m1 = _addcarryx_u64(add_carry_m1, carry_m1, low_m1, &temp_m1); \
-			add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[i], temp_m1, (uint64*)&(res->blocks)[i-1]); \
+			__asm__ __volatile__( \
+				"adox %3, %1;" \
+				"adcx %2, %1;" \
+				"movq %1, %0;" \
+				: "=m"(res->blocks[i-1]), "+r"(low_m1) \
+				: "m"(res->blocks[i]), "r"(carry_m1) \
+				: "cc" \
+			); \
 			carry_m1 = hi_m1; \
 		} \
  		\
 		/* Block mul_size */\
-		_addcarryx_u64(add_carry_m1, carry_m1, 0, &temp_m1); \
-		add_carry_1 = _addcarryx_u64(add_carry_1, res->blocks[mul_size], temp_m1, (uint64*)&(res->blocks)[mul_size-1]); \
+		__asm__ __volatile__( \
+			"adox %4, %2;" \
+			"adcx %3, %2;" \
+			"movq %2, %0;" \
+			"setc %1;" \
+			: "=m"(res->blocks[mul_size-1]), "=r"(add_carry_1), "+r"(carry_m1) \
+			: ""(res->blocks[mul_size]), "r"(zero) \
+			: "cc" \
+		); \
  		\
 		/* Block mul_size + 1 */\
 		res->blocks[mul_size] += (uint64_t)add_carry_1; \
-		 \
-		__COUNT_OP(&mul_opcount, 1); \
-		__COUNT_OP(&add_opcount, 4); \
 	} \
 	else if (d != 0) \
 	{ \
 		/* Block 0 */\
+		__asm__ __volatile__("addq $0, %0;" : "+r"(zero) : : "cc"); \
 		low_m2 = _mulx_u64(c->blocks[0], d, &carry_m2); \
-		add_carry_2 = _addcarryx_u64(add_carry_2, res->blocks[0], low_m2, &unused); \
+		__asm__ __volatile__( \
+			"adcx %1, %0;" \
+			: "+r"(low_m2) \
+			: ""(res->blocks[0]) \
+			: "cc" \
+		); \
  		\
 		/* Blocks 1 : mul_size-1 */\
 		for (unsigned int i = 1; i < mul_size; i++) { \
-			__COUNT_INDEX(&global_index_count, 1); \
-			__COUNT_OP(&mul_opcount, 1); \
-			__COUNT_OP(&add_opcount, 2); \
- 			\
 			low_m2 = _mulx_u64(c->blocks[i], d, &hi_m2); \
-			add_carry_m2 = _addcarryx_u64(add_carry_m2, carry_m2, low_m2, &temp_m2); \
-			add_carry_2 = _addcarryx_u64(add_carry_2, res->blocks[i], temp_m2, (uint64*)&(res->blocks)[i-1]); \
+			__asm__ __volatile__( \
+				"adox %3, %1;" \
+				"adcx %2, %1;" \
+				"movq %1, %0;" \
+				: "=m"(res->blocks[i-1]), "+r"(low_m2) \
+				: "m"(res->blocks[i]), "r"(carry_m2) \
+				: "cc" \
+			); \
 			carry_m2 = hi_m2; \
 		} \
  		\
 		/* Block mul_size */\
-		_addcarryx_u64(add_carry_m2, carry_m2, 0, &temp_m2); \
-		add_carry_2 = _addcarryx_u64(add_carry_2, res->blocks[mul_size], temp_m2, (uint64*)&(res->blocks)[mul_size-1]); \
+		__asm__ __volatile__( \
+			"adox %4, %2;" \
+			"adcx %3, %2;" \
+			"movq %2, %0;" \
+			"setc %1;" \
+			: "=m"(res->blocks[mul_size-1]), "=r"(add_carry_2), "+r"(carry_m2) \
+			: ""(res->blocks[mul_size]), "r"(zero) \
+			: "cc" \
+		); \
  		\
 		/* Block mul_size + 1 */\
 		res->blocks[mul_size] += (uint64_t)add_carry_2; \
-		 \
-		__COUNT_OP(&mul_opcount, 1); \
-		__COUNT_OP(&add_opcount, 4); \
 	} \
 	else \
 	{ \
