@@ -7,14 +7,23 @@ The Montgomery modular multiplication algorithm allows to perform fast modular m
 
 
 \begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=Mulitprecision Montogmery Modular Multiplication ]
+INPUT: 
+p = $p_{n-1}$ ... $p_{0}$)$_{b}$
+x = ($x_{n-1}$ ... $x_{0}$)$_{b}$
+y = ($y_{n-1}$ ... $y_{0}$)$_{b}$
+
+OUPUT:
+$xyR^{-1}$ mod $m$
+
 1. A $\leftarrow$ 0 (A = ($a_n$ ... $a_{0}$)$_{b}$
 2. For $i$ from $0$ to $(n-1)$ do:
-	2.1 $u_{i} \leftarrow (a_{0}+x_{i}y_{0})m'$ mod $b$
-	2.2 $A \leftarrow (A+ x_{i}y + u_{i}m) / b$
-3. If $A \geq m$ then $A \leftarrow A-m$
+	2.1 $u_{i} \leftarrow (a_{0}+x_{i}y_{0})p'$ mod $b$
+	2.2 $A \leftarrow (A+ x_{i}y + u_{i}p) / b$
+3. If $A \geq p$ then $A \leftarrow A-p$
 4. Return $A$
 \end{lstlisting}
 
+The challenging part of the reduction modulo $p$ resides in the high amount of division operations to be performed. The algorithm takes advantage of the underlying architecture by performing operations on machine words. The modulo operation in itself is only executed at the end, where $A$ is certain to be between $0$ and $2p-1$.
 
 
 
