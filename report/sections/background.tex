@@ -3,7 +3,7 @@ The purpose of this section is to familiarize the reader with the mathematical f
 \mypar{Finite Field arithmetic \cite[p. 3-4]{Brown:2009}} For elliptic curve cryptography one is mainly interested in the prime finite field $\mathbb{F}_p$ and the characteristic 2 finite field $\mathbb{F}_{2^m}$. In this paper only elliptic curves over $\mathbb{F}_p$ are discussed.
 
 \mypar{Montgomery multiplication} 
-The Montgomery modular multiplication algorithm allows to perform fast modular multiplication on large integers. In particular, the algorithm can be adapted for multi-precision arithmetic. Given two integer $x$ and $y$ and the value of the finite field $\mathbb{F}_p$ , the algorithm computes $xy$ mod $p$. In order to perform the modular multiplication, $x$ and $y$ are converted to Montgomery form: $xR$ and $yR$ where $R$ is larger than $p$ and co-prime with $p$. $R$ is usually chosen as $b^{t}$ where $b$ matches the size of a processor's word, $2^{64}$ in our case. The algorithm performs a chain of multiplication mod $b$ and division by $b$, which are simply mask and shift operations when $b$ is in the appropriate form. The algorithm for the multi-precision representation is given below \cite[p. 602]{Menezes:1996}
+\\The Montgomery modular multiplication algorithm allows to perform fast modular multiplication on large integers. In particular, the algorithm can be adapted for multi-precision arithmetic. Given two integer $x$ and $y$ and the value of the finite field $\mathbb{F}_p$ , the algorithm computes $xy$ mod $p$. In order to perform the modular multiplication, $x$ and $y$ are converted to Montgomery form: $xR$ and $yR$ where $R$ is larger than $p$ and co-prime with $p$. $R$ is usually chosen as $b^{t}$ where $b$ matches the size of a processor's word, $2^{64}$ in our case. The algorithm performs a chain of multiplication mod $b$ and division by $b$, which are simply mask and shift operations when $b$ is in the appropriate form. The algorithm for the multi-precision representation is given below \cite[p. 602]{Menezes:1996}
 
 
 \begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=Mulitprecision Montogmery Modular Multiplication ]
@@ -23,10 +23,13 @@ $xyR^{-1}$ mod $m$
 4. Return $A$
 \end{lstlisting}
 
-The challenging part of the reduction modulo $p$ resides in the high amount of division operations to be performed. The algorithm takes advantage of the underlying architecture by performing operations on machine words. The modulo operation in itself is only executed at the end, where $A$ is certain to be between $0$ and $2p-1$.
 
 
+The challenging part of the reduction modulo $p$ resides in the high amount of division operations to be performed. The algorithm takes advantage of the underlying architecture by performing operations on machine words. The modulo operation in itself is only executed at the end, where $A$ is certain to be between $0$ and $2p-1$. In the early phase of the project, we used a base $b=2$ for $R$. We later changed the base to match the machine word and our block representation of the multi-precision integers. 
 
+\mypar{Shifting using vector instructions} 
+
+The shift operation is used extensively in both our division and Montgomery multiplication algorithm. In the first implementation, we relied on multi-precision division which executes many shift-by-1-bit operations. Although the idea of using vector instruction can sound appealing, we did not see a major speed up when vectorizing the shift operation. The reason for this is that the shift needs to be performed across the vector and therefore also between two vector. This significantly slows the operation since the bits need to be moved between vectors but also across inner boundaries or vectors.
 
 \mypar{Elliptic Curve over $\mathbb{F}_p$ \cite[p. 6-7]{Brown:2009}}
 An elliptic curve is defined by the equation
