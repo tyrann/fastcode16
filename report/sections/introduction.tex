@@ -1,24 +1,7 @@
-Do not start the introduction with the abstract or a slightly modified
-version. It follows a possible structure of the introduction. 
-Note that the structure can be modified, but the
-content should be the same. Introduction and abstract should fill at most the first page, better less.
+Cryptography is a complex and widespread computational problem in modern computer science research and applications. To ensure the safety of the exchanging of information, encryption provides the core foundation of a secure information system. Among different cryptographic problems, key exchange is an essential topic for two distant users to be able to share a secret without meeting physically. Internet technology companies have been exploiting ways to have efficient yet high performance algorithms to fulfill the needs of exchanging keys in this age where network security has been concerned more than ever. Various key exchange tools have been generated. Elliptic Curve Cryptography (ECC) has shown its advantages over traditional RSA (Rivest, Shamir and Adleman). By using less key sizes, ECC can apply a more efficient method without reducing the secure level of the encryption, whereas RSA requires the involvement of larger primer number to reach the same goal \cite{Malik:2010}. 
 
-\mypar{Motivation} The first task is to motivate what you do.  You can
-start general and zoom in one the specific problem you consider.  In
-the process you should have explained to the reader: what you are doing,
-why you are doing, why it is important (order is usually reversed).
+As an important application domain of ECC, Elliptic Curve Diffie-Hellman (ECDH) key exchange has attracted researcher's attention due to its safety and efficiency. A fast implementation of ECDH is highly in demand, as the number of Internet users increases drastically with the growing needs for information security and the speed of computation. ECDH is widely used and there are some potential to be improved in its computational performance. The challenge lies in the complex computational models and its natural requires for large integers. In this paper, we propose a fast implementation of high performance of ECDH key exchange.By comparing with popular cryptography library we proved the feasibility of our improvement of our optimization methods.  
 
-For example, if my result is the fastest DFT implementation ever, one
-could roughly go as follows. First explain why the DFT is important
-(used everywhere with a few examples) and why performance matters (large datasets,
-realtime). Then explain that fast implementations are very hard and
-expensive to get (memory hierarchy, vector, parallel). 
+Brown provides the backbone of this project by providing a general standard of Elliptic Curve Cryptography\cite{Brown:2009} and specifying a well-established deployment requirements. Malik's work regarding a particular implementation in a FPGA card \cite{Malik:2010} shows the possibility of performance oriented optimization. The use of projective coordinates, as the most efficient optimization methods during our implementation, was proven by Blake et al.\cite{Blake:1999} as an effective method for expensive field inversions. In this paper we combine multiply approaches of optimizations and achieved satisfactory performance improvement and execution speedup.  
 
-Now you state what you do in this paper. In our example: 
-presenting a DFT implementation that is
-faster for some sizes than all the other ones.
-
-\mypar{Related work} Next, you have to give a brief overview of
-related work. For a paper like this, anywhere between 2 and 8
-references. Briefly explain what they do. In the end contrast to what
-you do to make now precisely clear what your contribution is.
+We give a thorough description of background in section 2, proposed optimization methods in section 3 and show our experimental results in section 4. In Section 5, we discuss and analyze our approach.
