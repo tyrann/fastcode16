@@ -1,3 +1,36 @@
+\begin{figure}[h!]
+\begin{tikzpicture}[
+rect/.style={
+draw,
+text width=22em,
+minimum height = 1cm
+},node distance=1.1cm
+]
+\node[rect] (1) {\textbf{Baseline} - Implementation without memory optimization};
+\node[rect, below of=1] (2) {\textbf{Memory optimization} - Implementation with memory optimization};
+\node[rect, below of=2] (3) {Comparison with OpenSSL};
+\node[rect, below of=3] (4) {\textbf{Jacobian coordinates} - Algorithmic changes, jacobian coordinates};
+\node[rect, below of=4] (5) {\textbf{Final} - Final performance optimization };
+
+\end{tikzpicture}
+\caption{approach\label{fig:method}}
+\end{figure}
+
+\mypar{Baseline} 
+Some information about the first baseline
+
+\mypar{Memory optimization}
+
+\mypar{First comparision with OpenSSL}
+Realization that the chosen algorithm is not optimal.
+
+\mypar{Jacobian coordinates}
+Introduction of the Jacobian coordinates
+Precomputation of the Points
+
+\mypar{Final}
+Final optimizations like function stitching and inline assembly 
+
 Now comes the ``beef'' of the paper, where you explain what you
 did. Again, organize it in paragraphs with titles. As in every section
 you start with a very brief overview of the section.
