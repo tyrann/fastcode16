@@ -1,0 +1,32 @@
+\newcommand{\SortNoop}[1]{}
+\begin{thebibliography}{1}
+
+\bibitem{Malik:2010}
+Muhammad~Yasir Malik,
+\newblock ``Efficient implementation of elliptic curve cryptography using
+  low-power digital signal processor,''
+\newblock in {\em Advanced Communication Technology (ICACT), 2010 The 12th
+  International Conference on}. IEEE, 2010, vol.~2, pp. 1464--1468.
+
+\bibitem{Brown:2009}
+Daniel R.~L. Brown,
+\newblock ``Sec 1: Elliptic curve cryptography,'' http://www.secg.org/, 2009.
+
+\bibitem{Blake:1999}
+I.~Blake, G.~Seroussi, and N.~Smart,
+\newblock {\em Elliptic Curves in Cryptography},
+\newblock Cambridge University Press, 1999,
+\newblock Cambridge Books Online.
+
+\bibitem{Menezes:1996}
+A.~Menezes, P.~Oorschot, and S.~Vanstone,
+\newblock {\em Handbook of Applied Cryptography},
+\newblock CRC Press, 1996,
+\newblock Fifth Printing (August 2001).
+
+\bibitem{Washington:2008}
+Lawrence C~. Washington,
+\newblock {\em Elliptic Curves Number Theory and Cryptography},
+\newblock Chapman and Hall/CRC, 2nd edition, 2008.
+
+\end{thebibliography}
