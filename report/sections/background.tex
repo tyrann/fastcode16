@@ -7,12 +7,12 @@ The purpose of this section is to familiarize the reader with the mathematical f
 
 
 \begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=Mulitprecision Montogmery Modular Multiplication ]
-INPUT: 
+Input: 
 p = $p_{n-1}$ ... $p_{0}$)$_{b}$
 X = ($x_{n-1}$ ... $x_{0}$)$_{b}$
 Y = ($y_{n-1}$ ... $y_{0}$)$_{b}$
 
-OUPUT:
+Output:
 $XYR^{-1}$ mod $p$
 
 1. A $\leftarrow$ 0 (A = ($a_n$ ... $a_{0}$)$_{b}$
@@ -53,15 +53,17 @@ In this project Jacobian coordinates were implemented. For the definition of the
 
 \mypar{Double-and-add method}
 In order to implement the Diffie-Hellman key exchange we need to calculate $dP$ fast.
-Input $P \in E(\mathbb{F}_p)$, $d \in \mathbb{N}$\\
-Output: $d\cdot P \in E(\mathbb{F}_p)$
+
 \begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=double-and-add method]
-$N$ <- $P$
-$Q$ <- $\mathcal{O}$
+Input: $P \in E(\mathbb{F}_p)$, $d \in \mathbb{N}$\\
+Output: $d\cdot P \in E(\mathbb{F}_p)$
+
+$N$ $\leftarrow$ $P$
+$Q$ $\leftarrow$ $\mathcal{O}$
 for i from 0 to m do
   if $d_i$ = 1 then
-    $Q$ <- point_add($Q$, $N$)
-  $N$ <- point_double($N$)
+    $Q$ $\leftarrow$ point_add($Q$, $N$)
+  $N$ $\leftarrow$ point_double($N$)
 return $Q$
 \end{lstlisting}
 where $d = d_0 + d_1 2 + ... + d_m 2^m \quad d_i \, \in \{0,1\}$
