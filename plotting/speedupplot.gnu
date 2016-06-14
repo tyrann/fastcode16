@@ -6,19 +6,19 @@ unset key
 
 # label and titles
 set xlabel "Key length [bits]" font "Helvetica, 18"
-set label "Speedup plot compared to Baseline" at screen 0.038, 0.95 left font "Helvetica Bold, 20"
-set label "Speedup X" at screen 0.038, 0.86 left font "Helvetica, 18"
+#set label "Speedup plot compared to Baseline" at screen 0.038, 0.95 left font "Helvetica Bold, 20"
+set label "Speedup X" at screen 0.038, 0.975 left font "Helvetica, 18"
 
-set label "Final" at screen 0.3, 0.77 left textcolor rgb '#990600' font "Helvetica, 18"
-set label "Jacobian coordinates" at screen 0.3, 0.58 left textcolor rgb '#0060AD' font "Helvetica, 18"
-set label "Memory optimization" at screen 0.3, 0.38 left textcolor rgb '#AA6000' font "Helvetica, 18"
+set label "Final" at screen 0.3, 0.86 left textcolor rgb '#990600' font "Helvetica, 18"
+set label "Jacobian coordinates" at screen 0.3, 0.65 left textcolor rgb '#0060AD' font "Helvetica, 18"
+set label "Memory optimization" at screen 0.3, 0.4 left textcolor rgb '#AA6000' font "Helvetica, 18"
 
 set logscale y
 
 # layout
-set tmargin at screen 0.8
+set tmargin at screen 0.9
 set lmargin at screen 0.13
-set rmargin at screen 0.93
+set rmargin at screen 0.95
 set bmargin at screen 0.18
 
 # axis

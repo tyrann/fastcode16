@@ -6,15 +6,16 @@ unset key
 
 # label and titles
 set xlabel "Key length [bits]" font "Helvetica, 18"
-set label "Performance plot Part 1" at screen 0.038, 0.95 left font "Helvetica Bold, 20"
-set label "[Ops/Cycle]" at screen 0.038, 0.86 left font "Helvetica, 18"
+#set label "Performance plot Part 1" at screen 0.038, 0.95 left font "Helvetica Bold, 20"
+set label "[Ops/Cycle]" at screen 0.02, 0.975 left font "Helvetica, 18"
 
-set label "Memory optimization" at screen 0.5, 0.66 left textcolor rgb '#990600' font "Helvetica, 18"
-set label "Baseline" at screen 0.5, 0.32 left textcolor rgb '#0060AD' font "Helvetica, 18"
+set label "Memory optimization" at screen 0.5, 0.62 left textcolor rgb '#990600' font "Helvetica, 18"
+set label "Baseline" at screen 0.5, 0.37 left textcolor rgb '#0060AD' font "Helvetica, 18"
 
 # layout
-set tmargin at screen 0.8
-set lmargin at screen 0.1
+set tmargin at screen 0.9
+set lmargin at screen 0.075
+set rmargin at screen 0.95
 set bmargin at screen 0.18
 
 # axis

@@ -5,29 +5,28 @@ set output "ecdh.pdf"
 unset key
 
 # label and titles
-set xlabel "Key length"
-set label "ECDH execution cycles comparison" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
-set label "[Cycles]" at screen 0.038, 0.86 left
+set xlabel "Key length [bits]" font "Helvetica, 18"
+#set label "ECDH execution cycles comparison" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
+set label "[Cycles]" at screen 0.038, 0.975 left font "Helvetica, 18"
 
-set label "Final" at screen 0.5, 0.45 left textcolor rgb '#0060AD'
-set label "OpenSSL" at screen 0.5, 0.225 left textcolor rgb '#990600'
+set label "Final" at screen 0.5, 0.5 left textcolor rgb '#0060AD' font "Helvetica, 18"
+set label "OpenSSL" at screen 0.5, 0.25 left textcolor rgb '#990600' font "Helvetica, 18"
 
 # layout
-set tmargin at screen 0.8
-set lmargin at screen 0.12
-set rmargin at screen 0.9
+set tmargin at screen 0.9
+set lmargin at screen 0.14
+set rmargin at screen 0.95
+set bmargin at screen 0.18
 
 # axis
 set style line 11 lc rgb '#000000' lt 1 lw 1
 set border 1 back ls 11
-#set format y "%02.1f"
-#set format y "%01.1f"
 set xrange [*:]
 #set yrange [0:0.5]
 set yrange [*:]
-set format x "%g bits"
-set xtics nomirror out
-set ytics nomirror scale 0
+set xtics (192, 224, 256, 384, 521) nomirror out font "Helvetica, 18"
+set ytics nomirror scale 0 font "Helvetica, 18"
+
 
 # grid 
 set object 3 rectangle from graph 0,0 to graph 1,1 fillcolor rgb"#DDDDDD" behind fs noborder
