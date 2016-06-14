@@ -57,7 +57,7 @@ In this project Jacobian coordinates were implemented. For the definition of the
 In order to implement the Diffie-Hellman key exchange we need to calculate $dP$ fast.
 Input $P \in E(\mathbb{F}_p)$, $d \in \mathbb{N}$\\
 Output: $d\cdot P \in E(\mathbb{F}_p)$
-\begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=double-and-add method]
+\begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=double-and-add method, label=lst:double_and_add]
 $N$ <- $P$
 $Q$ <- $\mathcal{O}$
 for i from 0 to m do
@@ -78,6 +78,7 @@ Alice and Bob want to establish a secret over a public channel. We assume that t
 \end{enumerate}
 One can verify that $uG_v = uvG = vuG = v G_u$. An eavesdropper knows $G, G_u, G_v$ and his goal is to calculate $uvG$. This is known as the Diffie-Hellman Problem and is assumed to be a hard problem. 
 
-\mypar{Complexity}
+\mypar{Complexity / Number of field operations}
+Since in ECDH the essential operation is multiplying a Point with a scalar, we want to investigate the number of field operations when calculating $dP$. We assume the double-and-method and Jacobian coordinates are used. This analysis is based on \cite[p. 63]{Blake:1999} As one can see in Listing \ref{lst:double_and_add} the number of point additions depends on the input $d$. Let $\ell$ be the number of bits of $d$. A reasonable assumption is to say, that $\ell / 2$ point additions and $\ell$ point doublings are necessary. Since arbitrary integer size multiplications are more expensive than additions we only count multiplications. According to \cite[p. 59, 60]{Brown:2009} a point addition costs 16 and a point doubling 10 multiplications. Hence we get an opcount of $\ell \cdot 10 + \ell / 2 \cdot 16$ multiplications.
 
 \mypar{Cost measure}
