@@ -1,0 +1,280 @@
+    bigint_create_buffer();
+    
+    mul_opcount = 0;
+	add_opcount = 0;
+	shift_opcount = 0;
+	avx_opcount = 0;
+
+    global_index_count = 0; 
+    // secp192
+    printf("==========ECDH optimal secp192==========\n");
+    compute_ECDH("1000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000",192); 
+    mul_opcount = 0;
+	add_opcount = 0;
+	shift_opcount = 0;
+	avx_opcount = 0;
+    global_index_count = 0;
+	
+    printf("==========ECDH open_ssl secp192==========\n");
+    compute_ECDH_open_ssl("1000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000", 192); 
+    mul_opcount = 0;
+	add_opcount = 0;
+	shift_opcount = 0;
+	avx_opcount = 0;
+    global_index_count = 0;
+    // secp224
+    printf("==========ECDH optimal secp224==========\n");
+    compute_ECDH("10000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000",224); 
+	mul_opcount = 0;
+	add_opcount = 0;
+	shift_opcount = 0;
+	avx_opcount = 0;
+
+    global_index_count = 0;
+    printf("==========ECDH open_ssl secp224==========\n");    
+    compute_ECDH_open_ssl("10000000000000000000000000000000000000000000000000000000","10000000000000000000000000000000000000000000000000000000", 224);  
+
+	mul_opcount = 0;
+	add_opcount = 0;
+	shift_opcount = 0;
+	avx_opcount = 0;
+
+
+    global_index_count = 0;   
+    // secp256
+    printf("==========ECDH optimal secp256==========\n");
+    compute_ECDH("1000000000000000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000000000000", 256); 
+	mul_opcount = 0;
+	add_opcount = 0;
+	shift_opcount = 0;
+	avx_opcount = 0;
+
+    global_index_count = 0;  
+    printf("==========ECDH open_ssl secp256==========\n");     
+    compute_ECDH_open_ssl("1000000000000000000000000000000000000000000000000000000000000000","1000000000000000000000000000000000000000000000000000000000000000", 256); 
+	mul_opcount = 0;
+	add_opcount = 0;
+	shift_opcount = 0;
+	avx_opcount = 0;
+
+    global_index_count = 0;
+    // secp384
+    printf("==========ECDH optimal secp384==========\n");
+    compute_ECDH("100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 384);
+	mul_opcount = 0;
+	add_opcount = 0;
+	shift_opcount = 0;
+	avx_opcount = 0;
+
+    global_index_count = 0;
+    printf("==========ECDH open_ssl secp384==========\n");  
+    compute_ECDH_open_ssl("100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 384);
+	mul_opcount = 0;
+	add_opcount = 0;
+	shift_opcount = 0;
+	avx_opcount = 0;
+
+    global_index_count = 0;
+    // secp521
+    printf("==========ECDH optimal secp521==========\n");
+    compute_ECDH("010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 521);
+	mul_opcount = 0;
+	add_opcount = 0;
+	shift_opcount = 0;
+	avx_opcount = 0;
+
+    global_index_count = 0;
+    printf("==========ECDH open_ssl secp521==========\n");  
+    compute_ECDH_open_ssl("010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 521);
+
+
+
+
+REPETITION 100
+RESULT
+CYCLE COUNT
+
+
+
+
+==========ECDH optimal secp192==========
+mul_opcount = 0
+add_opcount = 0
+shift_opcount = 0
+avx_opcount = 0
+global_index_count = 0
+RDTSC instruction:
+ 975663.000000 cycles measured => 0.000325 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u A83678AEDA556135D5A5461208F11DE4470224B2CBB5E759
+info v A83678AEDA556135D5A5461208F11DE4470224B2CBB5E759
+
+==========ECDH open_ssl secp192==========
+RDTSC instruction:
+ 1756744.000000 cycles measured => 0.000586 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u A83678AEDA556135D5A5461208F11DE4470224B2CBB5E759
+info v A83678AEDA556135D5A5461208F11DE4470224B2CBB5E759
+
+==========ECDH optimal secp224==========
+mul_opcount = 0
+add_opcount = 0
+shift_opcount = 0
+avx_opcount = 0
+global_index_count = 0
+RDTSC instruction:
+ 986119.000000 cycles measured => 0.000329 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 000000005E6CA45F6BF7BFCB14BD4E5C9C7126A8D91C090F310C05DA4490F073
+info v 000000005E6CA45F6BF7BFCB14BD4E5C9C7126A8D91C090F310C05DA4490F073
+
+==========ECDH open_ssl secp224==========
+RDTSC instruction:
+ 2148763.000000 cycles measured => 0.000716 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 5E6CA45F6BF7BFCB14BD4E5C9C7126A8D91C090F310C05DA4490F073
+info v 5E6CA45F6BF7BFCB14BD4E5C9C7126A8D91C090F310C05DA4490F073
+
+==========ECDH optimal secp256==========
+mul_opcount = 0
+add_opcount = 0
+shift_opcount = 0
+avx_opcount = 0
+global_index_count = 0
+RDTSC instruction:
+ 1088488.000000 cycles measured => 0.000363 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 1C010E9C71CF84AE67730F56CF2870D1270557B7F10B4D197ED5511A3DA810AC
+info v 1C010E9C71CF84AE67730F56CF2870D1270557B7F10B4D197ED5511A3DA810AC
+
+==========ECDH open_ssl secp256==========
+RDTSC instruction:
+ 2617051.000000 cycles measured => 0.000872 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 1C010E9C71CF84AE67730F56CF2870D1270557B7F10B4D197ED5511A3DA810AC
+info v 1C010E9C71CF84AE67730F56CF2870D1270557B7F10B4D197ED5511A3DA810AC
+
+==========ECDH optimal secp384==========
+mul_opcount = 0
+add_opcount = 0
+shift_opcount = 0
+avx_opcount = 0
+global_index_count = 0
+RDTSC instruction:
+ 2379518.000000 cycles measured => 0.000793 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 1C8523141D3D9BA89A3A53475C7FCC208F8B90745C308EF61EAF5B14E38D85C08AD3D59626EB0DF61DD026FE2B5255D3
+info v 1C8523141D3D9BA89A3A53475C7FCC208F8B90745C308EF61EAF5B14E38D85C08AD3D59626EB0DF61DD026FE2B5255D3
+
+==========ECDH open_ssl secp384==========
+RDTSC instruction:
+ 5218790.000000 cycles measured => 0.001740 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 1C8523141D3D9BA89A3A53475C7FCC208F8B90745C308EF61EAF5B14E38D85C08AD3D59626EB0DF61DD026FE2B5255D3
+info v 1C8523141D3D9BA89A3A53475C7FCC208F8B90745C308EF61EAF5B14E38D85C08AD3D59626EB0DF61DD026FE2B5255D3
+
+==========ECDH optimal secp521==========
+mul_opcount = 0
+add_opcount = 0
+shift_opcount = 0
+avx_opcount = 0
+global_index_count = 0
+RDTSC instruction:
+ 5350095.000000 cycles measured => 0.001783 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 0000000000000196457BE0FF6BDDFCC4714679E1BB35998FBDAFFB787CE4DEAFD70165433CC4A898A5381434CA591BC0C6FCAC1AE0F436E6017053D5265894B23EF850318126FB24
+info v 0000000000000196457BE0FF6BDDFCC4714679E1BB35998FBDAFFB787CE4DEAFD70165433CC4A898A5381434CA591BC0C6FCAC1AE0F436E6017053D5265894B23EF850318126FB24
+
+==========ECDH open_ssl secp521==========
+RDTSC instruction:
+ 11295713.000000 cycles measured => 0.003765 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 0196457BE0FF6BDDFCC4714679E1BB35998FBDAFFB787CE4DEAFD70165433CC4A898A5381434CA591BC0C6FCAC1AE0F436E6017053D5265894B23EF850318126FB24
+info v 0196457BE0FF6BDDFCC4714679E1BB35998FBDAFFB787CE4DEAFD70165433CC4A898A5381434CA591BC0C6FCAC1AE0F436E6017053D5265894B23EF850318126FB24
+
+
+
+
+
+OPCOUNT:
+
+
+
+
+
+==========ECDH optimal secp192==========
+mul_opcount = 2640482
+add_opcount = 9280951
+shift_opcount = 3165320
+avx_opcount = 1370000
+global_index_count = 246894
+RDTSC instruction:
+ 1462181.000000 cycles measured => 0.000487 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u A83678AEDA556135D5A5461208F11DE4470224B2CBB5E759
+info v A83678AEDA556135D5A5461208F11DE4470224B2CBB5E759
+
+==========ECDH open_ssl secp192==========
+RDTSC instruction:
+ 1702574.000000 cycles measured => 0.000568 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u A83678AEDA556135D5A5461208F11DE4470224B2CBB5E759
+info v A83678AEDA556135D5A5461208F11DE4470224B2CBB5E759
+
+==========ECDH optimal secp224==========
+mul_opcount = 4245200
+add_opcount = 12842893
+shift_opcount = 5329418
+avx_opcount = 1933000
+global_index_count = 303419
+RDTSC instruction:
+ 1568230.000000 cycles measured => 0.000523 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 000000005E6CA45F6BF7BFCB14BD4E5C9C7126A8D91C090F310C05DA4490F073
+info v 000000005E6CA45F6BF7BFCB14BD4E5C9C7126A8D91C090F310C05DA4490F073
+
+==========ECDH open_ssl secp224==========
+RDTSC instruction:
+ 2086025.000000 cycles measured => 0.000695 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 5E6CA45F6BF7BFCB14BD4E5C9C7126A8D91C090F310C05DA4490F073
+info v 5E6CA45F6BF7BFCB14BD4E5C9C7126A8D91C090F310C05DA4490F073
+
+==========ECDH optimal secp256==========
+mul_opcount = 4556126
+add_opcount = 14600635
+shift_opcount = 5404434
+avx_opcount = 2357000
+global_index_count = 326216
+RDTSC instruction:
+ 1722684.000000 cycles measured => 0.000574 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 1C010E9C71CF84AE67730F56CF2870D1270557B7F10B4D197ED5511A3DA810AC
+info v 1C010E9C71CF84AE67730F56CF2870D1270557B7F10B4D197ED5511A3DA810AC
+
+==========ECDH open_ssl secp256==========
+RDTSC instruction:
+ 2625970.000000 cycles measured => 0.000875 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 1C010E9C71CF84AE67730F56CF2870D1270557B7F10B4D197ED5511A3DA810AC
+info v 1C010E9C71CF84AE67730F56CF2870D1270557B7F10B4D197ED5511A3DA810AC
+
+==========ECDH optimal secp384==========
+mul_opcount = 9857441
+add_opcount = 28928018
+shift_opcount = 11664398
+avx_opcount = 3695000
+global_index_count = 487402
+RDTSC instruction:
+ 3650847.000000 cycles measured => 0.001217 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 1C8523141D3D9BA89A3A53475C7FCC208F8B90745C308EF61EAF5B14E38D85C08AD3D59626EB0DF61DD026FE2B5255D3
+info v 1C8523141D3D9BA89A3A53475C7FCC208F8B90745C308EF61EAF5B14E38D85C08AD3D59626EB0DF61DD026FE2B5255D3
+
+==========ECDH open_ssl secp384==========
+RDTSC instruction:
+ 5211080.000000 cycles measured => 0.001737 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 1C8523141D3D9BA89A3A53475C7FCC208F8B90745C308EF61EAF5B14E38D85C08AD3D59626EB0DF61DD026FE2B5255D3
+info v 1C8523141D3D9BA89A3A53475C7FCC208F8B90745C308EF61EAF5B14E38D85C08AD3D59626EB0DF61DD026FE2B5255D3
+
+==========ECDH optimal secp521==========
+mul_opcount = 21175031
+add_opcount = 51525394
+shift_opcount = 24957038
+avx_opcount = 7074000
+global_index_count = 706955
+RDTSC instruction:
+ 7628700.000000 cycles measured => 0.002543 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 0000000000000196457BE0FF6BDDFCC4714679E1BB35998FBDAFFB787CE4DEAFD70165433CC4A898A5381434CA591BC0C6FCAC1AE0F436E6017053D5265894B23EF850318126FB24
+info v 0000000000000196457BE0FF6BDDFCC4714679E1BB35998FBDAFFB787CE4DEAFD70165433CC4A898A5381434CA591BC0C6FCAC1AE0F436E6017053D5265894B23EF850318126FB24
+
+==========ECDH open_ssl secp521==========
+RDTSC instruction:
+ 11485308.000000 cycles measured => 0.003828 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+info u 0196457BE0FF6BDDFCC4714679E1BB35998FBDAFFB787CE4DEAFD70165433CC4A898A5381434CA591BC0C6FCAC1AE0F436E6017053D5265894B23EF850318126FB24
+info v 0196457BE0FF6BDDFCC4714679E1BB35998FBDAFFB787CE4DEAFD70165433CC4A898A5381434CA591BC0C6FCAC1AE0F436E6017053D5265894B23EF850318126FB24
+
+
