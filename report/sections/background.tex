@@ -16,11 +16,11 @@ OUPUT:
 $xyR^{-1}$ mod $m$
 
 1. A $\leftarrow$ 0 (A = ($a_n$ ... $a_{0}$)$_{b}$
-2. For $i$ from $0$ to $(n-1)$ do:
+2. for $i$ from $0$ to $(n-1)$ do:
 	2.1 $u_{i} \leftarrow (a_{0}+x_{i}y_{0})p'$ mod $b$
 	2.2 $A \leftarrow (A+ x_{i}y + u_{i}p) / b$
-3. If $A \geq p$ then $A \leftarrow A-p$
-4. Return $A$
+3. if $A \geq p$ then $A \leftarrow A-p$
+4. return $A$
 \end{lstlisting}
 
 
@@ -47,17 +47,17 @@ where $p$ is an odd prime number and $a,b \in \mathbb{F}_p$ are the parameters o
 Rule 4. describes how to add two different points whereas rule 5. explains how to double a point. The set of points satisfying (\ref{eq:defining_eq_ec}) and $\mathcal{O}$ together with this addition form a commutative group.
 
 \mypar{Jacobian Coordinates  \cite[p. 59 - 60]{Blake:1999}}
-"In cases where field inversions are significantly more expensive than multiplications, it is efficient to implement projective coordinates" \cite{Blake:1999} In Jacobian coordinates a point is represented as a triplet $(x,y,z)$ satisfying (\ref{eq:defining_eq_ec_jacobians}).
+"In cases where field inversions are significantly more expensive than multiplications, it is efficient to implement projective coordinates" \cite{Blake:1999} In Jacobian (also called projective) coordinates a point is represented as a triplet $(x,y,z)$ satisfying (\ref{eq:defining_eq_ec_jacobians}).
 \begin{equation}\label{eq:defining_eq_ec_jacobians}
 y^2 \equiv x^3 + axz^4 + bz^6 \quad (\text{mod } p)
 \end{equation}
-In this project Jacobian coordinates were implemented. For the definition of the rules see \cite[p. 59-60]{Blake:1999}
+Point additions in jacobian coordinates do not need modular divisions in contrast to affine coordinates, as one can see in the rules 4 and 5. The formulas how to add points in jacobian coordinates can be found in \cite[p. 59-60]{Blake:1999}
 
 \mypar{Double-and-add method}
 In order to implement the Diffie-Hellman key exchange we need to calculate $dP$ fast.
 Input $P \in E(\mathbb{F}_p)$, $d \in \mathbb{N}$\\
 Output: $d\cdot P \in E(\mathbb{F}_p)$
-\begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=double-and-add method]
+\begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=double-and-add method, label=lst:double_and_add]
 $N$ <- $P$
 $Q$ <- $\mathcal{O}$
 for i from 0 to m do
