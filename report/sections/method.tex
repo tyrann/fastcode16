@@ -1,10 +1,17 @@
-\begin{figure}[h!]
-\input{figures/approach}
-\caption{approach\label{fig:method}}
-\end{figure}
+The idea of this section is to give an overview about our implementation and the optimizations we did. We distinguish between four versions of our code. \textbf{Baseline}, which is the first naive implementation. \textbf{Memory optimization} uses the same algorithm as the baseline, but the memory handling is improved. The version \textbf{Jacobian coordinates} can be viewed as a second baseline, since a lot of algorithmic improvements were performed, which we figured out, when analyzing the OpenSSL implementation. \textbf{Final} marks our latest version.
 
 \mypar{Baseline} 
-Some information about the first baseline
+Since we have to calculate with large numbers 64-bit integer operations are not sufficient. We therefore had to find a representation for arbitrary sized integers. We decided not to use a library, in order to have full flexibility in the optimizations. Our choice is shown in Listing \ref{lst:bigint}. As a next step we implemented the addition, shifting, modular multiplication and division. Furthermore we implemented Addition of points (affine coordinates) and multiplication of a Point with a scalar (double-and-add method). All of the functions were tested with unit tests.
+
+\begin{lstlisting}[frame=single,  captionpos=b, caption=representation of the arbitrary size integers, label=lst:bigint]
+typedef uint64_t block;
+
+typedef struct 
+{
+    uint64_t significant_blocks;    
+    block blocks[BIGINT_BLOCKS_COUNT]; 
+} __BigInt;
+\end{lstlisting}
 
 \mypar{Memory optimization}
 
