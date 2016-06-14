@@ -1,0 +1,35 @@
+============Test Add============
+ECC Addition
+RDTSC instruction:
+ 101.000000 cycles measured => 0.000000 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+OpenSSl Addition
+RDTSC instruction:
+ 260.000000 cycles measured => 0.000000 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+============Test Mult============
+ECC multiplication
+RDTSC instruction:
+ 6251.000000 cycles measured => 0.000003 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+OpenSSl multiplication
+RDTSC instruction:
+ 161.000000 cycles measured => 0.000000 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+============Test montgomery Mult============
+ECC mont-multiplication
+RDTSC instruction:
+ 168.000000 cycles measured => 0.000000 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+OpenSSl mont-multiplication
+RDTSC instruction:
+ 142.000000 cycles measured => 0.000000 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+============Test Div============
+ECC Division
+RDTSC instruction:
+ 29351.000000 cycles measured => 0.000016 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+OpenSSl Division
+RDTSC instruction:
+ 536.000000 cycles measured => 0.000000 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+============Test ShiftLeft============
+ECC ShiftLeft
+RDTSC instruction:
+ 34.000000 cycles measured => 0.000000 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
+OpenSSl ShiftLeft
+RDTSC instruction:
+ 27.000000 cycles measured => 0.000000 seconds, assuming frequency is 1800.000000 MHz. (change in source file if different)
