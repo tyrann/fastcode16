@@ -82,6 +82,8 @@ void compute_ECDH(char* dURand, char* dVRand, int keyLength)
     pub_keyV.z = GET_BIGINT_PTR(BI_ECDH_PUBKEYVZ_TAG);
     BigInt sharedInfoV = GET_BIGINT_PTR(BI_ECDH_SHAREDV_TAG);
     
+	__montgomery_init(params.p);
+
     start = start_tsc();
     for(int i = 0; i < num_runs; i++)
     {
@@ -175,6 +177,7 @@ void compute_ECDH_open_ssl(char* dURand, char* dVRand, int keyLength)
     EC_POINT *public_keyV = EC_POINT_new(group_non_optimized);
     EC_POINT *resultU = EC_POINT_new(group_non_optimized);
     EC_POINT *resultV = EC_POINT_new(group_non_optimized);
+
     
     start = start_tsc();
     for(int i = 0; i < num_runs; i++)
