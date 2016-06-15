@@ -39,8 +39,20 @@ where $x_i$ and $u$ are $64$bit numbers, the remaining variables are BigInts. Th
 \mypar{ADX vs AVX2}  
 In the literature there is no reference to successful use of SIMD for ECC. [ref] claims that the performance of Montgomery multiplication increases using SIMD, but only if compared to a $32$bits SISD implementation.
 
-We verified the unsuitability of SIMD for this application by computing analytical lower bounds for the 
+We verified the unsuitability of SIMD for this application by computing analytical lower bounds for our ADX implementation and for two possible AVX2 approaches.
+We estimate the number of cycles required by one iteration when processing $4$ parallel carry chains, i.e. $2$ montgomery multiplications. Results are summarized in the table below:
 
-ADX 8 TP
-AVX2 32 10
-AVX2 64 24 
+\begin{tabular}{ |l|l|l|}
+	\hline
+ 	Approach & cycles/iteration & Bottleneck \\ \hline
+ 	ADX & 8 & ADX througput \\ \hline
+  	AVX2 32bit & 8 & Carry emulation \\ \hline
+ 	AVX2 64bit & 24 & Carry emulation \\ \hline
+\end{tabular}
+
+The main limitation is that AVX2 doesn't have support for carry propagation, thus it must be emulated. Moreover there are additional downsides:
+\begin{itemize}
+\item Data need to be transposed in the registers after loading.
+\item Multiplications have higher latency.
+\item Require two montgomery multiplications to be independent, which is not always the case.
+\end{itemize}
