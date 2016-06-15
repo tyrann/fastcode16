@@ -3,7 +3,7 @@ The idea of this section is to give an overview about our implementation and the
 \mypar{Baseline} 
 Since we have to calculate with large numbers 64-bit integer operations are not sufficient. We therefore had to find a representation for arbitrary sized integers. We decided not to use a library, in order to have full flexibility in the optimizations. Our choice is shown in Listing \ref{lst:bigint}. As a next step we implemented the addition, shifting, modular multiplication and division. Furthermore we implemented Addition of points (affine coordinates) and multiplication of a Point with a scalar (double-and-add method). All of the functions were tested with unit tests.
 
-\begin{lstlisting}[frame=single,  captionpos=b, caption=representation of the arbitrary size integers, label=lst:bigint]
+\begin{lstlisting}[frame=single,  captionpos=b, caption=representation of the arbitrary size integers, label=lst:bigint, language=c]
 typedef uint64_t block;
 
 typedef struct 
@@ -19,21 +19,11 @@ typedef struct
 Realization that the chosen algorithm is not optimal.
 
 \mypar{Jacobian coordinates}
-Introduction of the Jacobian coordinates
-Precomputation of the Points
+In this code version a lot of algorithmic optimizations were performed. The number of montgomery conversions was reduced significantly since the baseline implementation was suboptimal. Furthermore the base $b$ for the montgomery multiplication was changed to $2^{64}$.
+
+When considering the Diffie Hellman key exchange, one can see that $uG$ and $vG$ has to be calculated, where $G$ is the base point, which is previously known. This allows to precompute the values $2G, 4G, 8G,...$, which otherwise have to be calculated on line 6 in Listing \ref{lst:double_and_add}.
+
+Changing from affine coordinates to jacobian coordinates gave another significant speedup. In affine coordinate the modular division and the multiplication were the bottlenecks. Introducing jacobian coordinates allowed us to focus on optimizing the multiplication, since the division is only needed for converting from jacobians to affine coordinates.
 
 \mypar{Final}
 Final optimizations like function stitching and inline assembly 
-
-Now comes the ``beef'' of the paper, where you explain what you
-did. Again, organize it in paragraphs with titles. As in every section
-you start with a very brief overview of the section.
-
-For this class, explain all the optimizations you performed. This mean, you first very briefly
-explain the baseline implementation, then go through locality and other optimizations, and finally SSE (every project will be slightly different of course). Show or mention relevant analysis or assumptions. A few examples: 1) Profiling may lead you to optimize one part first; 2) bandwidth plus data transfer analysis may show that it is memory bound; 3) it may be too hard to implement the algorithm in full generality: make assumptions and state them (e.g., we assume $n$ is divisible by 4; or, we consider only one type of input image); 4) explain how certain data accesses have poor locality. Generally, any type of analysis adds value to your work.
-
-As important as the final results is to show that you took a structured, organized approach to the optimization and that you explain why you did what you did.
-
-Mention and cite any external resources including library or other code.
-
-Good visuals or even brief code snippets to illustrate what you did are good. Pasting large amounts of code to fill the space is not good.
