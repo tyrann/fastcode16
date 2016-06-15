@@ -3,7 +3,7 @@ The idea of this section is to give an overview about our implementation and the
 \mypar{Baseline} 
 Since we have to calculate with large numbers 64-bit integer operations are not sufficient. We therefore had to find a representation for arbitrary sized integers. We decided not to use a library, in order to have full flexibility in the optimizations. Our choice is shown in Listing \ref{lst:bigint}. As a next step we implemented the addition, shifting, modular multiplication and division. Furthermore we implemented Addition of points (affine coordinates) and multiplication of a Point with a scalar (double-and-add method). All of the functions were tested with unit tests.
 
-\begin{lstlisting}[frame=single,  captionpos=b, caption=representation of the arbitrary size integers, label=lst:bigint]
+\begin{lstlisting}[frame=single,  captionpos=b, caption=representation of the arbitrary size integers, label=lst:bigint, language=c]
 typedef uint64_t block;
 
 typedef struct 
@@ -32,8 +32,11 @@ With this approach we have great spatial and temporal locality, minimizing the n
 Realization that the chosen algorithm is not optimal.
 
 \mypar{Jacobian coordinates}
-Introduction of the Jacobian coordinates
-Precomputation of the Points
+In this code version a lot of algorithmic optimizations were performed. The number of montgomery conversions was reduced significantly since the baseline implementation was suboptimal. Furthermore the base $b$ for the montgomery multiplication was changed to $2^{64}$.
+
+When considering the Diffie Hellman key exchange, one can see that $uG$ and $vG$ has to be calculated, where $G$ is the base point, which is previously known. This allows to precompute the values $2G, 4G, 8G,...$, which otherwise have to be calculated on line 6 in Listing \ref{lst:double_and_add}.
+
+Changing from affine coordinates to jacobian coordinates gave another significant speedup. In affine coordinate the modular division and the multiplication were the bottlenecks. Introducing jacobian coordinates allowed us to focus on optimizing the multiplication, since the division is only needed for converting from jacobians to affine coordinates.
 
 \mypar{Final}
 Final optimizations like function stitching and inline assembly 
