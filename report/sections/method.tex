@@ -1,3 +1,24 @@
+\mypar{Locality optimizations}
+A first analysis of our naive implementation revealed that the creation and destruction of \texttt{BigInt} objects caused millions of \texttt{malloc}/\texttt{free} operations to be executed for each key pair. This results in poor locality and lot of time spent in OS calls.
+
+Our solution consist in a single contiguous buffer with enough space for all the \texttt{BigInt} objects required The buffer is allocated at initialization time and each function can access the single objects using tags like in the example below:
+
+\begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=Access by tag example]
+BigInt shared_v = GET_BIGINT_PTR(
+    BI_ECDH_SHAREDV_TAG);
+\end{lstlisting}
+
+For the scope of our project we assume that the maximum size of $p$ is $521$ bits. Including the header information we conclude that each \texttt{BigInt} object fits in at most $192$ bytes. Since there are $134$ distinct objects we get a total of $25.8KB$, that fits in the $32KB$ L1 cache of our target system.
+
+With this approach we have great spatial and temporal locality, minimizing the number of cache misses to the compulsory ones.
+
+\mypar{Montgomery multiplication}
+Running our application with callgrind after introducing Jacobian coordinates we noticed that the bottleneck of our algorithm is the multiplication in Montgomery space, consuming more than $80\%$ of CPU time.
+
+
+
+\mypar{ADX vs AVX2}  
+
 Now comes the ``beef'' of the paper, where you explain what you
 did. Again, organize it in paragraphs with titles. As in every section
 you start with a very brief overview of the section.
