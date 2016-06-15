@@ -1,7 +1,7 @@
-\mypar{Locality optimizations}
-A first analysis of our naive implementation revealed that the creation and destruction of \texttt{BigInt} objects caused millions of \texttt{malloc}/\texttt{free} operations to be executed for each key pair. This results in poor locality and lot of time spent in OS calls.
+\mypar{Memory optimizations}
+A first analysis of our naive implementation revealed that the creation and destruction of \texttt{BigInt} objects caused millions of \texttt{malloc}/\texttt{free} operations to be executed for each key computation. This results in poor locality and lot of time spent in OS calls.
 
-Our solution consist in a single contiguous buffer with enough space for all the \texttt{BigInt} objects required The buffer is allocated at initialization time and each function can access the single objects using tags like in the example below:
+Our solution consist in a single contiguous buffer with enough space for all the required \texttt{BigInt} objects. The buffer is allocated at initialization time and each function can access the single objects using tags like in the example below:
 
 \begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=Access by tag example]
 BigInt shared_v = GET_BIGINT_PTR(
@@ -12,22 +12,35 @@ For the scope of our project we assume that the maximum size of $p$ is $521$ bit
 
 With this approach we have great spatial and temporal locality, minimizing the number of cache misses to the compulsory ones.
 
+\mypar{Intel ADX and BMI2}
+The handling of the carry flag is a well-known problem on the x86 architecture. Developers usually have to use inline assembly and the \texttt{ADC} instruction or perform additions on smaller words, using the higher bits as carry flag like in our naive implementation.
+
+To overcome this problem Intel introduced the ADX extension, consisting in the \texttt{ADCX} (addition with carry flag) and \texttt{ADOX} (addition with overflow flag) instructions. ADX instructions redefine the use of the FLAGS register, using CF and OF respectively as carry flags and leaving the other flags untouched. This allows to perform two parallel chains of additions without conflicts in the carry flags.
+
+These instructions are accessible to C/C++ developers through the \texttt{\_addcarryx\_u64} intrinsic. Moreover Intel defines the \texttt{\_subborrow\_u64} intrinsic, that performs $64$bit subtractions with borrow flag.
+
+The BMI2 extension introduces the \texttt{MULX} instruction that multiplies two $64$bit integers, saving the $128$bit result in two $64$bit registers. This instruction doesn't affect the arithmetic flags, thus it can be safely mixed with the ADX instructions. The relative intrinsic is \texttt{\_mulx\_u64}. 
+
+Our optimized code makes heavy use of these intrinsics, that effectively improve the speed of our application. However the latest versions of GCC and ICC don't use ADX correctly. The assembly output shows that they emit simple \texttt{ADC} instructions, adding the overhead of saving and loading the carry flag in presence of multiple carry chains.
+
 \mypar{Montgomery multiplication}
-Running our application with callgrind after introducing Jacobian coordinates we noticed that the bottleneck of our algorithm is the multiplication in Montgomery space, consuming more than $80\%$ of CPU time.
-
-
+Running our application with callgrind after introducing Jacobian coordinates, we noticed that the bottleneck of our algorithm is the multiplication in Montgomery space. This covers more than $80\%$ of the execution time, making optimization of this step crucial.
+ 
+The core of the multiplication is the following operation:
+$$res = \left(res + y * x_i + p * u\right) >> 64$$
+where $x_i$ and $u$ are $64$bit numbers, the remaining variables are BigInts. The operation was optimized is different steps:
+\begin{enumerate}
+\item The basic BigInt operations were stitched into a single function, reducing the number of accesses to the cache and thus the operational intensity.
+\item Since our BigInt representation is based on $64$bit blocks, shifting a number by $64$bits is equivalent of shifting by one block. Here the right shift operation has been made implicit by writing the resulting blocks at index $i-1$ instead of $i$.
+\item Since the length of the loop is determined by the size of $p$ we we used macros for redefining the function with different fixed loop lengths. By doing so, the compiler can easily unroll the loops, drastically reducing the number of index operations. 
+\item Since the compiler is not able to emit \texttt{ADCX} and \texttt{ADOX} correctly, we write the instructions manually as inline assembly.
+\end{enumerate}
 
 \mypar{ADX vs AVX2}  
+In the literature there is no reference to successful use of SIMD for ECC. [ref] claims that the performance of Montgomery multiplication increases using SIMD, but only if compared to a $32$bits SISD implementation.
 
-Now comes the ``beef'' of the paper, where you explain what you
-did. Again, organize it in paragraphs with titles. As in every section
-you start with a very brief overview of the section.
+We verified the unsuitability of SIMD for this application by computing analytical lower bounds for the 
 
-For this class, explain all the optimizations you performed. This mean, you first very briefly
-explain the baseline implementation, then go through locality and other optimizations, and finally SSE (every project will be slightly different of course). Show or mention relevant analysis or assumptions. A few examples: 1) Profiling may lead you to optimize one part first; 2) bandwidth plus data transfer analysis may show that it is memory bound; 3) it may be too hard to implement the algorithm in full generality: make assumptions and state them (e.g., we assume $n$ is divisible by 4; or, we consider only one type of input image); 4) explain how certain data accesses have poor locality. Generally, any type of analysis adds value to your work.
-
-As important as the final results is to show that you took a structured, organized approach to the optimization and that you explain why you did what you did.
-
-Mention and cite any external resources including library or other code.
-
-Good visuals or even brief code snippets to illustrate what you did are good. Pasting large amounts of code to fill the space is not good.
+ADX 8 TP
+AVX2 32 10
+AVX2 64 24 
