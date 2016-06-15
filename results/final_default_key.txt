@@ -187,89 +187,92 @@ FINAL RESULT: OPCOUNT
 
 
 
+
 ==========ECDH optimal secp192==========
-mul_opcount = 9254482
-add_opcount = 19958851
+mul_opcount = 34498072
+add_opcount = 87275091
 shift_opcount = 3518120
 avx_opcount = 1344500
 global_index_count = 246394
 RDTSC instruction:
- 3183084.000000 cycles measured => 0.001061 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+ 5023151.000000 cycles measured => 0.001674 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
 info u F8B01EA5ECC24D059345305345230724B9DC033EE8343EB2
 info v F8B01EA5ECC24D059345305345230724B9DC033EE8343EB2
 
 ==========ECDH open_ssl secp192==========
 RDTSC instruction:
- 1886336.000000 cycles measured => 0.000629 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+ 1956889.000000 cycles measured => 0.000652 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
 info u F8B01EA5ECC24D059345305345230724B9DC033EE8343EB2
 info v F8B01EA5ECC24D059345305345230724B9DC033EE8343EB2
 
 ==========ECDH optimal secp224==========
-mul_opcount = 13960000
-add_opcount = 25709593
+mul_opcount = 68056136
+add_opcount = 160949933
 shift_opcount = 5851018
 avx_opcount = 1946000
 global_index_count = 293019
 RDTSC instruction:
- 3588226.000000 cycles measured => 0.001196 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+ 7469933.000000 cycles measured => 0.002490 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
 info u 000000006E1130D3354D778517EAA295A00F4F90494B94253D0A5CDD74662EC4
 info v 000000006E1130D3354D778517EAA295A00F4F90494B94253D0A5CDD74662EC4
 
 ==========ECDH open_ssl secp224==========
 RDTSC instruction:
- 2373082.000000 cycles measured => 0.000791 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+ 2506837.000000 cycles measured => 0.000836 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
 info u 6E1130D3354D778517EAA295A00F4F90494B94253D0A5CDD74662EC4
 info v 6E1130D3354D778517EAA295A00F4F90494B94253D0A5CDD74662EC4
 
 ==========ECDH optimal secp256==========
-mul_opcount = 15843826
-add_opcount = 31034535
+mul_opcount = 74261806
+add_opcount = 177079485
 shift_opcount = 6012434
 avx_opcount = 2334000
 global_index_count = 324016
 RDTSC instruction:
- 4276920.000000 cycles measured => 0.001426 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+ 8482071.000000 cycles measured => 0.002827 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
 info u 96EA1D5F43040AC1E1BE2EBCB04AE2629DCC1BB3BC124AB944BB2D7B4FCE4FEE
 info v 96EA1D5F43040AC1E1BE2EBCB04AE2629DCC1BB3BC124AB944BB2D7B4FCE4FEE
 
 ==========ECDH open_ssl secp256==========
 RDTSC instruction:
- 2955869.000000 cycles measured => 0.000985 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+ 3004435.000000 cycles measured => 0.001001 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
 info u 96EA1D5F43040AC1E1BE2EBCB04AE2629DCC1BB3BC124AB944BB2D7B4FCE4FEE
 info v 96EA1D5F43040AC1E1BE2EBCB04AE2629DCC1BB3BC124AB944BB2D7B4FCE4FEE
 
 ==========ECDH optimal secp384==========
-mul_opcount = 35166241
-add_opcount = 61496918
+mul_opcount = 235980235
+add_opcount = 530062904
 shift_opcount = 13041998
 avx_opcount = 3701500
 global_index_count = 489502
 RDTSC instruction:
- 9472882.000000 cycles measured => 0.003158 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+ 24077198.000000 cycles measured => 0.008026 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
 info u 82DCF5316A1D79DBE6CFA44141831C816794FC9F8AF93E70339F0D77B2AFA1CBA38D8E34C9B5FD908AC7435ACBA5B818
 info v 82DCF5316A1D79DBE6CFA44141831C816794FC9F8AF93E70339F0D77B2AFA1CBA38D8E34C9B5FD908AC7435ACBA5B818
 
 ==========ECDH open_ssl secp384==========
 RDTSC instruction:
- 5737972.000000 cycles measured => 0.001913 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+ 5788533.000000 cycles measured => 0.001930 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
 info u 82DCF5316A1D79DBE6CFA44141831C816794FC9F8AF93E70339F0D77B2AFA1CBA38D8E34C9B5FD908AC7435ACBA5B818
 info v 82DCF5316A1D79DBE6CFA44141831C816794FC9F8AF93E70339F0D77B2AFA1CBA38D8E34C9B5FD908AC7435ACBA5B818
 
 ==========ECDH optimal secp521==========
-mul_opcount = 72765931
-add_opcount = 105889794
+mul_opcount = 718230469
+add_opcount = 1540255434
 shift_opcount = 27779438
 avx_opcount = 6971000
 global_index_count = 709055
 RDTSC instruction:
- 22018450.000000 cycles measured => 0.007339 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+ 66715277.000000 cycles measured => 0.022238 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
 info u 00000000000001F9D081D59058D93019F157E2CBEA17789959CE4722B3A355B332948FB7EFD32AE7220E6B1CD6ADE238A025E6A8A58BC502382BFB1B8A0CEEB453BF7EDAA1C815B5
 info v 00000000000001F9D081D59058D93019F157E2CBEA17789959CE4722B3A355B332948FB7EFD32AE7220E6B1CD6ADE238A025E6A8A58BC502382BFB1B8A0CEEB453BF7EDAA1C815B5
 
 ==========ECDH open_ssl secp521==========
 RDTSC instruction:
- 12630707.000000 cycles measured => 0.004210 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
+ 12448438.000000 cycles measured => 0.004149 seconds, assuming frequency is 3000.000000 MHz. (change in source file if different)
 info u 01F9D081D59058D93019F157E2CBEA17789959CE4722B3A355B332948FB7EFD32AE7220E6B1CD6ADE238A025E6A8A58BC502382BFB1B8A0CEEB453BF7EDAA1C815B5
 info v 01F9D081D59058D93019F157E2CBEA17789959CE4722B3A355B332948FB7EFD32AE7220E6B1CD6ADE238A025E6A8A58BC502382BFB1B8A0CEEB453BF7EDAA1C815B5
+
+nfo v 01F9D081D59058D93019F157E2CBEA17789959CE4722B3A355B332948FB7EFD32AE7220E6B1CD6ADE238A025E6A8A58BC502382BFB1B8A0CEEB453BF7EDAA1C815B5
 
 
