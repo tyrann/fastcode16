@@ -6,9 +6,7 @@ set output "keysize.pdf"
 
 # label and titles
 set xlabel "Key length"
-set label "Speedup plot with varied private key form, compared to OpenSSL" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
 set label "Speedup/OpenSSL X" at screen 0.038, 0.86 left
-set key font ",10"
 
 # layout
 set tmargin at screen 0.8
