@@ -61,7 +61,7 @@ where $x_i$ and $u$ are $64$bit numbers, the remaining variables are BigInts. Th
 \end{enumerate}
 
 \mypar{ADX vs AVX2}  
-In the literature there is no reference to successful use of SIMD for ECC. We verified the unsuitability of SIMD for this application by computing analytical lower bounds for our ADX implementation and for two possible AVX2 approaches.
+In the literature we found no reference to successful use of SIMD for ECC. We verified the unsuitability of SIMD for this application by computing analytical lower bounds for our ADX implementation and for two possible AVX2 approaches.
 We estimate the number of cycles required by one iteration when processing $4$ parallel carry chains, i.e. $2$ montgomery multiplications. Results are summarized in table \ref{tbl-adx-avx2}.
 
 \begin{table}
