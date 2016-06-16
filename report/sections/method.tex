@@ -6,7 +6,7 @@ Since we have to calculate with large numbers 64-bit integer operations are not 
 \begin{lstlisting}[frame=single,  captionpos=b, caption=representation of the arbitrary size integers, label=lst:bigint, language=c]
 typedef struct 
 {
-    uint64_t significant_blocks;    
+    uint64 significant_blocks;    
     uint64 blocks[BI_BLOCKS_COUNT]; 
 } __BigInt;
 \end{lstlisting}
