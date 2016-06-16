@@ -1,3 +1,4 @@
 *.stackdump
 .vscode
 callgrind*
+report/report.out
