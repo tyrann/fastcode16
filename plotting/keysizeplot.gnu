@@ -5,7 +5,7 @@ set output "keysize.pdf"
 #unset key
 
 # label and titles
-set xlabel "Key length"
+set xlabel "Key length [bits]" font "Helvetica, 18"
 set label "Speedup/OpenSSL X" at screen 0.038, 0.86 left
 
 # layout
@@ -20,8 +20,7 @@ set border 1 back ls 11
 set xrange [*:]
 #set yrange [0:0.5]
 set yrange [*:]
-set format x "%g bits"
-set xtics nomirror out
+set xtics (192, 224, 256, 384, 521) nomirror out font "Helvetica, 18"
 set ytics nomirror scale 0
 
 # grid 
