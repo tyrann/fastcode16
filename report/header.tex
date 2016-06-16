@@ -2,6 +2,7 @@
 \usepackage{spconf,amsmath,amssymb,graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
+\usepackage{multirow}
 \usepackage{tikz}
 
 % Example definitions.
@@ -15,13 +16,20 @@
 
 \graphicspath{{figures/}}
 
+\lstset{
+	 numbers=left,
+	 xleftmargin = 0.6cm,
+	 keywordstyle=\bfseries,
+	 morekeywords = {for, from, to, do, if, then, return, mod}
+}
+
 % Title.
 % ------
 \title{Fast Implementation of Elliptic curve Diffie-Hellman}
 %
 % Single address.
 % ---------------
-\name{M.Gollub, C. Heiniger, T. Rubeli, H. Zhao}
+\name{M. G. Gollub, C. Heiniger, T. Rubeli, H. Zhao}
 
 \address{Department of Computer Science\\ ETH Z\"urich\\Z\"urich, Switzerland}
 
