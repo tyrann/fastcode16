@@ -9,8 +9,8 @@ set xlabel "Key length [bits]" font "Helvetica, 18"
 #set label "ECDH execution cycles comparison" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
 set label "[Cycles]" at screen 0.038, 0.975 left font "Helvetica, 18"
 
-set label "Final" at screen 0.5, 0.5 left textcolor rgb '#0060AD' font "Helvetica, 18"
-set label "OpenSSL" at screen 0.5, 0.25 left textcolor rgb '#990600' font "Helvetica, 18"
+set label "Final" at screen 0.5, 0.5 left textcolor rgb '#990600' font "Helvetica, 18"
+set label "OpenSSL" at screen 0.5, 0.25 left textcolor rgb '#227700' font "Helvetica, 18"
 
 # layout
 set tmargin at screen 0.9
@@ -39,4 +39,4 @@ set pointintervalbox 3
 set style line 2 lt 2 lc rgb '#0060AD' lw 1
 set style line 3 lt 2 lc rgb '#990600' lw 1
 
-plot "ecdh.csv" u 1:2 w lp pt 1 lc rgb '#0060AD' title "Final" , "ecdh.csv" u 1:3 w lp pt 1 lc rgb '#990600' title "OpenSSL"
+plot "ecdh.csv" u 1:2 w lp pt 1 lc rgb '#990600' title "Final" , "ecdh.csv" u 1:3 w lp pt 1 lc rgb '#227700' title "OpenSSL"

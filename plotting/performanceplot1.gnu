@@ -9,8 +9,8 @@ set xlabel "Key length [bits]" font "Helvetica, 18"
 #set label "Performance plot Part 1" at screen 0.038, 0.95 left font "Helvetica Bold, 20"
 set label "[Ops/Cycle]" at screen 0.02, 0.975 left font "Helvetica, 18"
 
-set label "Memory optimization" at screen 0.5, 0.62 left textcolor rgb '#990600' font "Helvetica, 18"
-set label "Baseline" at screen 0.5, 0.37 left textcolor rgb '#0060AD' font "Helvetica, 18"
+set label "Memory optimization" at screen 0.5, 0.62 left textcolor rgb '#AA6000' font "Helvetica, 18"
+set label "Baseline" at screen 0.5, 0.37 left textcolor rgb '#4035AD' font "Helvetica, 18"
 
 # layout
 set tmargin at screen 0.9
@@ -41,4 +41,4 @@ set grid ytics lt 1 lw 1 lc rgb "#FFFFFF"
 # plot data
 set style line 1 lc rgb '#0060ad' lt 1 lw 1 pt 7 ps 0.5
 set pointintervalbox 3
-plot "performance.csv" u 1:3 w lp pt 1  lc rgb '#990600' title "Memory optimization", "performance.csv" u 1:2 w lp pt 1 lc rgb '#0060AD' title "Baseline"
+plot "performance.csv" u 1:3 w lp pt 1  lc rgb '#AA6000' title "Memory optimization", "performance.csv" u 1:2 w lp pt 1 lc rgb '#4035AD' title "Baseline"
