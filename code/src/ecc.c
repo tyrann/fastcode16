@@ -94,16 +94,17 @@ void compute_ECDH(char* dURand, char* dVRand, int keyLength)
 	ecdh_compute_shared_secret(sharedInfoV, dV, &pub_keyU, &params);
     }
     cycles = stop_tsc(start);
+
+    mul_opcount = mul_opcount/num_runs;
+    add_opcount = add_opcount/num_runs; 
+    shift_opcount = shift_opcount/num_runs;
+    avx_opcount = avx_opcount/num_runs;
+    
 	printf("mul_opcount = %" PRIu64 "\n", mul_opcount);
 	printf("add_opcount = %" PRIu64 "\n", add_opcount);
 	printf("shift_opcount = %" PRIu64 "\n", shift_opcount);
 	printf("avx_opcount = %" PRIu64 "\n", avx_opcount);
     printf("global_index_count = %" PRIu64 "\n", global_index_count);
-	
-    mul_opcount = mul_opcount/num_runs;
-    add_opcount = add_opcount/num_runs; 
-    shift_opcount = shift_opcount/num_runs;
-    avx_opcount = avx_opcount/num_runs;
 
     global_index_count = global_index_count/num_runs;
     double r;  
