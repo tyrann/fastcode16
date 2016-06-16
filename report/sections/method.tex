@@ -24,9 +24,9 @@ BigInt shared_v = GET_BIGINT_PTR(
     BI_ECDH_SHAREDV_TAG);
 \end{lstlisting}
 
-For the scope of our project we assume that the maximum size of $p$ is $521$ bits. Including the header information we conclude that each \texttt{BigInt} object fits in at most $192$ bytes. Since there are $134$ distinct objects we get a total of $25.8KB$, that fits in the $32KB$ L1 cache of our target system.
+For the scope of our project we assume that the maximum size of $p$ is $521$ bits. Including the header information we conclude that each \texttt{BigInt} object fits in at most $192$ bytes. Since there are $134$ distinct objects we get a total of $25.8KB$, that fits in the $32KB$ L1 data cache of our target system.
 
-With this approach we have great spatial and temporal locality, minimizing the number of cache misses to the compulsory ones.
+With this approach we have great spatial and temporal locality, minimizing the number of cache misses to the compulsory ones. Moreover we only have one \texttt{malloc} operation.
 
 \mypar{First comparision with OpenSSL}
 Realization that the chosen algorithm is not optimal.
@@ -39,9 +39,9 @@ When considering the Diffie Hellman key exchange, one can see that $uG$ and $vG$
 Changing from affine coordinates to jacobian coordinates gave another significant speedup. In affine coordinate the modular division and the multiplication were the bottlenecks. Introducing jacobian coordinates allowed us to focus on optimizing the multiplication, since the division is only needed for converting from jacobians to affine coordinates.
 
 \mypar{Final}
-Final optimizations like function stitching and inline assembly 
+The following paragraphs describe the last round of optimizations that we introduced. Here we concentrate mainly on performance. 
 
-\mypar{Intel ADX and BMI2}
+1) \emph{Intel ADX and BMI2 \cite{Otzturk:2012}} 
 The handling of the carry flag is a well-known problem on the x86 architecture. Developers usually have to use inline assembly and the \texttt{ADC} instruction or perform additions on smaller words, using the higher bits as carry flag like in our naive implementation.
 
 To overcome this problem Intel introduced the ADX extension, consisting in the \texttt{ADCX} (addition with carry flag) and \texttt{ADOX} (addition with overflow flag) instructions. ADX instructions redefine the use of the FLAGS register, using CF and OF respectively as carry flags and leaving the other flags untouched. This allows to perform two parallel chains of additions without conflicts in the carry flags.
@@ -50,38 +50,41 @@ These instructions are accessible to C/C++ developers through the \texttt{\_addc
 
 The BMI2 extension introduces the \texttt{MULX} instruction that multiplies two $64$bit integers, saving the $128$bit result in two $64$bit registers. This instruction doesn't affect the arithmetic flags, thus it can be safely mixed with the ADX instructions. The relative intrinsic is \texttt{\_mulx\_u64}. 
 
-Our optimized code makes heavy use of these intrinsics, that effectively improve the speed of our application. However the latest versions of GCC and ICC don't use ADX correctly. The assembly output shows that they emit simple \texttt{ADC} instructions, adding the overhead of saving and loading the carry flag in presence of multiple carry chains.
+Our optimized code makes heavy use of these intrinsics, that effectively improve the speed of our application. However the latest versions of GCC and ICC don't support ADX as expected. The assembly output shows that they emit simple \texttt{ADC} instructions, adding the overhead of saving and loading the carry flag in presence of multiple carry chains.
 
-\mypar{Montgomery multiplication}
+2) \emph{Montgomery multiplication}
 Running our application with callgrind after introducing Jacobian coordinates, we noticed that the bottleneck of our algorithm is the multiplication in Montgomery space. This covers more than $80\%$ of the execution time, making optimization of this step crucial.
  
 The core of the multiplication is the following operation:
-$$res = \left(res + y * x_i + p * u\right) >> 64$$
+$$res = \left(res + y * x_i + p * u\right) \gg 64$$
 where $x_i$ and $u$ are $64$bit numbers, the remaining variables are BigInts. The operation was optimized is different steps:
 \begin{enumerate}
 \item The basic BigInt operations were stitched into a single function, reducing the number of accesses to the cache and thus the operational intensity.
 \item Since our BigInt representation is based on $64$bit blocks, shifting a number by $64$bits is equivalent of shifting by one block. Here the right shift operation has been made implicit by writing the resulting blocks at index $i-1$ instead of $i$.
 \item Since the length of the loop is determined by the size of $p$ we we used macros for redefining the function with different fixed loop lengths. By doing so, the compiler can easily unroll the loops, drastically reducing the number of index operations. 
-\item Since the compiler is not able to emit \texttt{ADCX} and \texttt{ADOX} correctly, we write the instructions manually as inline assembly.
+\item We observed that the compiler is not able to emit \texttt{ADCX} and \texttt{ADOX}, thus we decided to write the instructions manually as inline assembly. 
 \end{enumerate}
 
 \mypar{ADX vs AVX2}  
-In the literature there is no reference to successful use of SIMD for ECC. [ref] claims that the performance of Montgomery multiplication increases using SIMD, but only if compared to a $32$bits SISD implementation.
+In the literature there is no reference to successful use of SIMD for ECC. We verified the unsuitability of SIMD for this application by computing analytical lower bounds for our ADX implementation and for two possible AVX2 approaches.
+We estimate the number of cycles required by one iteration when processing $4$ parallel carry chains, i.e. $2$ montgomery multiplications. Results are summarized in table \ref{tbl-adx-avx2}.
 
-We verified the unsuitability of SIMD for this application by computing analytical lower bounds for our ADX implementation and for two possible AVX2 approaches.
-We estimate the number of cycles required by one iteration when processing $4$ parallel carry chains, i.e. $2$ montgomery multiplications. Results are summarized in the table below:
-
-\begin{tabular}{ |l|l|l|}
+\begin{table}
+\centering
+\caption{Lower bounds for different approaches}
+\label{tbl-adx-avx2}
+\begin{tabular}{ l l l}
 	\hline
- 	Approach & cycles/iteration & Bottleneck \\ \hline
- 	ADX & 8 & ADX througput \\ \hline
-  	AVX2 32bit & 8 & Carry emulation \\ \hline
- 	AVX2 64bit & 24 & Carry emulation \\ \hline
+ 	Approach & Cycles/iteration & Bottleneck \\ \hline
+ 	ADX & 8 & ADX througput \\
+  	AVX2 32bit & 8 & Carry emulation \\
+ 	AVX2 64bit & 16 & Carry emulation \\ \hline
 \end{tabular}
+\end{table}
 
-The main limitation is that AVX2 doesn't have support for carry propagation, thus it must be emulated. Moreover there are additional downsides:
+The main limitation is that AVX2 doesn't have support for carry propagation, thus it must be emulated. In the $32$bit case this can be done by adding $32$bit integers in $64$bit words, using the higher bits as carry. The $64$bit approach requires unsigned comparisons, which are expensive on AVX2. Moreover there are additional downsides:
 \begin{itemize}
-\item Data need to be transposed in the registers after loading.
+\item Data need to be transposed in the registers after load.
 \item Multiplications have higher latency.
-\item Require two montgomery multiplications to be independent, which is not always the case.
+\item Requires two montgomery multiplications to be independent, which is not always possible.
 \end{itemize}
