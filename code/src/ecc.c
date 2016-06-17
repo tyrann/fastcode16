@@ -246,7 +246,7 @@ int main(){
     global_index_count = 0; 
     // secp192
     printf("==========ECDH optimal secp192==========\n");
-    compute_ECDH("FEFFFFFFFFFFFFFFFFFFFFFE62F2FC170F69466A74DEFD8D","FEFFFFFFFFFFFFFFFFFFFFFE26F2FC710F69466A74DEFD8D",192); 
+    compute_ECDH("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",192); 
     mul_opcount = 0;
 	add_opcount = 0;
 	shift_opcount = 0;
@@ -254,7 +254,7 @@ int main(){
     global_index_count = 0;
 	
     printf("==========ECDH open_ssl secp192==========\n");
-    compute_ECDH_open_ssl("FEFFFFFFFFFFFFFFFFFFFFFE62F2FC170F69466A74DEFD8D","FEFFFFFFFFFFFFFFFFFFFFFE26F2FC710F69466A74DEFD8D", 192); 
+    compute_ECDH_open_ssl("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",192); 
     mul_opcount = 0;
 	add_opcount = 0;
 	shift_opcount = 0;

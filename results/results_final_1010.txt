@@ -1,0 +1,85 @@
+==========ECDH optimal secp192==========
+mul_opcount = 0
+add_opcount = 0
+shift_opcount = 0
+avx_opcount = 0
+global_index_count = 0
+RDTSC instruction:
+ 1589442.000000 cycles measured => 0.000467 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+info u 08000A3E4B2690A5EF350E235D653FA3968CA003E8F46476
+info v 08000A3E4B2690A5EF350E235D653FA3968CA003E8F46476
+
+==========ECDH open_ssl secp192==========
+RDTSC instruction:
+ 2089725.000000 cycles measured => 0.000615 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+info u 08000A3E4B2690A5EF350E235D653FA3968CA003E8F46476
+info v 08000A3E4B2690A5EF350E235D653FA3968CA003E8F46476
+
+==========ECDH optimal secp224==========
+mul_opcount = 0
+add_opcount = 0
+shift_opcount = 0
+avx_opcount = 0
+global_index_count = 0
+RDTSC instruction:
+ 2086672.000000 cycles measured => 0.000614 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+info u 000000008B789C1B07BA893EA4D2BD730E787CF5F0E40DB7D63E39B4E8EE39BB
+info v 000000008B789C1B07BA893EA4D2BD730E787CF5F0E40DB7D63E39B4E8EE39BB
+
+==========ECDH open_ssl secp224==========
+RDTSC instruction:
+ 2933126.000000 cycles measured => 0.000863 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+info u 8B789C1B07BA893EA4D2BD730E787CF5F0E40DB7D63E39B4E8EE39BB
+info v 8B789C1B07BA893EA4D2BD730E787CF5F0E40DB7D63E39B4E8EE39BB
+
+==========ECDH optimal secp256==========
+mul_opcount = 0
+add_opcount = 0
+shift_opcount = 0
+avx_opcount = 0
+global_index_count = 0
+RDTSC instruction:
+ 2463602.000000 cycles measured => 0.000725 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+info u 3FDE395BE18EF72E1E98FC82C2A7310C3F8E5E45B27B406F0B267CB2566D10E1
+info v 3FDE395BE18EF72E1E98FC82C2A7310C3F8E5E45B27B406F0B267CB2566D10E1
+
+==========ECDH open_ssl secp256==========
+RDTSC instruction:
+ 3448100.000000 cycles measured => 0.001014 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+info u 3FDE395BE18EF72E1E98FC82C2A7310C3F8E5E45B27B406F0B267CB2566D10E1
+info v 3FDE395BE18EF72E1E98FC82C2A7310C3F8E5E45B27B406F0B267CB2566D10E1
+
+==========ECDH optimal secp384==========
+mul_opcount = 0
+add_opcount = 0
+shift_opcount = 0
+avx_opcount = 0
+global_index_count = 0
+RDTSC instruction:
+ 5917200.000000 cycles measured => 0.001740 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+info u 4E23D594400FA8FDFC66369DBB2548E2F98870B1C7FE88020B92CC4CEC85FE815B169677B8DCD5D825D6C1A2D4C5B211
+info v 4E23D594400FA8FDFC66369DBB2548E2F98870B1C7FE88020B92CC4CEC85FE815B169677B8DCD5D825D6C1A2D4C5B211
+
+==========ECDH open_ssl secp384==========
+RDTSC instruction:
+ 7069992.000000 cycles measured => 0.002079 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+info u 4E23D594400FA8FDFC66369DBB2548E2F98870B1C7FE88020B92CC4CEC85FE815B169677B8DCD5D825D6C1A2D4C5B211
+info v 4E23D594400FA8FDFC66369DBB2548E2F98870B1C7FE88020B92CC4CEC85FE815B169677B8DCD5D825D6C1A2D4C5B211
+
+==========ECDH optimal secp521==========
+mul_opcount = 0
+add_opcount = 0
+shift_opcount = 0
+avx_opcount = 0
+global_index_count = 0
+RDTSC instruction:
+ 13606437.000000 cycles measured => 0.004002 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+info u 00000000000001132EEFCD48C4E4EB1BD7829478CCEA38FCAC955767B68B49893985E380499D8F93FFDE5EA7346FD1DE825F40CC420B2D54213B7CAA963738AA1B499E5C89AC1310
+info v 00000000000001132EEFCD48C4E4EB1BD7829478CCEA38FCAC955767B68B49893985E380499D8F93FFDE5EA7346FD1DE825F40CC420B2D54213B7CAA963738AA1B499E5C89AC1310
+
+==========ECDH open_ssl secp521==========
+RDTSC instruction:
+ 16205234.000000 cycles measured => 0.004766 seconds, assuming frequency is 3400.000000 MHz. (change in source file if different)
+info u 01132EEFCD48C4E4EB1BD7829478CCEA38FCAC955767B68B49893985E380499D8F93FFDE5EA7346FD1DE825F40CC420B2D54213B7CAA963738AA1B499E5C89AC1310
+info v 01132EEFCD48C4E4EB1BD7829478CCEA38FCAC955767B68B49893985E380499D8F93FFDE5EA7346FD1DE825F40CC420B2D54213B7CAA963738AA1B499E5C89AC1310
+
