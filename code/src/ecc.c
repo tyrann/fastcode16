@@ -85,13 +85,19 @@ void compute_ECDH(char* dURand, char* dVRand, int keyLength)
 	__montgomery_init(params.p);
 
     start = start_tsc();
+    
+    mul_opcount = 0;
+    add_opcount = 0;
+    shift_opcount = 0;
+    avx_opcount = 0;
+
     for(int i = 0; i < num_runs; i++)
     {
-	ecdh_generate_public_key(&pub_keyU, dU, &params);
-	ecdh_generate_public_key(&pub_keyV, dV, &params);
+	    ecdh_generate_public_key(&pub_keyU, dU, &params);
+	    ecdh_generate_public_key(&pub_keyV, dV, &params);
 
-	ecdh_compute_shared_secret(sharedInfoU, dU, &pub_keyV, &params);
-	ecdh_compute_shared_secret(sharedInfoV, dV, &pub_keyU, &params);
+	    ecdh_compute_shared_secret(sharedInfoU, dU, &pub_keyV, &params);
+	    ecdh_compute_shared_secret(sharedInfoV, dV, &pub_keyU, &params);
     }
     cycles = stop_tsc(start);
 
