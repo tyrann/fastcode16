@@ -1,34 +1,31 @@
-The purpose of this section is to familiarize the reader with the mathematical foundations of the Diffie-Hellman key exchange and which algorithms we used to achieve this task. This chapter follows a bottom-up approach.
+The purpose of this section is to familiarize the reader with the mathematical foundations of the Diffie-Hellman key exchange and with the algorithms we used to achieve this task.
 
 \mypar{Finite Field arithmetic} For elliptic curve cryptography one is mainly interested in the prime finite field $\mathbb{F}_p$ and the characteristic 2 finite field $\mathbb{F}_{2^m}$. In this paper only elliptic curves over $\mathbb{F}_p$ are discussed.
 
 \mypar{Montgomery multiplication} 
-\\The Montgomery modular multiplication algorithm allows to perform fast modular multiplication on large integers. In particular, the algorithm can be adapted for multi-precision arithmetic. Given two integers $x,y \in \mathbb{F}_p$, the algorithm computes $xy$ mod $p$. In order to perform the modular multiplication, $x$ and $y$ are converted to Montgomery form: $X = xR$ mod $p$ and $Y = yR$ mod $p$ where $R$ is larger than $p$ and co-prime with $p$. $R$ is usually chosen as $b^{t}$. A suitable choice of $b$ depends on the size of the processor's word. The algorithm performs a chain of multiplication mod $b$ and division by $b$, which are simply mask and shift operations when $b$ is in the appropriate form. The algorithm for the multi-precision representation is given below \cite[p. 602]{Menezes:1996}
-
-\bigskip
-\smallskip
-\begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=Mulitprecision Montogmery Modular Multiplication ]
+\\The Montgomery modular multiplication algorithm allows to perform fast modular multiplication. In particular, the algorithm can be adapted for multi-precision arithmetic. Given two integers $x,y \in \mathbb{F}_p$, the algorithm computes $xy$ mod $p$. In order to perform the modular multiplication, $x$ and $y$ are converted to Montgomery form: $X = xR$ mod $p$ and $Y = yR$ mod $p$ where $R$ is larger than $p$ and co-prime with $p$. $R$ is usually set as  $b^{t}$, where a suitable choice of $b$ depends on the size of the processor's word. The algorithm performs a chain of multiplications mod $b$ and divisions by $b$, which are simply mask and shift operations when $b$ is in the appropriate form. The algorithm for the multi-precision representation is given below List \ref{lst:mont} \cite[p. 602]{Menezes:1996}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=Mulitprecision Montogmery Modular Multiplication,label=lst:mont ]
 Input: p = ($p_{n-1}$ ... $p_{0}$)$_{b}$,
 X = ($x_{n-1}$ ... $x_{0}$)$_{b}$, Y = ($y_{n-1}$ ... $y_{0}$)$_{b}$
 
 Output: $XYR^{-1}$ mod $p$
 
-1. A $\leftarrow$ 0 (A = ($a_n$ ... $a_{0}$)$_{b}$
+1. A $\leftarrow$ 0 (A = ($a_n$ ... $a_{0}$)$_{b}$)
 2. for $i$ from $0$ to $(n-1)$ do:
 	2.1 $u_{i} \leftarrow (a_{0}+x_{i}y_{0})p'$ mod $b$
 	2.2 $A \leftarrow (A+ x_{i}y + u_{i}p) / b$
 3. if $A \geq p$ then $A \leftarrow A-p$
 4. return $A$
 \end{lstlisting}
-
-The challenging part of the reduction modulo $p$ resides in the high amount of division operations to be performed. The algorithm takes advantage of the underlying architecture by performing operations on machine words. The modulo operation in itself is only executed at the end, where $A$ is certain to be between $0$ and $2p-1$.
+\end{minipage}
 
 \mypar{Elliptic Curve over $\mathbb{F}_p$ \cite[p. 6-7]{Brown:2009}}
 An elliptic curve is defined by the equation
 \begin{equation}\label{eq:defining_eq_ec}
 y^2 \equiv x^3 + ax + b \quad (\text{mod } p)
 \end{equation}
-where $p$ is an odd prime number and $a,b \in \mathbb{F}_p$ are the parameters of the curve. Furthermore $a, b$ need to satisfy $4a^3 + 27b^2 \not\equiv 0$. The elliptic curve $E\left(\mathbb{F}_p\right)$ consists of the Points $P=(x,y)$ $x,y \in \mathbb{F}_p$ satisfying (\ref{eq:defining_eq_ec}). Additionally we introduce $\mathcal{O}$ the so called point at infinity. The addition of points (affine coordinates) is defined as follows \cite{Brown:2009}
+where $p$ is an odd prime number and $a,b \in \mathbb{F}_p$ are the parameters of the curve. Furthermore $a, b$ need to satisfy $4a^3 + 27b^2 \not\equiv 0$. The elliptic curve $E\left(\mathbb{F}_p\right)$ consists of the points $P=(x,y)$ $x,y \in \mathbb{F}_p$ satisfying (\ref{eq:defining_eq_ec}). Additionally we introduce $\mathcal{O}$ the so called point at infinity. The addition of points (affine coordinates) is defined as follows \cite{Brown:2009}
 \begin{enumerate}
 \item{$\mathcal{O} + \mathcal{O} = \mathcal{O}$}
 \item{$(x,y) + \mathcal{O} = \mathcal{O} + (x,y) = (x,y) \quad \forall (x,y) \in E(\mathbb{F}_p)$}
@@ -46,7 +43,9 @@ y^2 \equiv x^3 + axz^4 + bz^6 \quad (\text{mod } p)
 Point additions in jacobian coordinates \cite[p. 59-60]{Blake:1999} do not need modular divisions in contrast to affine coordinates, as one can see in the rules 4 and 5.
 
 \mypar{Double-and-add method}
-In order to implement the Diffie-Hellman key exchange we need to calculate $d \cdot P$ fast. This is done using the double-and-add method
+In order to implement the Diffie-Hellman key exchange we need to calculate $d \cdot P$ fast. This is done using the double-and-add method in Listing \ref{lst:double_and_add}, where $d = d_0 + d_1 2 + ... + d_m 2^m \quad d_i \, \in \{0,1\}$.
+
+
 \begin{lstlisting}[frame=single, mathescape=true, captionpos=b, caption=double-and-add method \cite{double_and_add}, label=lst:double_and_add]
 Input: $P \in E(\mathbb{F}_p)$, $d \in \mathbb{N}$
 Output: $d\cdot P \in E(\mathbb{F}_p)$
@@ -59,21 +58,21 @@ for i from 0 to m do
   $N$ $\leftarrow$ point_double($N$)
 return $Q$
 \end{lstlisting}
-where $d = d_0 + d_1 2 + ... + d_m 2^m \quad d_i \, \in \{0,1\}$
 
 \mypar{Diffie Hellman key exchange}
-Alice and Bob want to establish a secret over a public channel. We assume that the elliptic curve parameters: a prime $p$, $a, b \in \mathbb{F}_p$ a point $G$ with high order are publicly known. They need to do the following steps \cite{Washington:2008}: 
+Alice and Bob want to establish a secret over a public channel. We assume that the elliptic curve parameters: a prime $p$, $a, b \in \mathbb{F}_p$ and a point $G$ with high order are publicly known. They need to perform the following steps \cite{Washington:2008}: 
 \begin{enumerate}
 \item{Alice chooses a secret integer $u$, computes $G_u = u \cdot G$, and sends $G_u$ to Bob.}
 \item{Bob chooses a secret integer $v$, computes $G_v = v \cdot G$, and sends $G_v$ to Alice.}
 \item{Alice computes $u \cdot G_v = u \cdot (v \cdot G)$}
 \item{Bob computes $v \cdot G_u = v \cdot (u \cdot G)$.}
 \end{enumerate}
-One can verify that $u \cdot G_v = u \cdot (v \cdot G) = v\cdot (u \cdot G) = v \cdot G_u$. An eavesdropper knows $G, G_u, G_v$ and his goal is to calculate $u \cdot v \cdot G$. This is known as the Diffie-Hellman Problem and is assumed to be a hard \cite{Washington:2008}. If one could solve this problem efficiently, the method would be broken.
+One can verify that $u \cdot G_v = u \cdot (v \cdot G) = v\cdot (u \cdot G) = v \cdot G_u$. An eavesdropper knows $G, G_u, G_v$ and his goal is to calculate $u \cdot v \cdot G$. This is known as the Diffie-Hellman Problem and is assumed to be a hard \cite{Washington:2008}. If one could solve this problem efficiently, the method would loose its security.
 
 \mypar{Complexity / Number of field operations}
-Since in ECDH the essential operation is multiplying a Point with a scalar, we want to investigate the number of field operations when calculating $d \cdot P$. We assume the double-and-add method and Jacobian coordinates are used. This analysis is based on \cite[p. 63]{Blake:1999} As one can see in Listing \ref{lst:double_and_add} the number of point additions depends on the input $d$. Let $\ell$ be the number of bits of $d$. A reasonable assumption is to say, that $\ell / 2$ point additions and $\ell$ point doublings are necessary. Since arbitrary integer size multiplications are more expensive than additions we only count multiplications. According to \cite[p. 59, 60]{Brown:2009} a point addition costs 16 and a point doubling 10 multiplications. Hence we get an opcount of $\ell \cdot 10 + \ell / 2 \cdot 16$ multiplications.
+Since in ECDH the essential operation is multiplying a point with a scalar, we want to investigate the number of field operations needed for calculating $d \cdot P$. We assume the double-and-add method and Jacobian coordinates are used. This analysis is based on \cite[p. 63]{Blake:1999}. As one can see in Listing \ref{lst:double_and_add} the number of point additions depends on the input $d$. Let $\ell$ be the number of bits of $d$. A reasonable assumption is to say, that $\ell / 2$ point additions and $\ell$ point doublings are necessary. Since multi-precision integer multiplications are more expensive than additions we only count multiplications. According to \cite[p. 59, 60]{Blake:1999} a point addition consists of 16 multiplications and a point doubling of 10. Hence we get a total of $\ell \cdot 10 + \ell / 2 \cdot 16$ multi-precision multiplications.
 
 \mypar{Cost measure}
-In this computation the most frequent and expensive operations are multi-precision integers addition, multiplication and shift. Thus we conclude our computational cost as the sum of the three operations $C = C_{\text{add}} + C_{\text{mult}} + C_{\text{shift}}$. 
-Normally in order to show the real performance improvement, operation count would stay constant as the optimization goes on. Yet in our case since the integer operations does not only include the computational integer operations, but also include the index counts operations that are generated during looping. Thus we have to compromise by using code generated operation counts. The op counts flag will be turned on when operation counts need to be generated. When the program is rerun anew, the flag will be turned off to record the cycles so that the counting effect would not influence the final result. In section 4, the performance plots' the operation counts vary within one plot, but it does reflect the computational efficiency of the code in certain level. 
+ECDH is based on multiprecision integer operations, which in turn are built on top of native integer additions and multiplications. Thus we define our computational cost as $C=C_{add}+C_{mul}$. The operation count is highly dependent from the chosen private keys and changes drastically as we introduce algorithmic changes. For this reason, we determine the exact operation count programmatically using macros that can be disabled when measuring the cycles. In the plots in section \ref{sec:exp} the operation counts vary across different levels of optimizations; however, this allows us to determine the performance precisely.
+
+In contrast to what happens in programs based on floating point computations, index operations are relevant for our application. This is due to the fact that integer additions and index operations are both performed in the ALU (Arithmetic Logic Unit). As described in section \ref{sec:yourmethod}, the final round of optimizations introduces heavy use of loop unrolling, making the impact of index computations negligible. For this reason, we exclude index operations from the cost function. Other integer operations include shifts and modulo, but their impact is also negligible.
