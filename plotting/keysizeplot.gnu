@@ -1,14 +1,12 @@
 set term pdf
-set output "figure1.pdf"
-set datafile separator ";"
+set output "keysize.pdf"
 
 # disable legend
-unset key
+#unset key
 
 # label and titles
-set xlabel "n"
-set label "Runtime Plot" at screen 0.038, 0.95 left font "Helvetica Bold, 14"
-set label "[Cycles]" at screen 0.038, 0.86 left
+set xlabel "Key length"
+set label "Speedup/OpenSSL X" at screen 0.038, 0.86 left
 
 # layout
 set tmargin at screen 0.8
@@ -17,7 +15,12 @@ set lmargin at screen 0.1
 # axis
 set style line 11 lc rgb '#000000' lt 1 lw 1
 set border 1 back ls 11
-set format y "%02.1f"
+#set format y "%02.1f"
+#set format y "%01.1f"
+set xrange [*:]
+#set yrange [0:0.5]
+set yrange [*:]
+set format x "%g bits"
 set xtics nomirror out
 set ytics nomirror scale 0
 
@@ -28,4 +31,6 @@ set grid ytics lt 1 lw 1 lc rgb "#FFFFFF"
 # plot data
 set style line 1 lc rgb '#0060ad' lt 1 lw 1 pt 7 ps 0.5
 set pointintervalbox 3
-plot "data.csv" using 1:2 with linespoints ls 1
+plot "keysize.csv" u 1:2 w lp pt 1 title "Key form 111111","keysize.csv" u 1:3 w lp pt 1 ti "Key form 101010", "keysize.csv" u 1:4 w lp pt 1 ti "Key form 100000"
+
+#"speedup.csv" u 1:6 w lp pt 1 ti "OpenSSL"

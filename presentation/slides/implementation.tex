@@ -1,0 +1,25 @@
+\begin{frame}[fragile]
+\frametitle{Implementation}
+\begin{itemize}
+\setlength\itemsep{1.5em}
+\item{Bigint
+\begin{lstlisting}[frame=single, basicstyle=\scriptsize]
+typedef uint64_t block;
+
+typedef struct 
+{
+    uint64_t significant_blocks;    
+    block blocks[BIGINT_BLOCKS_COUNT]; 
+} __BigInt;
+\end{lstlisting}
+Corresponding operations (Addition, Multiplication, Division, ...)
+}
+\item{Elliptic Curve and ECDH
+\begin{itemize}
+\item{Elliptic Curve definition and key exchange mechanism}
+\item{5 predefined curves : 192, 224, 256, 384, 521 bits}
+\end{itemize}
+}
+\end{itemize}
+
+\end{frame}
